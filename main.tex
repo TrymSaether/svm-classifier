@@ -1,0 +1,27 @@
+\documentclass[a4paper, 10pt]{report}
+\usepackage{TrymTeX}
+\usepackage{csquotes}
+\usepackage[translate=babel,acronym,symbols,nogroupskip]{glossaries-extra}
+\usepackage[backend=biber]{biblatex}
+
+\addbibresource{cfg/references.bib}
+\glsaddkey{norsk}{\glsentrytext{\glslabel}}{\glsentrynorsk}{\GLSentrynorsk}{\glsnorsk}{\Glsnorsk}{\GLSnorsk}
+\setglossarystyle{listhypergroup}
+\setabbreviationstyle[acronym]{long-short}
+
+\makeglossaries
+
+\input{cfg/glossary}
+
+\begin{document}
+
+\include{t1}
+
+\section{Acronyms}
+We will look at \gls{LP} and \gls{QP}.
+
+\printglossaries
+
+\printbibliography[title={References}]
+
+\end{document}
