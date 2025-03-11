@@ -2,57 +2,70 @@
 \paragraph{Soft margin classification}
 
 \begin{equation}\label{eq:soft-margin-classification}
-\min_{w \in \R^d, \xi \in \R^M, b \in \R} \frac{1}{2} \norm*{w}_2^2 + C \sum_{i=1}^M \xi_i 
-\quad \text{s.t.} \quad
-\begin{cases}
+  \min_{w \in \R^d, \xi \in \R^M, b \in \R} \frac{1}{2} \norm*{w}_2^2 + C \sum_{i=1}^M \xi_i
+  \quad \text{s.t.} \quad
+  \begin{cases}
     y_i\left(\inner{w, x_i} + b\right) \geq 1 - \xi_i, & i = 1, \ldots, M \\
-    \xi_i \geq 0, & i = 1, \ldots, M
-\end{cases} \tag{3}
+    \xi_i \geq 0,                                      & i = 1, \ldots, M
+  \end{cases} \tag{3}
 \end{equation}
 \paragraph{The dual problem}
 \begin{equation}
-Y = \operatorname{diag}(y_1, \ldots, y_M) \in \R^{M \times M}, \quad G = \left(\inner{x_i, x_j}\right)_{i,j=1}^M \in \R^{M \times M}, \quad \alpha = (\alpha_1, \ldots, \alpha_M)^\top \in \R^M
+  Y = \operatorname{diag}(y_1, \ldots, y_M) \in \R^{M \times M}, \quad G = \left(\inner{x_i, x_j}\right)_{i,j=1}^M \in \R^{M \times M}, \quad \alpha = (\alpha_1, \ldots, \alpha_M)^\top \in \R^M
 \end{equation}
 
 where $Y$ is a diagonal matrix with the labels $y_i$ on the diagonal, and $G$ is the Gram matrix of the data points $x_i$. The dual problem can be written as
 
 \begin{equation}
-    \min_{\alpha \in \R^M} \frac{1}{2} \inner{\alpha, YGY\alpha} - \inner{\mathbf{1}_M, \alpha} 
-    \quad \text{s.t.} \quad
-    \begin{cases}
-        \inner{y, \alpha} = 0 \\
-        0 \leq \alpha_i \leq C, & i = 1, \ldots, M
-    \end{cases} \tag{7}
+  \min_{\alpha \in \R^M} \frac{1}{2} \inner{\alpha, YGY\alpha} - \inner{\mathbf{1}_M, \alpha}
+  \quad \text{s.t.} \quad
+  \begin{cases}
+    \inner{y, \alpha} = 0                      \\
+    0 \leq \alpha_i \leq C, & i = 1, \ldots, M
+  \end{cases} \tag{7}
 \end{equation}
 
 Discuss existence and uniqueness of equation (3) and (7).
 
 \paragraph{Existence of the primal problem}
 
-\subparagraph{Feasibility}
-The primal problem is feasible if there exists a solution $(w, b, \xi)$ such that the constraints are satisfied.
+\begin{lemma}{Feasibility of the Primal Problem}{}
+    The primal problem is feasible, i.e. the feasible set is non-empty, if there exists at least one point $(\symbf{w}, b, \symbf{\xi})$ such that the constraints are satisfied.
+\end{lemma}
 
-Let $\symbf{w} = \symbf{0}$, $b = 0$ and $\xi_i \geq 0$ then
-\[
-\min_{\xi \in \R^M} \frac{1}{2} \norm*{\symbf{0}}_2^2 + C \sum_{i=1}^M \xi_i 
-= \min_{\xi \in \R^M} C \sum_{i=1}^M \xi_i
-\quad \text{s.t.} \quad
-\begin{cases}
-    y_i\left(\inner{\symbf{0}, x_i} + 0\right) = 0 \geq 1 - \xi_i, & i = 1, \ldots, M \\
-    \xi_i \geq 0, & i = 1, \ldots, M
-\end{cases} 
-\]
-This is feasible if $\xi_i$ is large enough, i.e. $\xi_i \geq 1$ for all $i$.
+\begin{proof}{}{}
+  We show that the primal problem is feasible by constructing a solution $(\symbf{w}, b, \symbf{\xi})$ that satisfies all constraints.
 
-Let $\symbf{w} \neq \symbf{0}$, $b \neq 0$ and $\xi_i \geq 0$ then
-\[
-\min_{\xi \in \R^M} \frac{1}{2} \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i
-\quad \text{s.t.} \quad
-\begin{cases}
-    y_i\left(\inner{\symbf{w}, x_i} + b\right) \geq 1 - \xi_i, & i = 1, \ldots, M \\
-    \xi_i \geq 0, & i = 1, \ldots, M
-\end{cases}
-\]
+  Let $\symbf{w} = \symbf{0}$, $b = 0$, and $\symbf{\xi}_i = 1$ for all $i = 1, \ldots, M$. Then:
+
+  \[
+    y_i\left(\inner*{\symbf{w}, \symbf{x}_i} + b\right) = y_i\left(\inner*{\symbf{0}, \symbf{x}_i} + 0\right) = 0
+  \]
+
+  Since $0 \geq 1 - \symbf{\xi}_i$ when $\symbf{\xi}_i \geq 1$, and we've set $\symbf{\xi}_i = 1$, the first constraint is satisfied:
+
+  \[
+    y_i\left(\inner*{w, x_i} + b\right) \geq 1 - \xi_i, \quad i = 1, \ldots, M
+  \]
+
+  The second constraint $\xi_i \geq 0$ for all $i = 1, \ldots, M$ is clearly satisfied since $\xi_i = 1 > 0$.
+
+  Therefore, $(\symbf{0}, 0, \symbf{1})$ is a feasible solution, which proves that the primal problem is feasible.
+
+\end{proof}
+
+\begin{lemma}{Boundedness of the Primal Problem}{}
+  Since $C > 0$, $\symbf{\xi}_i \geq 0$, and $\norm*{\symbf{w}}_2^2 \geq 0$, the objective function is trivially bounded from below by $0$.
+    \[
+        \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i \geq 0
+    \]
+\end{lemma}
+\begin{lemma}{Coercitivity of the Primal Problem}{}
+  The primal problem is coercive, i.e. the objective function tends to infinity as $\norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i \to \infty$.
+    \[
+        \lim_{\norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i \to \infty} \left(\frac{1}{2} \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i\right) = \infty
+    \]
+\end{lemma}
 
 
 
