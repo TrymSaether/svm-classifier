@@ -1,72 +1,187 @@
+\chapter{Minimum tasks}
+\section{The Primal Problem (PP)}
 
-\paragraph{Soft margin classification}
+We start with the soft margin classification problem, or the \emph{primal problem} (PP), which is a convex optimization problem.
 
-\begin{equation}\label{eq:soft-margin-classification}
-  \min_{w \in \R^d, \xi \in \R^M, b \in \R} \frac{1}{2} \norm*{w}_2^2 + C \sum_{i=1}^M \xi_i
-  \quad \text{s.t.} \quad
+We denote it on the standard form as:
+\begin{align}\label{eq:primal-problem}
+  \min_{\symbf{w}, \xi_i, b} \; & f(\symbf{w}, \xi_i, b) =  \min_{\symbf{w}, \xi_i, b} \frac{1}{2} \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i \\
+  \text{subject to} \quad       & g_i(\symbf{w},\xi_i, b) =
   \begin{cases}
-    y_i\left(\inner{w, x_i} + b\right) \geq 1 - \xi_i, & i = 1, \ldots, M \\
-    \xi_i \geq 0,                                      & i = 1, \ldots, M
-  \end{cases} \tag{3}
-\end{equation}
-\paragraph{The dual problem}
-\begin{equation}
-  Y = \operatorname{diag}(y_1, \ldots, y_M) \in \R^{M \times M}, \quad G = \left(\inner{x_i, x_j}\right)_{i,j=1}^M \in \R^{M \times M}, \quad \alpha = (\alpha_1, \ldots, \alpha_M)^\top \in \R^M
-\end{equation}
+    1 - \symbf{y}_i\left(\inner{\symbf{w}, \symbf{x}_i} + b\right) - \xi_i \leq 0, & i = 1, \ldots, M \\
+    \xi_i \geq 0,                                                                  & i = 1, \ldots, M
+  \end{cases}
+\end{align}
 
-where $Y$ is a diagonal matrix with the labels $y_i$ on the diagonal, and $G$ is the Gram matrix of the data points $x_i$. The dual problem can be written as
-
-\begin{equation}
-  \min_{\alpha \in \R^M} \frac{1}{2} \inner{\alpha, YGY\alpha} - \inner{\mathbf{1}_M, \alpha}
-  \quad \text{s.t.} \quad
+Or in a more compact form:
+\begin{align*}
+  \min_{\symbf{w}, b, \symbf{\xi}} \quad & f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} \\
+  \text{subject to} \quad                &
   \begin{cases}
-    \inner{y, \alpha} = 0                      \\
-    0 \leq \alpha_i \leq C, & i = 1, \ldots, M
-  \end{cases} \tag{7}
-\end{equation}
+    g(\symbf{w}, b, \symbf{\xi}) = \symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} & \leq \symbf{0}_M \\
+    h(\symbf{\xi}) = \symbf{\xi}                                                            & \geq \symbf{0}_M
+  \end{cases}
+\end{align*}
+With
+\begin{itemize}
+  \item $\symbf{w} \in \R^d$ the weight vector.
+  \item $b \in \R$ the bias term.
+  \item $\symbf{\xi} \in \R^M$ the vector of slack variables.
+  \item $\symbf{1}_M, \symbf{0}_M \in \R^M$ the vectors of ones and zeros, respectively.
+  \item $\symbf{y} = [y_1, \ldots, y_M]^T \in \R^M$ the vector of class labels.
+  \item $Y = \text{diag}(y_1, \ldots, y_M) \in \R^{M \times M}$ the diagonal matrix with class labels.
+  \item $X = [\symbf{x}_1, \ldots, \symbf{x}_M]^T \in \R^{M \times d}$ the matrix of data points.
+\end{itemize}
 
-Discuss existence and uniqueness of equation (3) and (7).
+where \(\symbf{w} \in \R^N\) is the weight vector, \(b \in \R\) is the bias term, and \(\symbf{\xi}_i \geq 0\) are slack variables that allow for misclassification of data points.
+The parameter \(C > 0\) controls the trade-off between maximizing the margin and minimizing the classification error.
 
-\paragraph{Existence of the primal problem}
+Now we want to minimize the objective function \(f\) subject to the constraints \(g_i \geq 0\) for all \(i\).
 
-\begin{lemma}{Feasibility of the Primal Problem}{}
-    The primal problem is feasible, i.e. the feasible set is non-empty, if there exists at least one point $(\symbf{w}, b, \symbf{\xi})$ such that the constraints are satisfied.
-\end{lemma}
+\subsection{Existence and Uniqueness of Solutions}
+
+\begin{theorem}{Existence and Uniqueness of Solution for Primal Problem}{}
+  Assume \(C > 0\). Then the primal soft-margin optimization problem stated above satisfies the following properties:
+  \begin{itemize}
+    \item[(i)] \textbf{Existence:} There always exists at least one global minimizer \((\symbf{w}^\star, b^\star, \symbf{\xi}^\star)\).
+    \item[(ii)] \textbf{Uniqueness:} The vector \(\symbf{w}^\star\) is unique. However, the uniqueness of the bias \(b^\star\) and slack variables \(\xi_i^\star\) is, in general, not guaranteed without additional conditions on the data points \(\{x_i,y_i\}\).
+  \end{itemize}
+\end{theorem}
 
 \begin{proof}{}{}
-  We show that the primal problem is feasible by constructing a solution $(\symbf{w}, b, \symbf{\xi})$ that satisfies all constraints.
-
-  Let $\symbf{w} = \symbf{0}$, $b = 0$, and $\symbf{\xi}_i = 1$ for all $i = 1, \ldots, M$. Then:
-
+  The primal objective function
   \[
-    y_i\left(\inner*{\symbf{w}, \symbf{x}_i} + b\right) = y_i\left(\inner*{\symbf{0}, \symbf{x}_i} + 0\right) = 0
+    f(\symbf{w}, \symbf{\xi}, b) = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i
   \]
+  is strictly convex in \( w \), convex in \(\xi\), and independent of \(b\). The constraints are linear inequalities, defining a convex, closed, and nonempty feasible set (due to the slack variables \(\xi_i\geq 0\)).
 
-  Since $0 \geq 1 - \symbf{\xi}_i$ when $\symbf{\xi}_i \geq 1$, and we've set $\symbf{\xi}_i = 1$, the first constraint is satisfied:
+  Existence follows from standard arguments in convex optimization: since the feasible set is non-empty and closed, and the objective function is strongly convex in \(w\) (and linear, hence convex, in \(\xi\) and \(b\)), a global minimizer exists (see, e.g., Proposition 2.1 from [17]).
 
-  \[
-    y_i\left(\inner*{w, x_i} + b\right) \geq 1 - \xi_i, \quad i = 1, \ldots, M
-  \]
-
-  The second constraint $\xi_i \geq 0$ for all $i = 1, \ldots, M$ is clearly satisfied since $\xi_i = 1 > 0$.
-
-  Therefore, $(\symbf{0}, 0, \symbf{1})$ is a feasible solution, which proves that the primal problem is feasible.
-
+  For uniqueness, note that the objective function is strictly convex in \(w\). Hence, any solution in \(w\) must be unique. However, the function is only convex (linear) in \(b\) and \(\xi\), thus uniqueness in these variables is not guaranteed without additional conditions (such as strict separability of the data). Typically, \(\xi\) and \(b\) are unique if and only if the active constraints provide enough linear independence conditions to yield a unique solution. Otherwise, multiple solutions differing only by the choice of \(b\) (and possibly \(\xi\)) can occur.\qed
 \end{proof}
 
-\begin{lemma}{Boundedness of the Primal Problem}{}
-  Since $C > 0$, $\symbf{\xi}_i \geq 0$, and $\norm*{\symbf{w}}_2^2 \geq 0$, the objective function is trivially bounded from below by $0$.
-    \[
-        \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i \geq 0
-    \]
-\end{lemma}
-\begin{lemma}{Coercitivity of the Primal Problem}{}
-  The primal problem is coercive, i.e. the objective function tends to infinity as $\norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i \to \infty$.
-    \[
-        \lim_{\norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i \to \infty} \left(\frac{1}{2} \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i\right) = \infty
-    \]
-\end{lemma}
+\section{The Dual Problem (DP)}
+The dual of the primal problem \eqref{eq:primal-problem} can be derived using Lagrange multipliers, leading to the following dual optimization problem:
+\begin{align}\label{eq:dual-problem}
+  \min_{\symbf{\alpha}} \quad & D(\symbf{\alpha}) = \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} - \inner*{\symbf{1}_M, \symbf{\alpha}} \\
+  \text{subject to} \quad     & h_i(\symbf{\alpha}, \symbf{y}) =
+  \begin{cases}
+    \inner*{\symbf{y}, \symbf{\alpha}} = 0 \\
+    0 \leq \alpha_i \leq C, \quad \forall i = 1, \ldots, M
+  \end{cases}
+\end{align}
+
+where \(\mathrm{Y} = \operatorname{diag}\{y_1, \ldots, y_M\}\) is the diagonal class-label matrix, and \(\mathrm{G} = \left(\inner*{\symbf{x}_i, \symbf{x}_j}\right)_{i,j=1}^M\) is the Gram matrix of the points.
+
+\begin{theorem}{Existence and Uniqueness of Solution for Dual Problem}{}
+  Consider the dual optimization problem stated above. Then the following properties hold:
+  \begin{itemize}
+    \item[(i)] \textbf{Existence:} There always exists at least one solution to the dual optimization problem.
+    \item[(ii)] \textbf{Uniqueness:} The solution \(\symbf{\alpha}^\star\) is unique if and only if the matrix \(\mathrm{Y}\mathrm{G}\mathrm{Y}\) is positive definite when restricted to the subspace defined by \(\inner{\symbf{y},\symbf{\alpha}}=0\). In general, if \(\mathrm{Y}\mathrm{G}\mathrm{Y}\) is only positive semidefinite, uniqueness is not guaranteed.
+  \end{itemize}
+\end{theorem}
+
+\begin{proof}{}{}
+
+  The dual problem is a convex quadratic optimization problem with linear equality and box constraints.
+
+  The feasible set is compact (bounded and closed) due to the constraints \(0\leq \alpha_i \le C\).
+
+  The objective is a convex quadratic form since \(\mathrm{Y}\mathrm{G}\mathrm{Y}\) is positive semidefinite, ensuring existence by standard results in convex optimization\cite{nocedal2006numerical}.
+
+  Uniqueness depends entirely on the definiteness of the quadratic form defined by \(\mathrm{Y}\mathrm{G}\mathrm{Y}\).
+
+  Specifically, uniqueness holds if this quadratic form is strictly convex on the feasible affine subspace \(\{\symbf{\alpha}\mid \inner{\symbf{y},\symbf{\alpha}}=0\}\).
+
+  In that case, the objective function is strictly convex and has exactly one minimizer.
+
+  If this restricted definiteness condition fails, there may exist multiple solutions differing in the choice of \(\symbf{\alpha}\).\qed
+\end{proof}
+
+\hrule
+
+\section{Lagrange Duality}
+Here we show how to derive the dual problem ~\eqref{eq:dual-problem} from the primal problem \eqref{eq:primal-problem} using Lagrange multipliers.
+
+We introduce Lagrange multipliers \(\alpha_i, \mu_i \geq 0\) for the constraints \(g_i(\symbf{w}, b, \symbf{\xi}) \leq 0\) and \(\symbf{\xi} \geq 0\), respectively.
+Then we can write the Lagrangian function as:
+
+\begin{align*}
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \left(\symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi}\right) - \symbf{\mu}^\top \symbf{\xi}                                                  \\
+                                                                & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y X \symbf{w} - \symbf{\alpha}^\top Y b\symbf{1}_M - \symbf{\alpha}^\top \symbf{\xi} - \symbf{\mu}^\top \symbf{\xi} \\
+\end{align*}
+
+The stationary points of the Lagrangian are found by taking gradients with respect to all variables and setting them to zero:
+
+\begin{align*}
+  \nabla_{\symbf{w}} \Lcal          & = \symbf{w} -  (X^\top Y) \symbf{\alpha} = \symbf{0}                             \\
+  \frac{\partial \Lcal}{\partial b} & = - \symbf{\alpha}^\top Y = \symbf{0}^\top                                       \\
+  \nabla_{\symbf{\xi}} \Lcal        & = C \symbf{1}_M^\top - \symbf{\alpha}^\top - \symbf{\mu}^\top = \symbf{0}_M^\top
+\end{align*}
+
+This gives us the \emph{Karush-Kuhn-Tucker (KKT) conditions}:
+
+\begin{align*}
+  \symbf{w}             & = X^\top Y \symbf{\alpha}                        \\
+  \symbf{\alpha}^\top Y & = 0                                              \\
+  C \symbf{1}_M^\top    & = \symbf{\alpha}^\top + \symbf{\mu}^\top  \geq 0 \\
+\end{align*}
+
+Now we get that:
+\[
+  \norm*{\symbf{w}}_2^2 = \norm{X^\top Y \symbf{\alpha}}_2^2 = \left(X^\top Y \symbf{\alpha}\right)^\top \left(X^\top Y \symbf{\alpha}\right) = \symbf{\alpha}^\top Y [X X^\top] Y \symbf{\alpha} = \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}}
+\]
+
+Substituting the KKT conditions into the Lagrangian gives us:
+
+\begin{align*}
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y X \symbf{w} - \symbf{\alpha}^\top Y b\symbf{1}_M - \symbf{\alpha}^\top \symbf{\xi} - \symbf{\mu}^\top \symbf{\xi}                                                                                                                                                     \\
+                                                                & = \frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y \overbrace{X X^\top}^{G} Y \symbf{\alpha} - \overbrace{\symbf{\alpha}^\top Y}^{\symbf{0}_M^\top} b\symbf{1}_M - \symbf{\alpha}^\top \symbf{\xi} - \left(C \symbf{1}_M^\top - \symbf{\alpha}^\top\right) \symbf{\xi} \\
+                                                                & = \frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y G Y \symbf{\alpha} -  \symbf{\alpha}^\top \symbf{\xi} - C \symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{\xi}                                                                                            \\
+                                                                & = \frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} + \symbf{\alpha}^\top \symbf{1}_M                                                                                                                                                                                                 \\
+                                                                & = -\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} +  \symbf{\alpha}^\top \symbf{1}_M                                                                                                                                                                                                                                                                           \\
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha})              & = -\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} +  \inner*{\symbf{1}_M, \symbf{\alpha}}                                                                                                                                                                                                                                                                      \\
+\end{align*}
+
+We now define the temporary penalty function \(p(\symbf{w}, b, \symbf{\xi})\) as:
+\begin{align*}
+  p(\symbf{w}, b, \symbf{\xi}) =
+  \begin{cases}
+    f(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}^\top g(\symbf{w}, b, \symbf{\xi}) - \symbf{\mu}^\top \symbf{\xi} & \text{if } g(\symbf{w}, b,  \symbf{\xi}) \leq 0 \text{ and } h(\symbf{\xi}) \geq 0 \\
+    \infty                                                                                                         & \text{otherwise}
+  \end{cases}
+\end{align*}
+
+If the constraints hold, i.e. \(g(\symbf{w}, b, \symbf{\xi}) \leq 0\) and \(\symbf{\xi} \geq 0\), the following inequality holds:
+
+\begin{align*}
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) & = f(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}^\top g(\symbf{w}, b, \symbf{\xi}) - \symbf{\mu}^\top \symbf{\xi} \leq f(\symbf{w}, b, \symbf{\xi})
+\end{align*}
+
+and if we choose \(\symbf{\alpha} = \symbf{0}\) and \(\symbf{\mu} = \symbf{0}\) we see that the equality also holds:
+
+\begin{equation*}
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) = f(\symbf{w}, b, \symbf{\xi})
+\end{equation*}
+
+However, if the constraints do not hold, then we can choose \(\symbf{\alpha}\) and \(\symbf{\mu}\) such that the Lagrangian becomes unbounded below. For example, if any component \(\xi_i < 0\), we can let the corresponding \(\mu_i \to \infty\), driving \(\Lcal \to -\infty\). Similarly, if \(g(\symbf{w}, b, \symbf{\xi}) > 0\), we can choose the corresponding \(\alpha_i \to \infty\), again making \(\Lcal\) unbounded below.
 
 
+then \(p(\symbf{w}, b, \symbf{\xi}) = \infty\) and the Lagrangian is not bounded below.
 
+
+For which we want to maximize, to get the dual problem:
+
+\begin{equation*}
+  \max_{\symbf{\alpha}}\, d(\symbf{\alpha})  = -\min_{\symbf{\alpha}} \,\left[-d(\symbf{\alpha})\right]
+\end{equation*}
+
+\begin{align*}
+  \min_{\symbf{\alpha}} \; & \mathcal{D}(\symbf{\alpha}) = \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} - \inner*{\symbf{1}_M, \symbf{\alpha}} \\
+  \text{subject to} \;     & h_i(\symbf{\alpha}, \symbf{y}) =
+  \begin{cases}
+    \inner*{\symbf{y}, \symbf{\alpha}} = 0     \\
+    0 \leq \alpha_i \leq C, & i = 1, \ldots, M
+  \end{cases}
+\end{align*}
 
