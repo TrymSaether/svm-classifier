@@ -4,7 +4,7 @@
 \usepackage[translate=babel,acronym,symbols,nogroupskip]{glossaries-extra}
 \usepackage[backend=biber]{biblatex}
 
-\addbibresource{cfg/references.bib}
+\addbibresource{bib/references.bib}
 \glsaddkey{norsk}{\glsentrytext{\glslabel}}{\glsentrynorsk}{\GLSentrynorsk}{\glsnorsk}{\Glsnorsk}{\GLSnorsk}
 \setglossarystyle{listhypergroup}
 \setabbreviationstyle[acronym]{long-short}
@@ -13,55 +13,33 @@
 
 \input{cfg/glossary}
 
+\title{Solving the Soft-Margin SVM: Theory and Implementation}
+\author{Your Name}
+\date{\today}
+
 \begin{document}
 
-\begin{table}[htbp]
-    \centering
-    \caption{Notation Table}
-    \begin{tabular}{ll}
-        \hline
-        \textbf{Symbol} & \textbf{Meaning/Description} \\ 
-        \hline
-        $x_i \in \mathbb{R}^d$ & Data points in feature space, $i=1,\dots,M$ \\[3pt]
-        $y_i \in \{-1, +1\}$ & Class labels for data points, with $-1$ for class $A$, $+1$ for class $B$ \\[3pt]
-        $w \in \mathbb{R}^d$ & Normal vector to separating hyperplane \\[3pt]
-        $b \in \mathbb{R}$ & Offset (bias) of separating hyperplane \\[3pt]
-        $\xi_i \geq 0$ & Slack variables for soft margin classifier (misclassification penalty) \\[3pt]
-        $C > 0$ & Regularisation parameter (penalty factor) for misclassification \\[3pt]
-        $f_{w,b}(x)$ & Affine classification function, $f_{w,b}(x) = \langle w,x \rangle + b$ \\[3pt]
-        $F(x)$ & Classifier function, $F(x) = \text{sgn}(f_{w,b}(x))$ \\[3pt]
-        $H(w,-b)$ & Separating hyperplane, $H(w,-b) = \{x\in\mathbb{R}^d : f_{w,b}(x) = 0\}$ \\[3pt]
-        $\gamma$ & Margin, the minimal distance from data points to hyperplane \\[3pt]
-        $\xi = (\xi_1,\dots,\xi_M)$ & Vector of slack variables allowing misclassification \\[3pt]
-        $C > 0$ & Regularization parameter (penalty for misclassification) \\[3pt]
-        $\ell_h(t)$ & Hinge loss function, $\ell_h(t)=\max\{0,1-t\}$ \\[3pt]
-        $\ell_{\text{log}}(t)$ & Logistic loss function, $\ell_{\text{log}}(t) = \ln(1+e^{-t})$ \\[3pt]
-        $G \in \mathbb{R}^{M \times M}$ & Gram matrix, defined by $G_{ij} = \langle x_i, x_j \rangle$ \\[3pt]
-        $Y \in \mathbb{R}^{M\times M}$ & Diagonal label matrix, $Y = \text{diag}(y_1,\dots,y_M)$ \\[3pt]
-        $\alpha \in \mathbb{R}^M$ & Dual variables (Lagrange multipliers) \\[3pt]
-        $I_S$ & Set of indices corresponding to support vectors, $I_S=\{i: \alpha_i>0\}$ \\[3pt]
-        $S$ & Set of support vectors, $S=\{x_i:i\in I_S\}$ \\[3pt]
-        $\Omega \subseteq \mathbb{R}^d$ & Feasible set in constrained optimization problems \\[3pt]
-        $\lambda \in \mathbb{R}^{|E|\cup|I|}$ & Lagrange multipliers for constrained optimization problems \\[3pt]
-        $L(x,\lambda)$ & Lagrangian, defined by $L(x,\lambda)=f(x)-\sum_{i\in E\cup I}\lambda_i c_i(x)$ \\[3pt]
-        $q(\lambda)$ & Dual objective function, $q(\lambda)=\inf_{x\in\mathbb{R}^d} L(x,\lambda)$ \\[3pt]
-        $\nabla f(x)$ & Gradient of function $f$ at point $x$ \\[3pt]
-        $\nabla^2 f(x)$ & Hessian matrix (second derivative) of $f$ at point $x$ \\[3pt]
-        $\pi_{\Omega}(x)$ & Projection of point $x$ onto the feasible set $\Omega$ \\[3pt]
-        $T_\Omega(x)$ & Tangent cone to $\Omega$ at $x$ \\[3pt]
-        $N_\Omega(x)$ & Normal cone to $\Omega$ at $x$ \\[3pt]
-        \hline
-    \end{tabular}
-    \label{tab:notation}
-\end{table}
+\maketitle
 
-\include{t1}
+\begin{abstract}
+  This report presents a comprehensive analysis of the soft-margin Support Vector Machine (SVM) classification problem. We establish the theoretical foundations of both primal and dual formulations, proving existence and uniqueness properties of their solutions. A detailed derivation of the dual problem is provided through Lagrangian duality theory. We implement and analyze various solution algorithms, including a projected gradient method for the dual problem. Experimental results demonstrate the effectiveness of our implementation on synthetic and real datasets, highlighting the relationship between the regularization parameter and model complexity.
+\end{abstract}
 
-\section{Acronyms}
-We will look at \gls{LP} and \gls{QP}.
+\tableofcontents
+
+\chapter{Introduction}
+\input{chapters/1_introduction}
+\input{chapters/2_problem_formulation}
+\input{chapters/3_dual_derivation}
+\input{chapters/4_numerical_methods}
+\input{chapters/5_experiments_results}
+\input{chapters/6_conclusion}
 
 \printglossaries
-
 \printbibliography[title={References}]
+\printglossary[type=symbols, title={Symbols}]
+\printglossary[type=acronym, title={Acronyms}]
+
+\appendix
 
 \end{document}

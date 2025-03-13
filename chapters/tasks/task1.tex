@@ -1,44 +1,27 @@
 \chapter{Minimum tasks}
-\section{The Primal Problem (PP)}
+\section{The Primal Problem (P)}
 
-We start with the soft margin classification problem, or the \emph{primal problem} (PP), which is a convex optimization problem.
+We start with the soft margin classification problem, or the \emph{primal problem (P)}, which is a convex optimization problem.
+Denoted on a standard and compact form as:
 
-We denote it on the standard form as:
-\begin{align}\label{eq:primal-problem}
-  \min_{\symbf{w}, \xi_i, b} \; & f(\symbf{w}, \xi_i, b) =  \min_{\symbf{w}, \xi_i, b} \frac{1}{2} \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i \\
-  \text{subject to} \quad       & g_i(\symbf{w},\xi_i, b) =
+\begin{align*}\label{eq:soft-margin-problem}
+  \min_{\symbf{w}, b, \symbf{\xi}} f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} 
+  \quad \text{subject to} \quad 
   \begin{cases}
-    1 - \symbf{y}_i\left(\inner{\symbf{w}, \symbf{x}_i} + b\right) - \xi_i \leq 0, & i = 1, \ldots, M \\
-    \xi_i \geq 0,                                                                  & i = 1, \ldots, M
-  \end{cases}
-\end{align}
-
-Or in a more compact form:
-\begin{align*}
-  \min_{\symbf{w}, b, \symbf{\xi}} \quad & f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} \\
-  \text{subject to} \quad                &
-  \begin{cases}
-    g(\symbf{w}, b, \symbf{\xi}) = \symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} & \leq \symbf{0}_M \\
-    h(\symbf{\xi}) = \symbf{\xi}                                                            & \geq \symbf{0}_M
-  \end{cases}
+    \symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} & \leq \symbf{0}_M \\
+    \symbf{\xi}                                              & \geq \symbf{0}_M
+  \end{cases}\tag{P}
 \end{align*}
-With
-\begin{itemize}
-  \item $\symbf{w} \in \R^d$ the weight vector.
-  \item $b \in \R$ the bias term.
-  \item $\symbf{\xi} \in \R^M$ the vector of slack variables.
-  \item $\symbf{1}_M, \symbf{0}_M \in \R^M$ the vectors of ones and zeros, respectively.
-  \item $\symbf{y} = [y_1, \ldots, y_M]^T \in \R^M$ the vector of class labels.
-  \item $Y = \text{diag}(y_1, \ldots, y_M) \in \R^{M \times M}$ the diagonal matrix with class labels.
-  \item $X = [\symbf{x}_1, \ldots, \symbf{x}_M]^T \in \R^{M \times d}$ the matrix of data points.
-\end{itemize}
 
-where \(\symbf{w} \in \R^N\) is the weight vector, \(b \in \R\) is the bias term, and \(\symbf{\xi}_i \geq 0\) are slack variables that allow for misclassification of data points.
-The parameter \(C > 0\) controls the trade-off between maximizing the margin and minimizing the classification error.
+where $\symbf{w} \in \R^d$ is the weight vector, 
+$b \in \R$ is the bias term, 
+$\symbf{\xi} \in \R^M$ is the vector of slack variables, 
+$Y = \text{diag}(y_1, \ldots, y_M) \in \R^{M \times M}$ is the diagonal matrix with class labels, 
+and $X = [\symbf{x}_1, \ldots, \symbf{x}_M]^T \in \R^{M \times d}$ is the matrix of data points.
 
-Now we want to minimize the objective function \(f\) subject to the constraints \(g_i \geq 0\) for all \(i\).
+The parameter $C > 0$ controls the trade-off between maximizing the margin and minimizing the classification error.
 
-\subsection{Existence and Uniqueness of Solutions}
+\subsection{Ex
 
 \begin{theorem}{Existence and Uniqueness of Solution for Primal Problem}{}
   Assume \(C > 0\). Then the primal soft-margin optimization problem stated above satisfies the following properties:
@@ -61,13 +44,14 @@ Now we want to minimize the objective function \(f\) subject to the constraints 
 \end{proof}
 
 \section{The Dual Problem (DP)}
-The dual of the primal problem \eqref{eq:primal-problem} can be derived using Lagrange multipliers, leading to the following dual optimization problem:
+The dual of the primal problem~\eqref{eq:primal-problem} can be derived using Lagrange multipliers, leading to the following dual optimization problem:
 \begin{align}\label{eq:dual-problem}
-  \min_{\symbf{\alpha}} \quad & D(\symbf{\alpha}) = \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} - \inner*{\symbf{1}_M, \symbf{\alpha}} \\
-  \text{subject to} \quad     & h_i(\symbf{\alpha}, \symbf{y}) =
+  \min_{\symbf{\alpha}}\frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} - \inner*{\symbf{1}_M, \symbf{\alpha}}
+  \quad \text{subject to} \quad
+  h(\symbf{\alpha}, \symbf{y}) =
   \begin{cases}
     \inner*{\symbf{y}, \symbf{\alpha}} = 0 \\
-    0 \leq \alpha_i \leq C, \quad \forall i = 1, \ldots, M
+    \symbf{0}_M \leq \symbf{\alpha} \leq C\symbf{1}_M
   \end{cases}
 \end{align}
 
@@ -101,6 +85,14 @@ where \(\mathrm{Y} = \operatorname{diag}\{y_1, \ldots, y_M\}\) is the diagonal c
 \hrule
 
 \section{Lagrange Duality}
+\begin{align*}\label{eq:soft-margin-problem}
+  \min_{\symbf{w}, b, \symbf{\xi}} \quad & f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} \text{subject to} \quad &
+  \begin{cases}
+    \symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} & \leq \symbf{0}_M \\
+    \symbf{\xi}                                              & \geq \symbf{0}_M
+  \end{cases}\tag{P}
+\end{align*}
+
 Here we show how to derive the dual problem ~\eqref{eq:dual-problem} from the primal problem \eqref{eq:primal-problem} using Lagrange multipliers.
 
 We introduce Lagrange multipliers \(\alpha_i, \mu_i \geq 0\) for the constraints \(g_i(\symbf{w}, b, \symbf{\xi}) \leq 0\) and \(\symbf{\xi} \geq 0\), respectively.
@@ -155,33 +147,58 @@ We now define the temporary penalty function \(p(\symbf{w}, b, \symbf{\xi})\) as
 If the constraints hold, i.e. \(g(\symbf{w}, b, \symbf{\xi}) \leq 0\) and \(\symbf{\xi} \geq 0\), the following inequality holds:
 
 \begin{align*}
-  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) & = f(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}^\top g(\symbf{w}, b, \symbf{\xi}) - \symbf{\mu}^\top \symbf{\xi} \leq f(\symbf{w}, b, \symbf{\xi})
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) & = f(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}^\top g(\symbf{w}, b, \symbf{\xi}) - \symbf{\mu}^\top \symbf{\xi} \leq f(\symbf{w}, b, \symbf{\xi})
 \end{align*}
 
-and if we choose \(\symbf{\alpha} = \symbf{0}\) and \(\symbf{\mu} = \symbf{0}\) we see that the equality also holds:
+and if we choose \(\symbf{\alpha} = \symbf{0}\) and \(\symbf{\mu} = \symbf{0}\) we see that the equality holds and that:
+\[
+  p(\symbf{w}, b, \symbf{\xi}) = \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) = f(\symbf{w}, b, \symbf{\xi})
+\]
 
-\begin{equation*}
-  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) = f(\symbf{w}, b, \symbf{\xi})
-\end{equation*}
+However, if the constraints do not hold, i.e. \(g(\symbf{w}, b, \symbf{\xi}) > 0\) or \(\symbf{\xi} < 0\).
+Then the Lagrangian can be made arbitrarily large by choosing \(\symbf{\alpha}, \symbf{\mu} \to \pm \infty\), such that \(p(\symbf{w}, b, \symbf{\xi}) \to \infty\) when the constraints are violated.
 
-However, if the constraints do not hold, then we can choose \(\symbf{\alpha}\) and \(\symbf{\mu}\) such that the Lagrangian becomes unbounded below. For example, if any component \(\xi_i < 0\), we can let the corresponding \(\mu_i \to \infty\), driving \(\Lcal \to -\infty\). Similarly, if \(g(\symbf{w}, b, \symbf{\xi}) > 0\), we can choose the corresponding \(\alpha_i \to \infty\), again making \(\Lcal\) unbounded below.
+We also can conclude that $p(\symbf{w}, b, \symbf{\xi})$ equals $f(\symbf{w}, b, \symbf{\xi})$ for all feasible points, except $+\infty$ for infeasible points.
+This forces the minimization to occur only within the feasible region.
 
+Therefore, minimizing $p(\symbf{w}, b, \symbf{\xi})$ is equivalent to minimizing \eqref{eq:soft-margin-problem} subject to our original constraints.
 
-then \(p(\symbf{w}, b, \symbf{\xi}) = \infty\) and the Lagrangian is not bounded below.
+\begin{equation}\label{eq:primal-problem}
+  \min_{\symbf{w}, b, \symbf{\xi}} p(\symbf{w}, b, \symbf{\xi}) = \min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha}\leq 0 \leq \symbf{\mu}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu})
+\end{equation}
+Which is our primal problem.
 
+Furthermore, since the Lagrangian \(\Lcal\) is convex function in \((\symbf{w}, b, \symbf{\xi})\) and concave in \((\symbf{\alpha}, \symbf{\mu})\),
+we can apply Von Neumann's minimax theorem to exchange the order of minimization and maximization\cite{vonNeumann1928}.
 
-For which we want to maximize, to get the dual problem:
+\begin{equation}
+  \min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha},\symbf{\mu}) = \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha},\symbf{\mu})
+\end{equation}
 
-\begin{equation*}
-  \max_{\symbf{\alpha}}\, d(\symbf{\alpha})  = -\min_{\symbf{\alpha}} \,\left[-d(\symbf{\alpha})\right]
-\end{equation*}
+where we now define:
 
+\[
+  q(\symbf{\alpha},\symbf{\mu}) = \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) \tag{D}
+\]
+Thus, we can define the \emph{Lagrangian dual} of the primal problem~\eqref{eq:primal-problem} as:
+\begin{equation}
+  \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} q(\symbf{\alpha},\symbf{\mu}) = \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) \tag{D}
+\end{equation}
+
+From before we have already derived the reduced Lagrangian:
 \begin{align*}
-  \min_{\symbf{\alpha}} \; & \mathcal{D}(\symbf{\alpha}) = \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} - \inner*{\symbf{1}_M, \symbf{\alpha}} \\
-  \text{subject to} \;     & h_i(\symbf{\alpha}, \symbf{y}) =
-  \begin{cases}
-    \inner*{\symbf{y}, \symbf{\alpha}} = 0     \\
-    0 \leq \alpha_i \leq C, & i = 1, \ldots, M
-  \end{cases}
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) & = -\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} +  \inner*{\symbf{1}_M, \symbf{\alpha}}
 \end{align*}
+
+We can now substitute this into the dual problem:
+\begin{align*}
+  q(\symbf{\alpha}) & = \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) = -\left(\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}\right) = - r(\symbf{\alpha}) \\
+\end{align*}
+
+
+
+
+
+
+
 
