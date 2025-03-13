@@ -1,0 +1,62 @@
+\section{Writing a Structured Report}
+
+\subsection*{Title and Abstract}
+Start with a concise title (e.g., ``Solving the Soft-Margin SVM: Theory and Implementation'') and a brief abstract summarizing the objectives, methods, and key results (4-5 sentences focusing on what was achieved in the project).
+
+\subsection{Introduction} 
+$\sim$1 page
+
+Introduce the support vector machine classification problem. Explain the context -- what SVMs are, why they are important, and what the project aims to accomplish. Summarize the tasks: establishing the theoretical foundations (primal/dual, existence, uniqueness), describing the dual derivation, and implementing solution algorithms. You might also mention the structure of the report.
+
+\subsection{Problem Formulation}
+$\sim$2 pages
+
+Present the primal soft-margin SVM problem (equation \eqref{eq:primal}) clearly and the rationale behind it (hinge loss, slack variables, role of $C$). Then present the dual problem (equation \eqref{eq:dual}). Here you can incorporate Task 1 discussion: comment on convexity, existence of solutions, and conditions for uniqueness. This is also a good place to include the relationship between primal and dual -- how many variables each has, and perhaps a brief note on when one might prefer one formulation over the other.
+
+\subsection{Dual Derivation}
+$\sim$1-2 pages
+
+Provide a self-contained derivation of the dual (Task 2). This means writing down the Lagrangian, the KKT conditions, eliminating $w$, $b$, $\xi$, and arriving at the dual objective and constraints. Ensure each step is explained (this shows understanding of convex duality). Include formulas \eqref{eq:w_optimal} and \eqref{eq:b_optimal} and derive them or at least explain why they hold (from KKT conditions). This section is mathematical; use equations and possibly bullet points for KKT conditions to make it well structured. By the end of this section, the reader should be convinced that solving the dual yields the same outcome as the primal and know how to recover the primal variables.
+
+\subsection{Numerical Methods}
+$\sim$2-3 pages
+
+This corresponds to the implementation part (Tasks 3, 4, 5, 6).
+
+\subsubsection{Chosen Method for Implementation}
+Explain that you implemented the dual projected gradient algorithm (and/or any other method, like SMO or primal QP). Justify why (for example, ease of implementation and alignment with Section 4).
+
+\subsubsection{Algorithm Details}
+Describe the algorithm in words and pseudo-code. For the projected gradient method, detail how the gradient is computed, how the projection is done, and how step sizes are chosen (this is Task 6 content). You might include a small flowchart or pseudocode listing.
+
+\subsubsection{Computational Complexity}
+Briefly discuss the complexity per iteration and any tricks used (like caching the Gram matrix or using partial updates).
+
+\subsubsection{Alternative Approaches}
+If you implemented primal or SMO as well, describe those here. Even if not implemented, you can mention them as alternatives (showing awareness).
+
+\subsubsection{Numerical Behavior}
+Discuss how your implementation performed. Did it converge reliably? How many iterations? Any numerical stability issues? This is where you incorporate the observations from experimenting with different $C$, etc.
+
+\subsection{Experiments and Results}
+$\sim$2-3 pages
+
+Use this section to demonstrate your classifier on one or more datasets. You could generate a simple 2D dataset and show the resulting separating line, or use a small UCI dataset. Summarize the results:
+\begin{itemize}
+    \item Accuracy of the classifier on training and maybe a test set.
+    \item How the number of support vectors changes with $C$.
+    \item If comparing methods: time taken or iterations for each.
+    \item Perhaps demonstrate that primal and dual solutions match.
+\end{itemize}
+
+\subsection{Conclusion}
+$\sim$1 page
+
+Recap the key theoretical insights and the outcome of the implementations. Give a forward-looking statement or two.
+
+\section*{References}
+List any references used (course notes, textbooks, the [DF06] paper, etc.).
+
+\appendix
+\section{Appendices}
+If you have lengthy code or additional proofs that don't fit in the main text.

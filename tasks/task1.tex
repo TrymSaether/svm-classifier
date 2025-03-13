@@ -1,27 +1,43 @@
 \chapter{Minimum tasks}
 \section{The Primal Problem (P)}
 
-We start with the soft margin classification problem, or the \emph{primal problem (P)}, which is a convex optimization problem.
-Denoted on a standard and compact form as:
+We start with the soft margin classification problem, or the \emph{primal problem}, which is a convex optimization problem.
 
-\begin{align*}\label{eq:soft-margin-problem}
-  \min_{\symbf{w}, b, \symbf{\xi}} f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} 
-  \quad \text{subject to} \quad 
+We denote it on the standard form as:
+\begin{align*}
+  \min_{\symbf{w}, \xi_i, b} \; & f(\symbf{w}, \xi_i, b) =  \min_{\symbf{w}, \xi_i, b} \frac{1}{2} \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i \\
+  \text{subject to} \quad       & g_i(\symbf{w},\xi_i, b) =
+  \begin{cases}
+    1 - \symbf{y}_i\left(\inner{\symbf{w}, \symbf{x}_i} + b\right) - \xi_i \leq 0, & i = 1, \ldots, M \\
+    \xi_i \geq 0,                                                                  & i = 1, \ldots, M
+  \end{cases}
+\end{align*}
+
+Or in a more compact form:
+\begin{align*}
+  \min_{\symbf{w}, b, \symbf{\xi}} \quad & f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} \text{subject to} \quad &
   \begin{cases}
     \symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} & \leq \symbf{0}_M \\
     \symbf{\xi}                                              & \geq \symbf{0}_M
   \end{cases}\tag{P}
 \end{align*}
+With
+\begin{itemize}
+  \item $\symbf{w} \in \R^d$ the weight vector.
+  \item $b \in \R$ the bias term.
+  \item $\symbf{\xi} \in \R^M$ the vector of slack variables.
+  \item $\symbf{1}_M, \symbf{0}_M \in \R^M$ the vectors of ones and zeros, respectively.
+  \item $\symbf{y} = [y_1, \ldots, y_M]^T \in \R^M$ the vector of class labels.
+  \item $Y = \text{diag}(y_1, \ldots, y_M) \in \R^{M \times M}$ the diagonal matrix with class labels.
+  \item $X = [\symbf{x}_1, \ldots, \symbf{x}_M]^T \in \R^{M \times d}$ the matrix of data points.
+\end{itemize}
 
-where $\symbf{w} \in \R^d$ is the weight vector, 
-$b \in \R$ is the bias term, 
-$\symbf{\xi} \in \R^M$ is the vector of slack variables, 
-$Y = \text{diag}(y_1, \ldots, y_M) \in \R^{M \times M}$ is the diagonal matrix with class labels, 
-and $X = [\symbf{x}_1, \ldots, \symbf{x}_M]^T \in \R^{M \times d}$ is the matrix of data points.
+where \(\symbf{w} \in \R^N\) is the weight vector, \(b \in \R\) is the bias term, and \(\symbf{\xi}_i \geq 0\) are slack variables that allow for misclassification of data points.
+The parameter \(C > 0\) controls the trade-off between maximizing the margin and minimizing the classification error.
 
-The parameter $C > 0$ controls the trade-off between maximizing the margin and minimizing the classification error.
+Now we want to minimize the objective function \(f\) subject to the constraints \(g_i \geq 0\) for all \(i\).
 
-\subsection{Ex
+\subsection{Existence and Uniqueness of Solutions}
 
 \begin{theorem}{Existence and Uniqueness of Solution for Primal Problem}{}
   Assume \(C > 0\). Then the primal soft-margin optimization problem stated above satisfies the following properties:
@@ -194,11 +210,4 @@ We can now substitute this into the dual problem:
 \begin{align*}
   q(\symbf{\alpha}) & = \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) = -\left(\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}\right) = - r(\symbf{\alpha}) \\
 \end{align*}
-
-
-
-
-
-
-
 

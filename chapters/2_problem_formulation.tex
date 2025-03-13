@@ -1,1 +1,72 @@
 \chapter{Problem Formulation}\label{chap:problem}
+
+\section{The Primal Problem (P)}
+We begin with the soft margin classification problem, also known as the \emph{primal problem}, which is a convex optimization problem:
+
+\begin{align*}
+  \min_{\symbf{w}, \xi_i, b} f(\symbf{w}, \xi_i, b) =  \frac{1}{2} \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i
+  \text{subject to}
+  \begin{cases}
+    1 - \symbf{y}_i\left(\inner{\symbf{w}, \symbf{x}_i} + b\right) - \xi_i \leq 0 \\
+    \xi_i \geq 0
+  \end{cases}
+  , \quad i = 1, \ldots, M
+\end{align*}
+
+For ease of notation, we denote this problem in a more compact form:
+
+\begin{align*}\label{eq:soft-margin-problem}
+  \min_{\symbf{w}, b, \symbf{\xi}} \quad & f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} \text{subject to} \quad &
+  \begin{cases}
+    \symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} & \leq \symbf{0}_M \\
+    \symbf{\xi}                                              & \geq \symbf{0}_M
+  \end{cases}\tag{P}
+\end{align*}
+
+Here, $\symbf{w} \in \R^d$ represents the weight vector, $b \in \R$ is the bias term, and $\symbf{\xi} \in \R^M$ is the vector of slack variables, which account for misclassified points by allowing constraint violations.
+
+The training data consists of $M$ data points, represented by the matrix $X = [\symbf{x}_1, \ldots, \symbf{x}_M] \in \R^{d \times M}$,
+where each column $\symbf{x}_i$ is a data point associated with a class label $y_i \in {\pm 1}$, collectively forming the label vector $\symbf{y}=[y_1, \ldots, y_M]^T \in \R^M$.
+
+For convenience, we define the diagonal class-label matrix $Y = \operatorname{diag}(y_1, \ldots, y_M) \in \R^{M \times M}$, where $y_i$ the class label for the $i$-th data point.
+
+The parameter $C > 0$ controls the trade-off between maximizing the margin and minimizing classification error. A higher $C$ penalizes misclassification more heavily, enforcing stricter adherence to the margin constraints.
+
+\subsection{Existence and Uniqueness of Solutions}
+
+\begin{theorem}{Existence and Uniqueness of Solution for Primal Problem}{}
+  Assume \(C > 0\). Then the primal soft-margin optimization problem stated above satisfies the following properties:
+  
+  \begin{itemize}
+    \item[(i)] \textbf{Existence:} There always exists at least one global minimizer \((\symbf{w}^\star, b^\star, \symbf{\xi}^\star)\).
+    \item[(ii)] \textbf{Uniqueness:} The vector \(\symbf{w}^\star\) is unique. However, the uniqueness of the bias \(b^\star\) and slack variables \(\xi_i^\star\) is, in general, not guaranteed without additional conditions on the data points \(\{x_i,y_i\}\).
+  \end{itemize}
+
+\end{theorem}
+
+\begin{proof}{}{}
+  The primal objective function
+  \[
+    f(\symbf{w}, \symbf{\xi}, b) = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C \sum_{i=1}^M \xi_i
+  \]
+  is strictly convex in \( w \), convex in \(\xi\), and independent of \(b\). The constraints are linear inequalities, defining a convex, closed, and nonempty feasible set (due to the slack variables \(\xi_i\geq 0\)).
+
+  Existence follows from standard arguments in convex optimization: since the feasible set is non-empty and closed, and the objective function is strongly convex in \(w\) (and linear, hence convex, in \(\xi\) and \(b\)), a global minimizer exists (see, e.g., Proposition 2.1 from [17]).
+
+  For uniqueness, note that the objective function is strictly convex in \(w\). Hence, any solution in \(w\) must be unique. However, the function is only convex (linear) in \(b\) and \(\xi\), thus uniqueness in these variables is not guaranteed without additional conditions (such as strict separability of the data). Typically, \(\xi\) and \(b\) are unique if and only if the active constraints provide enough linear independence conditions to yield a unique solution. Otherwise, multiple solutions differing only by the choice of \(b\) (and possibly \(\xi\)) can occur.\qed
+\end{proof}
+
+
+\section{The Dual Problem (DP)}
+The dual of the primal problem~\eqref{eq:primal-problem} can be derived using Lagrange multipliers, leading to the following dual optimization problem:
+\begin{align}\label{eq:dual-problem}
+  \min_{\symbf{\alpha}}\frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} - \inner*{\symbf{1}_M, \symbf{\alpha}}
+  \quad \text{subject to} \quad
+  h(\symbf{\alpha}, \symbf{y}) =
+  \begin{cases}
+    \inner*{\symbf{y}, \symbf{\alpha}} = 0 \\
+    \symbf{0}_M \leq \symbf{\alpha} \leq C\symbf{1}_M
+  \end{cases}
+\end{align}
+
+where \(\mathrm{Y} = \operatorname{diag}\{y_1, \ldots, y_M\}\) is the diagonal class-label matrix, and \(\mathrm{G} = \left(\inner*{\symbf{x}_i, \symbf{x}_j}\right)_{i,j=1}^M\) is the Gram matrix of the points.

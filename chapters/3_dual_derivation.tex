@@ -1,2 +1,139 @@
-\chapter{Lagrangian Duality}\label{chap:duality}
+\chapter{Dual Derivation}\label{chap:dual}
 
+\begin{theorem}{Existence and Uniqueness of Solution for Dual Problem}{}
+  Consider the dual optimization problem stated above. Then the following properties hold:
+  \begin{itemize}
+    \item[(i)] \textbf{Existence:} There always exists at least one solution to the dual optimization problem.
+    \item[(ii)] \textbf{Uniqueness:} The solution \(\symbf{\alpha}^\star\) is unique if and only if the matrix \(\mathrm{Y}\mathrm{G}\mathrm{Y}\) is positive definite when restricted to the subspace defined by \(\inner{\symbf{y},\symbf{\alpha}}=0\). In general, if \(\mathrm{Y}\mathrm{G}\mathrm{Y}\) is only positive semidefinite, uniqueness is not guaranteed.
+  \end{itemize}
+\end{theorem}
+
+\begin{proof}{}{}
+
+  The dual problem is a convex quadratic optimization problem with linear equality and box constraints.
+
+  The feasible set is compact (bounded and closed) due to the constraints \(0\leq \alpha_i \le C\).
+
+  The objective is a convex quadratic form since \(\mathrm{Y}\mathrm{G}\mathrm{Y}\) is positive semidefinite, ensuring existence by standard results in convex optimization\cite{nocedal2006numerical}.
+
+  Uniqueness depends entirely on the definiteness of the quadratic form defined by \(\mathrm{Y}\mathrm{G}\mathrm{Y}\).
+
+  Specifically, uniqueness holds if this quadratic form is strictly convex on the feasible affine subspace \(\{\symbf{\alpha}\mid \inner{\symbf{y},\symbf{\alpha}}=0\}\).
+
+  In that case, the objective function is strictly convex and has exactly one minimizer.
+
+  If this restricted definiteness condition fails, there may exist multiple solutions differing in the choice of \(\symbf{\alpha}\).\qed
+\end{proof}
+
+\hrule
+
+\section{Lagrange Duality}
+\begin{align*}\label{eq:soft-margin-problem}
+  \min_{\symbf{w}, b, \symbf{\xi}} \quad & f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} \text{subject to} \quad &
+  \begin{cases}
+    \symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} & \leq \symbf{0}_M \\
+    \symbf{\xi}                                              & \geq \symbf{0}_M
+  \end{cases}\tag{P}
+\end{align*}
+
+Here we show how to derive the dual problem ~\eqref{eq:dual-problem} from the primal problem \eqref{eq:primal-problem} using Lagrange multipliers.
+
+We introduce Lagrange multipliers \(\alpha_i, \mu_i \geq 0\) for the constraints \(g_i(\symbf{w}, b, \symbf{\xi}) \leq 0\) and \(\symbf{\xi} \geq 0\), respectively.
+Then we can write the Lagrangian function as:
+
+\begin{align*}
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \left(\symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi}\right) - \symbf{\mu}^\top \symbf{\xi}                                                  \\
+                                                                & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y X \symbf{w} - \symbf{\alpha}^\top Y b\symbf{1}_M - \symbf{\alpha}^\top \symbf{\xi} - \symbf{\mu}^\top \symbf{\xi} \\
+\end{align*}
+
+The stationary points of the Lagrangian are found by taking gradients with respect to all variables and setting them to zero:
+
+\begin{align*}
+  \nabla_{\symbf{w}} \Lcal          & = \symbf{w} -  (X^\top Y) \symbf{\alpha} = \symbf{0}                             \\
+  \frac{\partial \Lcal}{\partial b} & = - \symbf{\alpha}^\top Y = \symbf{0}^\top                                       \\
+  \nabla_{\symbf{\xi}} \Lcal        & = C \symbf{1}_M^\top - \symbf{\alpha}^\top - \symbf{\mu}^\top = \symbf{0}_M^\top
+\end{align*}
+
+This gives us the \emph{Karush-Kuhn-Tucker (KKT) conditions}:
+
+\begin{align*}
+  \symbf{w}             & = X^\top Y \symbf{\alpha}                        \\
+  \symbf{\alpha}^\top Y & = 0                                              \\
+  C \symbf{1}_M^\top    & = \symbf{\alpha}^\top + \symbf{\mu}^\top  \geq 0 \\
+\end{align*}
+
+Now we get that:
+\[
+  \norm*{\symbf{w}}_2^2 = \norm{X^\top Y \symbf{\alpha}}_2^2 = \left(X^\top Y \symbf{\alpha}\right)^\top \left(X^\top Y \symbf{\alpha}\right) = \symbf{\alpha}^\top Y [X X^\top] Y \symbf{\alpha} = \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}}
+\]
+
+Substituting the KKT conditions into the Lagrangian gives us:
+
+\begin{align*}
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y X \symbf{w} - \symbf{\alpha}^\top Y b\symbf{1}_M - \symbf{\alpha}^\top \symbf{\xi} - \symbf{\mu}^\top \symbf{\xi}                                                                                                                                                     \\
+                                                                & = \frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y \overbrace{X X^\top}^{G} Y \symbf{\alpha} - \overbrace{\symbf{\alpha}^\top Y}^{\symbf{0}_M^\top} b\symbf{1}_M - \symbf{\alpha}^\top \symbf{\xi} - \left(C \symbf{1}_M^\top - \symbf{\alpha}^\top\right) \symbf{\xi} \\
+                                                                & = \frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y G Y \symbf{\alpha} -  \symbf{\alpha}^\top \symbf{\xi} - C \symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{\xi}                                                                                            \\
+                                                                & = \frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} + \symbf{\alpha}^\top \symbf{1}_M                                                                                                                                                                                                 \\
+                                                                & = -\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} +  \symbf{\alpha}^\top \symbf{1}_M                                                                                                                                                                                                                                                                           \\
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha})              & = -\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} +  \inner*{\symbf{1}_M, \symbf{\alpha}}                                                                                                                                                                                                                                                                      \\
+\end{align*}
+
+We now define the temporary penalty function \(p(\symbf{w}, b, \symbf{\xi})\) as:
+\begin{align*}
+  p(\symbf{w}, b, \symbf{\xi}) =
+  \begin{cases}
+    f(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}^\top g(\symbf{w}, b, \symbf{\xi}) - \symbf{\mu}^\top \symbf{\xi} & \text{if } g(\symbf{w}, b,  \symbf{\xi}) \leq 0 \text{ and } h(\symbf{\xi}) \geq 0 \\
+    \infty                                                                                                         & \text{otherwise}
+  \end{cases}
+\end{align*}
+
+If the constraints hold, i.e. \(g(\symbf{w}, b, \symbf{\xi}) \leq 0\) and \(\symbf{\xi} \geq 0\), the following inequality holds:
+
+\begin{align*}
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) & = f(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}^\top g(\symbf{w}, b, \symbf{\xi}) - \symbf{\mu}^\top \symbf{\xi} \leq f(\symbf{w}, b, \symbf{\xi})
+\end{align*}
+
+and if we choose \(\symbf{\alpha} = \symbf{0}\) and \(\symbf{\mu} = \symbf{0}\) we see that the equality holds and that:
+\[
+  p(\symbf{w}, b, \symbf{\xi}) = \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) = f(\symbf{w}, b, \symbf{\xi})
+\]
+
+However, if the constraints do not hold, i.e. \(g(\symbf{w}, b, \symbf{\xi}) > 0\) or \(\symbf{\xi} < 0\).
+Then the Lagrangian can be made arbitrarily large by choosing \(\symbf{\alpha}, \symbf{\mu} \to \pm \infty\), such that \(p(\symbf{w}, b, \symbf{\xi}) \to \infty\) when the constraints are violated.
+
+We also can conclude that $p(\symbf{w}, b, \symbf{\xi})$ equals $f(\symbf{w}, b, \symbf{\xi})$ for all feasible points, except $+\infty$ for infeasible points.
+This forces the minimization to occur only within the feasible region.
+
+Therefore, minimizing $p(\symbf{w}, b, \symbf{\xi})$ is equivalent to minimizing \eqref{eq:soft-margin-problem} subject to our original constraints.
+
+\begin{equation}\label{eq:primal-problem}
+  \min_{\symbf{w}, b, \symbf{\xi}} p(\symbf{w}, b, \symbf{\xi}) = \min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha}\leq 0 \leq \symbf{\mu}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu})
+\end{equation}
+Which is our primal problem.
+
+Furthermore, since the Lagrangian \(\Lcal\) is convex function in \((\symbf{w}, b, \symbf{\xi})\) and concave in \((\symbf{\alpha}, \symbf{\mu})\),
+we can apply Von Neumann's minimax theorem to exchange the order of minimization and maximization\cite{vonNeumann1928}.
+
+\begin{equation}
+  \min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha},\symbf{\mu}) = \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha},\symbf{\mu})
+\end{equation}
+
+where we now define:
+
+\[
+  q(\symbf{\alpha},\symbf{\mu}) = \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) \tag{D}
+\]
+Thus, we can define the \emph{Lagrangian dual} of the primal problem~\eqref{eq:primal-problem} as:
+\begin{equation}
+  \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} q(\symbf{\alpha},\symbf{\mu}) = \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) \tag{D}
+\end{equation}
+
+From before we have already derived the reduced Lagrangian:
+\begin{align*}
+  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) & = -\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} +  \inner*{\symbf{1}_M, \symbf{\alpha}}
+\end{align*}
+
+We can now substitute this into the dual problem:
+\begin{align*}
+  q(\symbf{\alpha}) & = \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) = -\left(\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}\right) = - r(\symbf{\alpha}) \\
+\end{align*}

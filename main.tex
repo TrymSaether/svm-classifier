@@ -3,31 +3,23 @@
 \usepackage{csquotes}
 \usepackage[translate=babel,acronym,symbols,nogroupskip]{glossaries-extra}
 \usepackage[backend=biber]{biblatex}
-
 \addbibresource{bib/references.bib}
+
 \glsaddkey{norsk}{\glsentrytext{\glslabel}}{\glsentrynorsk}{\GLSentrynorsk}{\glsnorsk}{\Glsnorsk}{\GLSnorsk}
 \setglossarystyle{listhypergroup}
 \setabbreviationstyle[acronym]{long-short}
-
 \makeglossaries
-
-\input{cfg/glossary}
-
-\title{Solving the Soft-Margin SVM: Theory and Implementation}
-\author{Your Name}
-\date{\today}
+\input{bib/glossary}
 
 \begin{document}
 
-\maketitle
+\input{frontmatter/titlepage}
 
 \begin{abstract}
-  This report presents a comprehensive analysis of the soft-margin Support Vector Machine (SVM) classification problem. We establish the theoretical foundations of both primal and dual formulations, proving existence and uniqueness properties of their solutions. A detailed derivation of the dual problem is provided through Lagrangian duality theory. We implement and analyze various solution algorithms, including a projected gradient method for the dual problem. Experimental results demonstrate the effectiveness of our implementation on synthetic and real datasets, highlighting the relationship between the regularization parameter and model complexity.
 \end{abstract}
 
 \tableofcontents
 
-\chapter{Introduction}
 \input{chapters/1_introduction}
 \input{chapters/2_problem_formulation}
 \input{chapters/3_dual_derivation}
@@ -38,7 +30,6 @@
 \printglossaries
 \printbibliography[title={References}]
 \printglossary[type=symbols, title={Symbols}]
-\printglossary[type=acronym, title={Acronyms}]
 
 \appendix
 
