@@ -1,40 +1,4 @@
-\chapter{Dual Derivation}\label{chap:dual}
-
-\begin{theorem}{Existence and Uniqueness of Solution for Dual Problem}{}
-  Consider the dual optimization problem stated above. Then the following properties hold:
-  \begin{itemize}
-    \item[(i)] \textbf{Existence:} There always exists at least one solution to the dual optimization problem.
-    \item[(ii)] \textbf{Uniqueness:} The solution \(\symbf{\alpha}^\star\) is unique if and only if the matrix \(\mathrm{Y}\mathrm{G}\mathrm{Y}\) is positive definite when restricted to the subspace defined by \(\inner{\symbf{y},\symbf{\alpha}}=0\). In general, if \(\mathrm{Y}\mathrm{G}\mathrm{Y}\) is only positive semidefinite, uniqueness is not guaranteed.
-  \end{itemize}
-\end{theorem}
-
-\begin{proof}{}{}
-
-  The dual problem is a convex quadratic optimization problem with linear equality and box constraints.
-
-  The feasible set is compact (bounded and closed) due to the constraints \(0\leq \alpha_i \le C\).
-
-  The objective is a convex quadratic form since \(\mathrm{Y}\mathrm{G}\mathrm{Y}\) is positive semidefinite, ensuring existence by standard results in convex optimization\cite{nocedal2006numerical}.
-
-  Uniqueness depends entirely on the definiteness of the quadratic form defined by \(\mathrm{Y}\mathrm{G}\mathrm{Y}\).
-
-  Specifically, uniqueness holds if this quadratic form is strictly convex on the feasible affine subspace \(\{\symbf{\alpha}\mid \inner{\symbf{y},\symbf{\alpha}}=0\}\).
-
-  In that case, the objective function is strictly convex and has exactly one minimizer.
-
-  If this restricted definiteness condition fails, there may exist multiple solutions differing in the choice of \(\symbf{\alpha}\).\qed
-\end{proof}
-
-\hrule
-
-\section{Lagrange Duality}
-\begin{align*}\label{eq:soft-margin-problem}
-  \min_{\symbf{w}, b, \symbf{\xi}} \quad & f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} \text{subject to} \quad &
-  \begin{cases}
-    \symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} & \leq \symbf{0}_M \\
-    \symbf{\xi}                                              & \geq \symbf{0}_M
-  \end{cases}\tag{P}
-\end{align*}
+\chapter{Dual Derivation}\label{chap:dual_derivation}
 
 Here we show how to derive the dual problem ~\eqref{eq:dual-problem} from the primal problem \eqref{eq:primal-problem} using Lagrange multipliers.
 
@@ -106,10 +70,9 @@ This forces the minimization to occur only within the feasible region.
 
 Therefore, minimizing $p(\symbf{w}, b, \symbf{\xi})$ is equivalent to minimizing \eqref{eq:soft-margin-problem} subject to our original constraints.
 
-\begin{equation}\label{eq:primal-problem}
+\begin{equation}
   \min_{\symbf{w}, b, \symbf{\xi}} p(\symbf{w}, b, \symbf{\xi}) = \min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha}\leq 0 \leq \symbf{\mu}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu})
 \end{equation}
-Which is our primal problem.
 
 Furthermore, since the Lagrangian \(\Lcal\) is convex function in \((\symbf{w}, b, \symbf{\xi})\) and concave in \((\symbf{\alpha}, \symbf{\mu})\),
 we can apply Von Neumann's minimax theorem to exchange the order of minimization and maximization\cite{vonNeumann1928}.
