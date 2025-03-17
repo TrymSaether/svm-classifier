@@ -3,10 +3,11 @@
 \section{The Primal Problem (P)}
 
 We begin with the soft margin classification problem, also known as the \emph{primal problem}, which is a convex optimization problem:
+
 For ease of notation, we denote the problem in a more compact vectorized form:
 
 \begin{align*}\label{eq:primal-problem}
-  \min_{\symbf{w}, b, \symbf{\xi}} \quad & f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} \text{subject to} \quad &
+  \min_{\symbf{w}, b, \symbf{\xi}} \quad & f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} \quad \text{subject to} \quad
   \begin{cases}
     \symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} & \leq \symbf{0}_M \\
     \symbf{\xi}                                              & \geq \symbf{0}_M
@@ -31,43 +32,71 @@ The parameter $C > 0$ controls the trade-off between maximizing the margin and m
   To establish existence of a solution, we need to verify that the feasible set is non-empty, and the objective function is coercive.
 
   \paragraph{Feasibility}
-  Let $\symbf{w} = \symbf{0}_d$, $b = 0$, and $\symbf{\xi} = \symbf{1}_M$. 
+  Let $\symbf{w} = \symbf{0}_d$, $b = 0$, and $\symbf{\xi} = \symbf{1}_M$.
   This point satisfies all constraints since:
   \begin{align*}
     \symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} = \symbf{0}_M \leq \symbf{0}_M \quad \text{and} \quad \symbf{\xi} = \symbf{1}_M \geq \symbf{0}_M
   \end{align*}
 
-  \paragraph{Coercivity}  
-  The dominating term $\frac{1}{2}\norm{\symbf{w}}_2^2 \to \infty$ when $\symbf{w} \to \infty$, ensuring that the objective function is coercive.
+  \paragraph{Coercivity}
+  We need to show that the objectfunction $f(\symbf{w}, b, \symbf{\xi})$ is coercive.
 
+  If we start with the dominating term $\norm*{\symbf{w}}_2^2$, this is always positive, from the definition of the $L_2$-norm.
+  \[
+    \norm*{\symbf{w}}_2^2 = \sum_{i=1}^d w_i^2 \geq 0
+  \]
+  The term $C\symbf{1}_M^\top \symbf{\xi}$ is also positive, since $C > 0$ and from the second constraint we have that $\symbf{\xi} \geq \symbf{0}_M$.
   
-  Since the feasible set is non-empty and closed, and $f$ is coercive, the \emph{Weierstrass theorem} guarantees existence of a global minimizer\cite{weierstrass}.\qed
+  Thus, the objective function is coercive:
+  \begin{align*}
+    \lim_{\|\symbf{w}\|_2 \to \infty, \; \symbf{\xi} \to \infty, \; b \to \infty} f(\symbf{w}, b, \symbf{\xi}) = \lim_{\|\symbf{w}\|_2 \to \infty, \; \symbf{\xi} \to \infty, \; b \to \infty} \left(\frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi}\right) \to \infty
+  \end{align*}
 
 \end{proof}
 
 \begin{theorem}{Uniqueness of Solution for Primal Problem}{primal-uniqueness}
-  The weight vector $\symbf{w}^\star$ is unique.
-
-  The offset $b^\star$ is unique if there exists at least one support vector $\symbf{x}_i$ with $0 < \alpha_i^\star < C$.
-
-  The slack variables $\symbf{\xi}^\star$ are not necessarily unique.
+  The objective is strictly convex in $\symbf{w}$ (due to the $\norm*{\symbf{w}}_2^2$ term), but linear (hence not strictly convex) in $\symbf{\xi}$.
+  As this is a sum of a stricly convex objective and a positive linear function, there must exist a unique global minimum, as Coercivity garenties
+  the existance of a global minimum and strict convexity garenties that any local minimum is also the only global minimum as the function 
+  must curve up in all directions.
 \end{theorem}
+
 \begin{proof}{}{}
   \paragraph{Uniqueness of $\symbf{w}^\star$}
-  The objective is strictly convex in $\symbf{w}$ due to the $\|\symbf{w}\|_2^2$ term. 
+  The objective is strictly convex in $\symbf{w}$ due to the $\|\symbf{w}\|_2^2$ term.
   Strict convexity ensures a unique minimizer for $\symbf{w}$.
 
   \paragraph{Uniqueness of $b^\star$}
-  From the KKT conditions, for any $i$ with $0 < \alpha_i^\star < C$ (margin support vectors):
+  From the KKT conditions, for any support vector $\symbf{x}_i$ with $\symbf{0}_M < \symbf{\alpha}^\star < C\symbf{1}_M$, we have:
   \[
-    y_i(\inner{\symbf{w}^\star, \symbf{x}_i} + b^\star) = 1 \implies b^\star = y_i - \inner{\symbf{w}^\star, \symbf{x}_i}
+    Y\left(X\symbf{w}^\star + b^\star\right) = 1 \implies b^\star = Y^{-1} - X\symbf{w}^\star
   \]
+
   If such $i$ exist, $b^\star$ is uniquely determined. If not, $b^\star$ may lie in an interval.
 
   \paragraph{Non-Uniqueness of $\symbf{\xi}^\star$}
-  For $i$ with $\alpha_i^\star = C$, $\xi_i = \max\{0, 1-y_i(\inner{\symbf{w}^\star, \symbf{x}_i} + b^\star)\}$ is fixed.
-  For $0 < \alpha_i^\star < C$, $\xi_i = 0$.
-  For $\alpha_i^\star = 0$, $\xi_i$ is unconstrained but bounded by $\xi_i \geq 0$.
+
+  For $\symbf{\alpha^\star} = C\symbf{1}_M$ then $\symbf{\xi}^\star$ is fixed, and therefore unique.
+  
+  \[
+  \symbf{\xi} = \max\{\symbf{0}_M, \symbf{1}_M - Y(X\symbf{w^\star} + b^\star\symbf{1}_M)\}
+  \]
+
+  \medskip
+
+  For the KKT-conditions $\symbf{0}_M < \symbf{\alpha^\star} < C\symbf{1}_M$ then $\symbf{\xi}^\star = \symbf{0}_M$.
+
+  \medskip
+
+  For $\symbf{\alpha}^\star = \symbf{0}$, then $\symbf{\xi}$ is unconstrained but bounded by $\symbf{\xi} \geq \symbf{0}_M$.
+
+  Therefore, $\symbf{\xi}^\star$ may not be unique in various cases:
+  \begin{itemize}
+    \item For data points with $\alpha_i^\star = C$, $\xi_i^\star$ is fixed by the constraints.
+    \item For support vectors with $0 < \alpha_i^\star < C$, $\xi_i^\star = 0$.
+    \item For points with $\alpha_i^\star = 0$, $\xi_i^\star$ is only bounded from below by 0.
+  \end{itemize}
+  \qed
 \end{proof}
 
 \section{The Dual Problem (DP)}
@@ -87,7 +116,7 @@ The dual of the primal problem~\eqref{eq:primal-problem} can be derived using La
 where \(\mathrm{G} = \left(\inner*{\symbf{x}_i, \symbf{x}_j}\right)_{i,j=1}^M\) is the Gram matrix of the points.
 
 \begin{theorem}{Existence and Uniqueness of Solution for Dual Problem}{}
- 
+
 \end{theorem}
 
 \begin{proof}{}{}

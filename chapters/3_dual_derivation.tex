@@ -1,5 +1,9 @@
 \chapter{Dual Derivation}\label{chap:dual_derivation}
 
+\begin{align*}
+  \mathcal{L}(\symbf{w}, b, \symbf{\xi}) & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \left(\overbrace{\symbf{\alpha}^\top c_1(\symbf{w}, b, \symbf{\xi}) + \symbf{\mu}^\top c_2(\symbf{w}, b, \symbf{\xi})}^{\text{Constraints}} \right)
+\end{align*}
+
 Here we show how to derive the dual problem ~\eqref{eq:dual-problem} from the primal problem \eqref{eq:primal-problem} using Lagrange multipliers.
 
 We introduce Lagrange multipliers \(\alpha_i, \mu_i \geq 0\) for the constraints \(g_i(\symbf{w}, b, \symbf{\xi}) \leq 0\) and \(\symbf{\xi} \geq 0\), respectively.
