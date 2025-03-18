@@ -1,5 +1,4 @@
 \chapter{Dual Derivation}\label{chap:dual_derivation}
-
 \begin{proposition}{The dual problem of the primal problem}{dual-derivation}
 	The dual problem of the primal problem~\eqref{eq:primal-problem} is given by:
 	\begin{align}
@@ -12,11 +11,8 @@
 			\symbf{\alpha}^\top Y = 0
 		\end{cases}\tag{DP}
 	\end{align}
-	where \(G = X X^\top\).
 \end{proposition}
-
-\begin{proof}[Proof of Proposition~\ref{dual-derivation}]
-	\vspace{-1em}
+\begin{proof}[Proof of Proposition~\ref{prop:dual-derivation}]
 	\paragraph{Primal problem (P)}
 	We begin with the soft-margin SVM primal:
 	\[
@@ -30,7 +26,7 @@
 		\end{cases}
 	\]
 	Denote these constraints as \(c_1(\symbf{w}, b, \symbf{\xi}) \le \symbf{0}_M\) and \(c_2(\symbf{\xi}) \le \symbf{0}_M.\)
-	
+
 	\paragraph{Lagrangian}
 	We introduce the Lagrange multipliers
 	\(\symbf{\alpha}_1,\symbf{\alpha}_2 \ge \symbf{0}_M.
@@ -43,7 +39,7 @@
 	Because $\mathcal{L}$ is convex in $(\symbf{w},b,\symbf{\xi})$ and concave in $(\symbf{\alpha}_1,\symbf{\alpha}_2)$, the minimax theorem~\cite{vonNeumann1928} implies
 
 	\begin{align*}
-	\min_{\symbf{w},b,\symbf{\xi}}\max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)= \max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\min_{\symbf{w},b,\symbf{\xi}}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)
+		\min_{\symbf{w},b,\symbf{\xi}}\max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)= \max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\min_{\symbf{w},b,\symbf{\xi}}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)
 	\end{align*}
 	We now define
 	\[
@@ -62,16 +58,16 @@
 
 	Then we have that:
 	\[
-	\norm*{\symbf{w}}_2^2 = \norm{X^\top Y \symbf{\alpha}_1}_2^2 = \left(X^\top Y \symbf{\alpha}_1\right)^\top \left(X^\top Y \symbf{\alpha}_1\right) = \symbf{\alpha}_1^\top Y [X X^\top] Y \symbf{\alpha}_1 = \inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1}
+		\norm*{\symbf{w}}_2^2 = \norm{X^\top Y \symbf{\alpha}_1}_2^2 = \left(X^\top Y \symbf{\alpha}_1\right)^\top \left(X^\top Y \symbf{\alpha}_1\right) = \symbf{\alpha}_1^\top Y [X X^\top] Y \symbf{\alpha}_1 = \inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1}
 	\]
 	Substituting this into the Lagrangian gives:
 	\begin{align*}
-		g(\symbf{\alpha}_1,\symbf{\alpha}_2) &= \tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 -\symbf{\alpha}_1^\top YGY\symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M\\ 
-		&= -\tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M\\
-		&= -\tfrac12\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} + \inner*{\symbf{1}_M, \symbf{\alpha}_1}
+		g(\symbf{\alpha}_1,\symbf{\alpha}_2) & = \tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 -\symbf{\alpha}_1^\top YGY\symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M \\
+		                                     & = -\tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M                                           \\
+		                                     & = -\tfrac12\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} + \inner*{\symbf{1}_M, \symbf{\alpha}_1}
 	\end{align*}
-
-	Flipping signs for a minimization form, the dual problem is
+	\paragraph{Dual problem (DP)}
+	Flipping signs for a minimization form, gives us the dual problem is
 	\[
 		\min_{\symbf{\alpha}} \tfrac12\symbf{\alpha}^\top YGY \symbf{\alpha}
 		-\symbf{1}_M^\top \symbf{\alpha}
