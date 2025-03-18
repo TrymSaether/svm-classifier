@@ -98,12 +98,9 @@
 
 	Substituting this into the Lagrangian gives:
 
-	\begin{align*}
-		g(\symbf{\alpha}_1,\symbf{\alpha}_2)
-		&=\tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 -\symbf{\alpha}_1^\top YGY\symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M\\
-		&= -\tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M\\
-		&= -\tfrac12\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} + \inner*{\symbf{1}_M, \symbf{\alpha}_1}
-	\end{align*}
+	\[
+		g(\symbf{\alpha}_1,\symbf{\alpha}_2) =\tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 -\symbf{\alpha}_1^\top YGY\symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M = -\tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M = -\tfrac12\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} + \inner*{\symbf{1}_M, \symbf{\alpha}_1}
+	\]
 	
 	Flipping signs for a minimization form, the dual problem is
 	\[
@@ -114,5 +111,5 @@
 		0\le\symbf{\alpha}\le C\symbf{1}_M,
 		\symbf{\alpha}^\top Y =0.
 	\]
-	This completes the derivation of the dual problem~\eqref{eq:dual-problem}.
+	This completes the derivation of the dual problem~\eqref{eq:dual-problem}.\qed
 \end{proof}
