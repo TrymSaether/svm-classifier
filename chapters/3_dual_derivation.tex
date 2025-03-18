@@ -29,14 +29,9 @@
 			-\symbf{\xi}\le\symbf{0}_M.
 		\end{cases}
 	\]
-	Denote these constraints as
-	\(
-	c_1(\symbf{w}, b, \symbf{\xi}) \le \symbf{0}_M
-	\)
-	and
-	\(
-	c_2(\symbf{\xi}) \le \symbf{0}_M.
-	\)
+	Denote these constraints as \(c_1(\symbf{w}, b, \symbf{\xi}) \le \symbf{0}_M\) and \(c_2(\symbf{\xi}) \le \symbf{0}_M.\)
+	
+	\paragraph{Lagrangian}
 	We introduce the Lagrange multipliers
 	\(\symbf{\alpha}_1,\symbf{\alpha}_2 \ge \symbf{0}_M.
 	\)
@@ -54,14 +49,17 @@
 	\[
 		g(\symbf{\alpha}_1,\symbf{\alpha}_2) =\min_{(\symbf{w},b,\symbf{\xi})}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)
 	\]
-	Setting the gradients of the constraints to zero:
+
+	\paragraph{KKT conditions}
+	Setting the gradients of the constraints to zero gives us the KKT conditions:
 	\begin{align*}
 		\nabla_{\symbf{w}} \Lcal = \symbf{w} -  (X^\top Y) \symbf{\alpha}_1 = \symbf{0}, \quad \nabla_{b} \Lcal = - \symbf{\alpha}_1^\top Y = \symbf{0}^\top, \quad \nabla_{\symbf{\xi}} \Lcal  = C \symbf{1}_M^\top - \symbf{\alpha}_1^\top - \symbf{\alpha}_2^\top = \symbf{0}_M^\top
 	\end{align*}
-	gives us the KKT conditions:
+	Thus, we have the following conditions:
 	\begin{align*}
 		\symbf{w} = X^\top Y \symbf{\alpha}_1 , \quad \symbf{\alpha}_1^\top Y  = \symbf{0}_M^\top, \quad \symbf{0}_M \leq \symbf{\alpha}_1 + \underset{=\symbf{0}}{\symbf{\alpha}_2} \leq C\symbf{1}_M
 	\end{align*}
+
 	Then we have that:
 	\[
 	\norm*{\symbf{w}}_2^2 = \norm{X^\top Y \symbf{\alpha}_1}_2^2 = \left(X^\top Y \symbf{\alpha}_1\right)^\top \left(X^\top Y \symbf{\alpha}_1\right) = \symbf{\alpha}_1^\top Y [X X^\top] Y \symbf{\alpha}_1 = \inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1}
