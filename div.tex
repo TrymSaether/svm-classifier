@@ -1,0 +1,45 @@
+
+We can now rewrite the primal problem~\eqref{eq:primal-problem} as:
+\begin{align*}
+	\min_{\symbf{w}, b, \symbf{\xi}} p(\symbf{w}, b, \symbf{\xi}) & = \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2)                                                                                                        \\
+	                                                              & = \min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha}_1, \symbf{\alpha}_2} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2)                                                              \\
+	                                                              & = -\frac{1}{2}\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} +  \inner*{\symbf{1}_M, \symbf{\alpha}_1} + C\symbf{1}_M^\top \symbf{\xi} -  \inner*{\symbf{0}_M, \symbf{\alpha}_2}
+\end{align*}
+
+\begin{equation}
+	\min_{\symbf{w}, b, \symbf{\xi}} p(\symbf{w}, b, \symbf{\xi}) = \min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha}_1, \symbf{\alpha}_2} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2)
+\end{equation}
+
+where we now define:
+
+\[
+	q(\symbf{\alpha}_1,\symbf{\alpha}_2) = \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2) \tag{D}
+\]
+
+Thus, we can define the \emph{Lagrangian dual} of the primal problem~\eqref{eq:primal-problem} as:
+\begin{align*}
+	\max_{\symbf{\alpha}_1, \symbf{\alpha}_2} q(\symbf{\alpha}_1,\symbf{\alpha}_2) & = \max_{\symbf{\alpha}_1, \symbf{\alpha}_2} \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2)                                            \\
+	                                                                               & = \max_{\symbf{\alpha}_1, \symbf{\alpha}_2} -\left(\frac{1}{2}\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} -  \inner*{\symbf{1}_M, \symbf{\alpha}_1} \right) \\
+\end{align*}
+
+Now, if we want to minimize $q$ instead of maximizing it, we can simply multiply the entire equation by -1, which gives us:
+\begin{align*}
+	\min_{\symbf{\alpha}_1, \symbf{\alpha}_2} q(\symbf{\alpha}_1,\symbf{\alpha}_2) & = -\max_{\symbf{\alpha}_1, \symbf{\alpha}_2} -q(\symbf{\alpha}_1,\symbf{\alpha}_2)                                                                                                                                             \\
+	                                                                               & = -\max_{\symbf{\alpha}_1, \symbf{\alpha}_2} \min_{\symbf{w}, b, \symbf{\xi}} -\left(\frac{1}{2}\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} -  \inner*{\symbf{1}_M, \symbf{\alpha}_1} \right) \\
+	                                                                               & = \min_{\symbf{\alpha}_1, \symbf{\alpha}_2} \left(\frac{1}{2}\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} -  \inner*{\symbf{1}_M, \symbf{\alpha}_1} \right)                                    \\
+	                                                                               & = \min_{\symbf{\alpha}_1, \symbf{\alpha}_2} -\left(\frac{1}{2}\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} -  \inner*{\symbf{1}_M, \symbf{\alpha}_1} \right)                                   \\
+\end{align*}
+
+This gives us the dual problem, where \(\symbf{\alpha} := \symbf{\alpha}_1\) and \(\symbf{\alpha}_2 = \symbf{0}\):
+
+\begin{align}\label{eq:dual-problem}
+	\min_{\symbf{\alpha}} & \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}
+	\quad
+	\text{subject to}
+	\quad
+	\begin{cases}
+		0 \leq \symbf{\alpha} \leq C\symbf{1}_M \\
+		\symbf{\alpha}^\top Y = 0
+	\end{cases}\tag{DP}
+\end{align}\qedhere
+

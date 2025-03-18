@@ -1,106 +1,138 @@
 \chapter{Dual Derivation}\label{chap:dual_derivation}
 
-\begin{align*}
-  \mathcal{L}(\symbf{w}, b, \symbf{\xi}) & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \left(\overbrace{\symbf{\alpha}^\top c_1(\symbf{w}, b, \symbf{\xi}) + \symbf{\mu}^\top c_2(\symbf{w}, b, \symbf{\xi})}^{\text{Constraints}} \right)
-\end{align*}
+\begin{proposition}{The dual problem of the primal problem}{dual-derivation}
+	The dual problem of the primal problem~\eqref{eq:primal-problem} is given by:
+	\begin{align}
+		\min_{\symbf{\alpha}} & \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}
+		\quad
+		\text{subject to}
+		\quad
+		\begin{cases}
+			0 \leq \symbf{\alpha} \leq C\symbf{1}_M \\
+			\symbf{\alpha}^\top Y = 0
+		\end{cases}\tag{DP}
+	\end{align}
+	where \(G = X X^\top\).
+\end{proposition}
+
+We derive the dual problem from the primal problem~\eqref{eq:primal-problem} using Lagrange multipliers and the KKT conditions.
 
 Here we show how to derive the dual problem ~\eqref{eq:dual-problem} from the primal problem \eqref{eq:primal-problem} using Lagrange multipliers.
 
-We introduce Lagrange multipliers \(\alpha_i, \mu_i \geq 0\) for the constraints \(g_i(\symbf{w}, b, \symbf{\xi}) \leq 0\) and \(\symbf{\xi} \geq 0\), respectively.
+We start with the primal problem~\eqref{eq:primal-problem}:
+\begin{align}
+	\min_{\symbf{w}, b, \symbf{\xi}} & \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi}
+	\quad \text{subject to} \quad
+	\begin{cases}
+		\symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} \leq \symbf{0}_M \\
+		-\symbf{\xi} \leq \symbf{0}_M
+	\end{cases}
+\end{align}
+
+We want to solve the minimization problem~\eqref{eq:primal-problem} with the constraints \(c_i(\symbf{w}, b, \symbf{\xi}) \leq 0\).
+An equivalent, but not very efficient, way to do this is to minimize the function:
+
+\begin{align*}\label{eq:penalty-function}
+	p(\symbf{w}, b, \symbf{\xi}) & =
+	\begin{cases}
+		f(\symbf{w}, b, \symbf{\xi}) & \text{if } c_i(\symbf{w}, b, \symbf{\xi}) \leq 0 \\
+		+\infty                      & \text{otherwise}
+	\end{cases}                            \\
+	                             & = f(\symbf{w}, b, \symbf{\xi}) + \mathcal{I}(c_i(\symbf{w}, b, \symbf{\xi})) \\
+\end{align*}
+where \(\mathcal{I}\) is the indicator function, which is defined as:
+\[
+	\mathcal{I}(c_i(\symbf{w}, b, \symbf{\xi})) =
+	\begin{cases}
+		0 & \text{if } c_i(\symbf{w}, b, \symbf{\xi}) \leq 0 \\
+		+\infty & \text{otherwise}
+	\end{cases}
+\]
+
+Now this is not a very efficient way to solve the problem, since \(\mathcal{I}\) is both non-differentiable and discontinuous.
+
+\paragraph{Lagrangian}
+Instead, we can use the Lagrangian function to solve the problem. The Lagrangian function is a way to incorporate the constraints into the objective function by introducing Lagrange multipliers.
+Let \(\symbf{\alpha}_1, \symbf{\alpha}_2 \geq 0\) be the Lagrange multipliers for the constraints \(c_i(\symbf{w}, b, \symbf{\xi}) \leq 0\).
+
 Then we can write the Lagrangian function as:
 
 \begin{align*}
-  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \left(\symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi}\right) - \symbf{\mu}^\top \symbf{\xi}                                                  \\
-                                                                & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y X \symbf{w} - \symbf{\alpha}^\top Y b\symbf{1}_M - \symbf{\alpha}^\top \symbf{\xi} - \symbf{\mu}^\top \symbf{\xi} \\
+	\Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2) & = f(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}_1^\top c_1(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}_2^\top c_2(\symbf{\xi})
 \end{align*}
+
+If the constraints \(c_i(\symbf{w}, b, \symbf{\xi}) \leq 0\) now hold, then we can just set \(\symbf{\alpha}_1, \symbf{\alpha}_2 = 0\) and function becomes:
+\[
+	\Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{0}, \symbf{0}) = f(\symbf{w}, b, \symbf{\xi})
+\]
+
+However, if the constraints do not hold, i.e. \(c_i(\symbf{w}, b, \symbf{\xi}) > 0\), then we can set \(\symbf{\alpha}_1, \symbf{\alpha}_2\) to be large enough so that the Lagrangian function becomes:
+\[
+	\Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2) = f(\symbf{w}, b, \symbf{\xi}) + \infty \to \infty
+\]
+
+It so happens that if we take the \emph{maximum} of the Lagrangian with respect to \(\symbf{\alpha}_1, \symbf{\alpha}_2\), we recover the original function \(p(\symbf{w}, b, \symbf{\xi})\).
+
+This is because, if the constraints hold, then the Lagrangian is equal to the original function \(f(\symbf{w}, b, \symbf{\xi}\), and if the constraints do not hold, then the Lagrangian is equal to \(\infty\).
+
+\begin{align*}
+	\max_{\symbf{\alpha}_1, \symbf{\alpha}_2} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2) & = p(\symbf{w}, b, \symbf{\xi}) 
+\end{align*}
+
+Recall, that we still want to minimize the function \(p(\symbf{w}, b, \symbf{\xi})\) with respect to \(\symbf{w}, b, \symbf{\xi}\), so we can write the problem as:
+
+\[
+	\min_{\symbf{w}, b, \symbf{\xi}} p(\symbf{w}, b, \symbf{\xi}) = \min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha}_1, \symbf{\alpha}_2} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2)
+\]
+Since the Lagrangian \(\Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2)\) is convex with respect to the primal variables \(\symbf{w}, b, \symbf{\xi}\),
+and concave with respect to the dual variables \(\symbf{\alpha}_1, \symbf{\alpha}_2\), 
+we can apply the minimax theorem \cite{vonNeumann1928}.
+
+\[
+	\min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha}_1, \symbf{\alpha}_2} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1,\symbf{\alpha}_2) = \max_{\symbf{\alpha}_1,\symbf{\alpha}_2} g(\symbf{\alpha}_1,\symbf{\alpha}_2)
+\]
+
+where we define:
+\[
+g(\symbf{\alpha}_1,\symbf{\alpha}_2) = \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1,\symbf{\alpha}_2)
+\]
+
+
+\begin{align*}
+	\Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2) & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}_1^\top c_1(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}_2^\top c_2(\symbf{w}, b, \symbf{\xi})                                                                            \\
+	                                                                     & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}_1^\top \left(\symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi}\right) - \symbf{\alpha}_2^\top \symbf{\xi}                                                        \\
+	                                                                     & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}_1^\top \symbf{1}_M - \symbf{\alpha}_1^\top Y X \symbf{w} - \symbf{\alpha}_1^\top Y b\symbf{1}_M - \symbf{\alpha}_1^\top \symbf{\xi} - \symbf{\alpha}_2^\top \symbf{\xi} \\
+\end{align*}
+
 
 The stationary points of the Lagrangian are found by taking gradients with respect to all variables and setting them to zero:
 
 \begin{align*}
-  \nabla_{\symbf{w}} \Lcal          & = \symbf{w} -  (X^\top Y) \symbf{\alpha} = \symbf{0}                             \\
-  \frac{\partial \Lcal}{\partial b} & = - \symbf{\alpha}^\top Y = \symbf{0}^\top                                       \\
-  \nabla_{\symbf{\xi}} \Lcal        & = C \symbf{1}_M^\top - \symbf{\alpha}^\top - \symbf{\mu}^\top = \symbf{0}_M^\top
+	\nabla_{\symbf{w}} \Lcal   & = \symbf{w} -  (X^\top Y) \symbf{\alpha}_1 = \symbf{0}                                  \\
+	\nabla_{b} \Lcal           & = - \symbf{\alpha}_1^\top Y = \symbf{0}^\top                                            \\
+	\nabla_{\symbf{\xi}} \Lcal & = C \symbf{1}_M^\top - \symbf{\alpha}_1^\top - \symbf{\alpha}_2^\top = \symbf{0}_M^\top
 \end{align*}
 
-This gives us the \emph{Karush-Kuhn-Tucker (KKT) conditions}:
-
+\subparagraph{KKT conditions}
+The KKT conditions are given by the following equations:
 \begin{align*}
-  \symbf{w}             & = X^\top Y \symbf{\alpha}                        \\
-  \symbf{\alpha}^\top Y & = 0                                              \\
-  C \symbf{1}_M^\top    & = \symbf{\alpha}^\top + \symbf{\mu}^\top  \geq 0 \\
+	\symbf{w}                         & = X^\top Y \symbf{\alpha}_1                                 \\
+	\symbf{\alpha}_1^\top Y           & = \symbf{0}_M^\top                                          \\
+	\symbf{0}_M \leq \symbf{\alpha}_1 & + \underset{=\symbf{0}}{\symbf{\alpha}_2} \leq C\symbf{1}_M
 \end{align*}
 
 Now we get that:
 \[
-  \norm*{\symbf{w}}_2^2 = \norm{X^\top Y \symbf{\alpha}}_2^2 = \left(X^\top Y \symbf{\alpha}\right)^\top \left(X^\top Y \symbf{\alpha}\right) = \symbf{\alpha}^\top Y [X X^\top] Y \symbf{\alpha} = \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}}
+	\norm*{\symbf{w}}_2^2 = \norm{X^\top Y \symbf{\alpha}_1}_2^2 = \left(X^\top Y \symbf{\alpha}_1\right)^\top \left(X^\top Y \symbf{\alpha}_1\right) = \symbf{\alpha}_1^\top Y [X X^\top] Y \symbf{\alpha}_1 = \inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1}
 \]
 
 Substituting the KKT conditions into the Lagrangian gives us:
 
 \begin{align*}
-  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y X \symbf{w} - \symbf{\alpha}^\top Y b\symbf{1}_M - \symbf{\alpha}^\top \symbf{\xi} - \symbf{\mu}^\top \symbf{\xi}                                                                                                                                                     \\
-                                                                & = \frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y \overbrace{X X^\top}^{G} Y \symbf{\alpha} - \overbrace{\symbf{\alpha}^\top Y}^{\symbf{0}_M^\top} b\symbf{1}_M - \symbf{\alpha}^\top \symbf{\xi} - \left(C \symbf{1}_M^\top - \symbf{\alpha}^\top\right) \symbf{\xi} \\
-                                                                & = \frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{1}_M - \symbf{\alpha}^\top Y G Y \symbf{\alpha} -  \symbf{\alpha}^\top \symbf{\xi} - C \symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}^\top \symbf{\xi}                                                                                            \\
-                                                                & = \frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} + \symbf{\alpha}^\top \symbf{1}_M                                                                                                                                                                                                 \\
-                                                                & = -\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} +  \symbf{\alpha}^\top \symbf{1}_M                                                                                                                                                                                                                                                                           \\
-  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha})              & = -\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} +  \inner*{\symbf{1}_M, \symbf{\alpha}}                                                                                                                                                                                                                                                                      \\
-\end{align*}
-
-We now define the temporary penalty function \(p(\symbf{w}, b, \symbf{\xi})\) as:
-\begin{align*}
-  p(\symbf{w}, b, \symbf{\xi}) =
-  \begin{cases}
-    f(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}^\top g(\symbf{w}, b, \symbf{\xi}) - \symbf{\mu}^\top \symbf{\xi} & \text{if } g(\symbf{w}, b,  \symbf{\xi}) \leq 0 \text{ and } h(\symbf{\xi}) \geq 0 \\
-    \infty                                                                                                         & \text{otherwise}
-  \end{cases}
-\end{align*}
-
-If the constraints hold, i.e. \(g(\symbf{w}, b, \symbf{\xi}) \leq 0\) and \(\symbf{\xi} \geq 0\), the following inequality holds:
-
-\begin{align*}
-  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) & = f(\symbf{w}, b, \symbf{\xi}) + \symbf{\alpha}^\top g(\symbf{w}, b, \symbf{\xi}) - \symbf{\mu}^\top \symbf{\xi} \leq f(\symbf{w}, b, \symbf{\xi})
-\end{align*}
-
-and if we choose \(\symbf{\alpha} = \symbf{0}\) and \(\symbf{\mu} = \symbf{0}\) we see that the equality holds and that:
-\[
-  p(\symbf{w}, b, \symbf{\xi}) = \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) = f(\symbf{w}, b, \symbf{\xi})
-\]
-
-However, if the constraints do not hold, i.e. \(g(\symbf{w}, b, \symbf{\xi}) > 0\) or \(\symbf{\xi} < 0\).
-Then the Lagrangian can be made arbitrarily large by choosing \(\symbf{\alpha}, \symbf{\mu} \to \pm \infty\), such that \(p(\symbf{w}, b, \symbf{\xi}) \to \infty\) when the constraints are violated.
-
-We also can conclude that $p(\symbf{w}, b, \symbf{\xi})$ equals $f(\symbf{w}, b, \symbf{\xi})$ for all feasible points, except $+\infty$ for infeasible points.
-This forces the minimization to occur only within the feasible region.
-
-Therefore, minimizing $p(\symbf{w}, b, \symbf{\xi})$ is equivalent to minimizing \eqref{eq:soft-margin-problem} subject to our original constraints.
-
-\begin{equation}
-  \min_{\symbf{w}, b, \symbf{\xi}} p(\symbf{w}, b, \symbf{\xi}) = \min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha}\leq 0 \leq \symbf{\mu}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu})
-\end{equation}
-
-Furthermore, since the Lagrangian \(\Lcal\) is convex function in \((\symbf{w}, b, \symbf{\xi})\) and concave in \((\symbf{\alpha}, \symbf{\mu})\),
-we can apply Von Neumann's minimax theorem to exchange the order of minimization and maximization\cite{vonNeumann1928}.
-
-\begin{equation}
-  \min_{\symbf{w}, b, \symbf{\xi}} \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha},\symbf{\mu}) = \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha},\symbf{\mu})
-\end{equation}
-
-where we now define:
-
-\[
-  q(\symbf{\alpha},\symbf{\mu}) = \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) \tag{D}
-\]
-Thus, we can define the \emph{Lagrangian dual} of the primal problem~\eqref{eq:primal-problem} as:
-\begin{equation}
-  \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} q(\symbf{\alpha},\symbf{\mu}) = \max_{\symbf{\alpha} \leq 0 \leq \symbf{\mu}} \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) \tag{D}
-\end{equation}
-
-From before we have already derived the reduced Lagrangian:
-\begin{align*}
-  \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) & = -\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} +  \inner*{\symbf{1}_M, \symbf{\alpha}}
-\end{align*}
-
-We can now substitute this into the dual problem:
-\begin{align*}
-  q(\symbf{\alpha}) & = \min_{\symbf{w}, b, \symbf{\xi}} \Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}) = -\left(\frac{1}{2}\inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}\right) = - r(\symbf{\alpha}) \\
+	\Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1, \symbf{\alpha}_2) & = \frac{1}{2} \norm*{\symbf{w}}_2^2 + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}_1^\top \symbf{1}_M - \symbf{\alpha}_1^\top Y X \symbf{w} - \symbf{\alpha}_1^\top Y b\symbf{1}_M - \symbf{\alpha}_1^\top \symbf{\xi} - \symbf{\alpha}_2^\top \symbf{\xi}                                                                                                                                                        \\
+	                                                                     & = \frac{1}{2}\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}_1^\top \symbf{1}_M - \symbf{\alpha}_1^\top Y \overbrace{X X^\top}^{G} Y \symbf{\alpha}_1 - \overbrace{\symbf{\alpha}_1^\top Y}^{\symbf{0}_M^\top} b\symbf{1}_M - \symbf{\alpha}_1^\top \symbf{\xi} - \left(C \symbf{1}_M^\top - \symbf{\alpha}_1^\top\right) \symbf{\xi} \\
+	                                                                     & = \frac{1}{2}\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} + C\symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}_1^\top \symbf{1}_M - \symbf{\alpha}_1^\top Y G Y \symbf{\alpha}_1 -  \symbf{\alpha}_1^\top \symbf{\xi} - C \symbf{1}_M^\top \symbf{\xi} + \symbf{\alpha}_1^\top \symbf{\xi}                                                                                              \\
+	                                                                     & = \frac{1}{2}\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} -  \inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} + \symbf{\alpha}_1^\top \symbf{1}_M                                                                                                                                                                                                       \\
+	                                                                     & = -\frac{1}{2}\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} +  \symbf{\alpha}_1^\top \symbf{1}_M                                                                                                                                                                                                                                                                                     \\
+	\Lcal(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1)                   & = -\frac{1}{2}\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} +  \inner*{\symbf{1}_M, \symbf{\alpha}_1}
 \end{align*}
