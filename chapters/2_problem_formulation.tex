@@ -4,122 +4,102 @@
 
 We begin with the soft margin classification problem, also known as the \emph{primal problem}, which is a convex optimization problem:
 
-For ease of notation, we denote the problem in a more compact vectorized form:
-
 \begin{align*}\label{eq:primal-problem}
-	\min_{\symbf{w}, b, \symbf{\xi}} \quad & f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi} \quad \text{subject to} \quad
+	\min_{\symbf{w}, b, \symbf{\xi}} \quad 
+	& f(\symbf{w}, b, \symbf{\xi}) 
+	= \frac{1}{2}\|\symbf{w}\|_2^2 + C\,\symbf{1}_M^\top \symbf{\xi}
+	\quad 
+	\text{subject to} 
+	\quad
 	\begin{cases}
-		\symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} & \leq \symbf{0}_M \\
-		\symbf{\xi}                                              & \geq \symbf{0}_M
+		\symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi} & \le \symbf{0}_M, \\[6pt]
+		\symbf{\xi} \;\;&\ge \symbf{0}_M,
 	\end{cases}\tag{P}
 \end{align*}
 
-Here, $\symbf{w} \in \R^d$ represents the weight vector, $b \in \R$ is the bias term, and $\symbf{\xi} \in \R^M$ is the vector of slack variables, which account for misclassified points by allowing constraint violations.
+Here, $\symbf{w} \in \R^d$ represents the weight vector, $b \in \R$ is the bias term, and $\symbf{\xi} \in \R^M$ is the vector of slack variables. 
+The data matrix is $X = [\symbf{x}_1, \ldots, \symbf{x}_M] \in \R^{d \times M}$ with labels $\symbf{y}=[y_1, \ldots, y_M]^\top \in \{\pm1\}^M$ and diagonal label matrix $Y = \operatorname{diag}(y_1,\ldots,y_M)$. 
+The parameter $C>0$ controls the penalty for misclassification.
 
-The training data consists of $M$ data points, represented by the matrix $X = [\symbf{x}_1, \ldots, \symbf{x}_M] \in \R^{d \times M}$,
-where each column $\symbf{x}_i$ is a data point associated with a class label $y_i \in {\pm 1}$, collectively forming the label vector $\symbf{y}=[y_1, \ldots, y_M]^T \in \R^M$.
-
-For convenience, we define the diagonal class-label matrix $Y = \operatorname{diag}(y_1, \ldots, y_M) \in \R^{M \times M}$, where $y_i$ the class label for the $i$-th data point.
-
-The parameter $C > 0$ controls the trade-off between maximizing the margin and minimizing classification error. A higher $C$ penalizes misclassification more heavily, enforcing stricter adherence to the margin constraints.
-
-\begin{theorem}{Existence of Solution for Primal Problem}{primal-existence}
-	The primal problem~\eqref{eq:primal-problem} has atleast one solution (i.e. a global minimizer) $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ if the feasible set is non-empty, and the objective function $f$ is coercive.
+\begin{theorem}{Existence \& Uniqueness of Primal Solution}{existence-uniqueness-primal}
+  The primal problem \eqref{eq:primal-problem} always admits at least one global minimizer. Furthermore, the weight vector $\symbf{w}^\star$ is unique due to strict convexity in $\symbf{w}$. However, $b^\star$ and/or $\symbf{\xi}^\star$ may fail to be unique under certain degenerate conditions.
 \end{theorem}
 
-\begin{proof}{}{}
-	The primal problem~\eqref{eq:primal-problem} is a convex quadratic program with linear constraints.
-	To establish existence of a solution, we need to verify that the feasible set is non-empty, and the objective function is coercive.
+\begin{proof}[Proof of Theorem~\ref{thm:existence-uniqueness-primal}]
+  \paragraph{Existence of a solution.}
+  The primal problem~\eqref{eq:primal-problem} is a convex quadratic program with linear constraints. We check two key facts:
+  \begin{itemize}
+    \item \textbf{Feasibility:} The point
+    \[
+      \symbf{w} = \symbf{0}_d,\quad
+      b = 0,\quad
+      \symbf{\xi} = \symbf{1}_M
+    \]
+    satisfies
+    \(
+      \symbf{1}_M - Y\bigl(X\,\symbf{0}_d + 0\cdot\symbf{1}_M\bigr) - \symbf{1}_M = \symbf{0}_M \le \symbf{0}_M,
+      \quad
+      \symbf{1}_M \ge \symbf{0}_M.
+    \)
+    Hence the feasible set is nonempty.
+    \item \textbf{Coercivity:} The objective
+    \[
+       f(\symbf{w},b,\symbf{\xi}) 
+       = \tfrac12\,\|\symbf{w}\|_2^2 
+         \;+\; C\,\bigl(\symbf{1}_M^\top \symbf{\xi}\bigr)
+    \]
+    grows unboundedly whenever $\|\symbf{w}\|\to\infty$ or $\|\symbf{\xi}\|\to\infty$ ($C>0$). So the objective cannot go to $-\infty.$ By standard convexity arguments, a global minimizer must exist.
+  \end{itemize}
 
-	\paragraph{Feasibility}
-	Let $\symbf{w} = \symbf{0}_d$, $b = 0$, and $\symbf{\xi} = \symbf{1}_M$.
-	This point satisfies all constraints since:
-	\begin{align*}
-		\symbf{1}_M - Y(X\symbf{w} + b\symbf{1}_M) - \symbf{\xi} = \symbf{0}_M \leq \symbf{0}_M \quad \text{and} \quad \symbf{\xi} = \symbf{1}_M \geq \symbf{0}_M
-	\end{align*}
-
-	\paragraph{Coercivity}
-	We need to show that the objectfunction $f(\symbf{w}, b, \symbf{\xi})$ is coercive.
-
-	If we start with the dominating term $\norm*{\symbf{w}}_2^2$, this is always positive, from the definition of the $L_2$-norm.
-	\[
-		\norm*{\symbf{w}}_2^2 = \sum_{i=1}^d w_i^2 \geq 0
-	\]
-	The term $C\symbf{1}_M^\top \symbf{\xi}$ is also positive, since $C > 0$ and from the second constraint we have that $\symbf{\xi} \geq \symbf{0}_M$.
-
-	Thus, the objective function is coercive:
-	\begin{align*}
-		\lim_{\|\symbf{w}\|_2 \to \infty, \; \symbf{\xi} \to \infty, \; b \to \infty} f(\symbf{w}, b, \symbf{\xi}) = \lim_{\|\symbf{w}\|_2 \to \infty, \; \symbf{\xi} \to \infty, \; b \to \infty} \left(\frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top \symbf{\xi}\right) \to \infty
-	\end{align*}
-
+  \paragraph{Uniqueness of a solution.}
+  \begin{itemize}
+    \item \textbf{Uniqueness of $\symbf{w}^\star$:}
+    The strictly convex term $\tfrac12\,\|\symbf{w}\|_2^2$ ensures that $\symbf{w}^\star$ is unique once the problem is solved, because no other $\symbf{w}$ can yield the same minimal value unless it coincides with $\symbf{w}^\star$.
+    \item \textbf{Possible non-uniqueness of $b^\star$:}
+    Since $b$ does not appear in the quadratic term, it may not be pinned down uniquely by the constraints (unless certain support vectors fix it via KKT conditions). In symmetric or degenerate configurations, $b$ can shift while adjusting $\symbf{w}$ accordingly.
+    \item \textbf{Possible non-uniqueness of $\symbf{\xi}^\star$:}
+    For points with $\alpha_i^\star=0$, one only needs $\xi_i \ge 0$, so there may be infinitely many ways to satisfy that constraint. Conversely, for $\alpha_i^\star = C$ or $0<\alpha_i^\star<C$, $\xi_i^\star$ is determined exactly by the constraints. In degenerate cases, overall $\symbf{\xi}^\star$ need not be unique.
+  \end{itemize}
 \end{proof}
 
-\begin{theorem}{Uniqueness of Solution for Primal Problem}{primal-uniqueness}
-	The objective is strictly convex in $\symbf{w}$ (due to the $\norm*{\symbf{w}}_2^2$ term), but linear (hence not strictly convex) in $\symbf{\xi}$.
-	As this is a sum of a stricly convex objective and a positive linear function, there must exist a unique global minimum, as Coercivity garenties
-	the existance of a global minimum and strict convexity garenties that any local minimum is also the only global minimum as the function
-	must curve up in all directions.
-\end{theorem}
-
-\begin{proof}{}{}
-	\paragraph{Uniqueness of $\symbf{w}^\star$}
-	The objective is strictly convex in $\symbf{w}$ due to the $\|\symbf{w}\|_2^2$ term.
-	Strict convexity ensures a unique minimizer for $\symbf{w}$.
-
-	\paragraph{Uniqueness of $b^\star$}
-	From the KKT conditions, for any support vector $\symbf{x}_i$ with $\symbf{0}_M < \symbf{\alpha}^\star < C\symbf{1}_M$, we have:
-	\[
-		Y\left(X\symbf{w}^\star + b^\star\right) = 1 \implies b^\star = Y^{-1} - X\symbf{w}^\star
-	\]
-
-	If such $i$ exist, $b^\star$ is uniquely determined. If not, $b^\star$ may lie in an interval.
-
-	\paragraph{Non-Uniqueness of $\symbf{\xi}^\star$}
-
-	For $\symbf{\alpha^\star} = C\symbf{1}_M$ then $\symbf{\xi}^\star$ is fixed, and therefore unique.
-
-	\[
-		\symbf{\xi} = \max\{\symbf{0}_M, \symbf{1}_M - Y(X\symbf{w^\star} + b^\star\symbf{1}_M)\}
-	\]
-
-	\medskip
-
-	For the KKT-conditions $\symbf{0}_M < \symbf{\alpha^\star} < C\symbf{1}_M$ then $\symbf{\xi}^\star = \symbf{0}_M$.
-
-	\medskip
-
-	For $\symbf{\alpha}^\star = \symbf{0}$, then $\symbf{\xi}$ is unconstrained but bounded by $\symbf{\xi} \geq \symbf{0}_M$.
-
-	Therefore, $\symbf{\xi}^\star$ may not be unique in various cases:
-	\begin{itemize}
-		\item For data points with $\alpha_i^\star = C$, $\xi_i^\star$ is fixed by the constraints.
-		\item For support vectors with $0 < \alpha_i^\star < C$, $\xi_i^\star = 0$.
-		\item For points with $\alpha_i^\star = 0$, $\xi_i^\star$ is only bounded from below by 0.
-	\end{itemize}
-	\qed
-\end{proof}
 
 \section{The Dual Problem (DP)}
 
-The dual of the primal problem~\eqref{eq:primal-problem} can be derived using Lagrange multipliers, leading to the following dual optimization problem:
+The dual of the primal problem~\eqref{eq:primal-problem} is obtained by forming the Lagrangian and eliminating $\symbf{w},b,\symbf{\xi}$:
 
 \begin{align}\label{eq:dual-problem}
-	\min_{\symbf{\alpha}}\frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} - \inner*{\symbf{1}_M, \symbf{\alpha}}
-	\quad \text{subject to} \quad
+	\min_{\symbf{\alpha}} 
+	\;\;\frac{1}{2}\,\inner*{\symbf{\alpha},\,Y\,G\,Y\,\symbf{\alpha}} 
+	\;-\;\inner*{\symbf{1}_M,\;\symbf{\alpha}}
+	\quad
+	\text{subject to}
+	\quad
 	\begin{cases}
-		\inner*{\symbf{y}, \symbf{\alpha}} = 0 \\
-		\symbf{0}_M \leq \symbf{\alpha} \leq C\symbf{1}_M
+		\inner{\symbf{y}}{\symbf{\alpha}} = 0,\\
+		\symbf{0}_M \;\;\leq\;\; \symbf{\alpha} \;\;\leq\;\; C\,\symbf{1}_M.
 	\end{cases}
 \end{align}
+Here $G = \bigl(\inner*{\symbf{x}_i}{\symbf{x}_j}\bigr)_{i,j=1}^M$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
 
-where \(\mathrm{G} = \left(\inner*{\symbf{x}_i, \symbf{x}_j}\right)_{i,j=1}^M\) is the Gram matrix of the points.
-
-\begin{theorem}{Existence and Uniqueness of Solution for Dual Problem}{}
-
+\begin{theorem}{Existence \& Uniqueness of Dual Solution}{existence-uniqueness-dual}
+The dual problem \eqref{eq:dual-problem} always admits at least one global minimizer. Moreover, if $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha}\mid \inner{\symbf{y}}{\symbf{\alpha}}=0\}$, then its solution $\symbf{\alpha}^\star$ is unique. In degenerate cases, multiple $\symbf{\alpha}^\star$ can yield the same minimum.
 \end{theorem}
 
-\begin{proof}{}{}
+\begin{proof}
+	\paragraph{Existence of a solution.}
+	The dual \eqref{eq:dual-problem} is a convex quadratic program in $\symbf{\alpha}$, subject to box constraints $0 \le \alpha_i \le C$ and the linear equality $\inner{\symbf{y}}{\symbf{\alpha}}=0$. Thus:
+	\begin{itemize}
+		\item The feasible region (a slice of a hyperbox) is closed and bounded.
+		\item The dual objective 
+		\(
+		  \tfrac12\, \symbf{\alpha}^\top (YGY)\,\symbf{\alpha}\;-\;\symbf{1}_M^\top \symbf{\alpha}
+		\)
+		is continuous and convex over that compact set.
+	\end{itemize}
+	By the extreme-value theorem, a global minimizer $\symbf{\alpha}^\star$ must exist.
+	\paragraph{Uniqueness of a solution.}
+	\begin{itemize}
+		\item If $Y\,G\,Y$ is positive-definite on the subspace $\{\symbf{\alpha}\mid \inner{\symbf{y}}{\symbf{\alpha}}=0\}$, then the quadratic objective is strictly convex there, guaranteeing a single minimizer.
+		\item In degenerate situations, e.g.\ if $G$ is positive semidefinite but not definite on that subspace, there can be infinitely many optimal $\symbf{\alpha}^\star$.
+	\end{itemize}
 \end{proof}
-
-
-
