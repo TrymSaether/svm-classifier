@@ -100,4 +100,4 @@ def TestLinear(w,b,n_A,n_B,margin,**kwargs):
     supp_B = rng.integers(0,n_B)
     list_B[supp_B] = vec+(-b-margin)*w
 
-    return(list_A,list_B)
+    return np.array(list_A), np.array(list_B)
