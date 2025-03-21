@@ -1,20 +1,22 @@
 import numpy as np
 
-def alpha(lambda_val):
-    # Define the function alpha(lambda) here
-    # This is a placeholder; replace it with the actual function
-    return lambda_val - 2  # Example function
+y = np.ones(10)
+beta = np.full_like(y, 0.5)
+C = 1
+lambda_minus = 0
+lambda_plus = C
+delta = 0.01
+epsilon = 0.01
 
-def dot_product(y, alpha_val):
-    return sum(a * b for a, b in zip(y, alpha_val))
+alpha = lambda y, lamb: np.median(0,C, beta + lamb*y)
 
 def find_lambda(y, lambda_minus, lambda_plus, delta, epsilon):
     while True:
-        alpha_minus = [alpha(lambda_minus)]
-        alpha_plus = [alpha(lambda_plus)]
+        alpha_minus = alpha(y,lambda_minus)
+        alpha_plus = alpha(y,lambda_plus)
         
-        dot_minus = dot_product(y, alpha_minus)
-        dot_plus = dot_product(y, alpha_plus)
+        dot_minus = np.dot(y, alpha_minus)
+        dot_plus = np.dot(y, alpha_plus)
         
         if dot_minus > 0:
             lambda_plus = lambda_minus
@@ -27,12 +29,11 @@ def find_lambda(y, lambda_minus, lambda_plus, delta, epsilon):
     
     while True:
         lambda_hat = 0.5 * (lambda_minus + lambda_plus)
-        alpha_hat = [alpha(lambda_hat)]
-        dot_hat = dot_product(y, alpha_hat)
+        alpha_hat = alpha(y,lambda_hat)
         
-        if abs(dot_hat) < epsilon:
+        if abs(np.dot(y, alpha_hat)) < epsilon:
             return lambda_hat
-        elif dot_hat < 0:
+        elif np.dot(y, alpha_hat) < 0:
             lambda_minus = lambda_hat
         else:
             lambda_plus = lambda_hat
