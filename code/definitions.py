@@ -42,3 +42,12 @@ lambda_star = find_lambda(y, lambda_minus, lambda_plus, delta, epsilon)
 alpha_star = alpha(y, lambda_star)
 
 
+def BarzilaiBorwein(alpha_k, alpha_k_next, grad_f, grad_f_next):
+    s_k = alpha_k_next - alpha_k
+    z_k = grad_f_next - grad_f
+    if np.dot(s_k,z_k) <= 0:
+        return 10**(5)
+    else:
+        return np.dot(s_k,s_k)/np.dot(s_k,z_k)
+    
+    
