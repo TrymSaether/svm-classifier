@@ -8,7 +8,7 @@ lambda_plus = C
 delta = 0.01
 epsilon = 0.01
 
-alpha = lambda y, lamb: np.median(0,C, beta + lamb*y)
+alpha = lambda y, lamb: np.minimum(np.maximum(0,beta + lamb*y), C)
 
 def find_lambda(y, lambda_minus, lambda_plus, delta, epsilon):
     while True:
@@ -37,3 +37,8 @@ def find_lambda(y, lambda_minus, lambda_plus, delta, epsilon):
             lambda_minus = lambda_hat
         else:
             lambda_plus = lambda_hat
+
+lambda_star = find_lambda(y, lambda_minus, lambda_plus, delta, epsilon)
+alpha_star = alpha(y, lambda_star)
+
+
