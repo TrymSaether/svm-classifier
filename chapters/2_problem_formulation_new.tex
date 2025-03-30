@@ -1,0 +1,234 @@
+\chapter{Problem Formulation}\label{chap:problem}
+\section{Existence and Uniqueness for a constrained optimization problem}
+To prove the existence and uniqueness of a minimizer for a constrained optimization problem, 
+three properties are required. Feasibility ensures that the constraint set is non-empty, meaning 
+that there is at least one point that satisfies all constraints. Coercivity of the objective 
+function guarantees that the function tends to infinity as the norm of the variable tends to infinity,
+ensuring the existence of a global minimum on the feasible set. Finally, convexity of the objective 
+function implies that any local minimizer is also a global one, and if the function is strictly convex,
+it ensures that the minimizer is unique. Therefore, the combination of feasibility, coercivity, and 
+strict convexity, establishes both the existence and uniqueness of a global minimizer.
+
+
+\section{The Primal Problem (P)}
+We begin with the first soft-margin classification problem we are interested in solving, which is 
+formulated as a convex optimization problem. This will serve as the primal problem in our analysis.
+
+\begin{align*}\label{eq:primal-problem}
+	\min_{\symbf{w}, b, \symbf{\xi}} \quad 
+	& f(\symbf{w}, b, \symbf{\xi}) 
+	= \frac{1}{2}\|\symbf{w}\|_2^2 + C\,\symbf{1}_M^\top \symbf{\xi}
+	\quad 
+	\text{subject to} 
+	\quad
+	\begin{cases}
+		\symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi} & \le \symbf{0}_M, \\[6pt]
+		\symbf{\xi} \;\;&\ge \symbf{0}_M,
+	\end{cases}\tag{P}
+\end{align*}
+
+Here, $\symbf{w} \in \R^d$ represents the weight vector, $b \in \R$ is the bias term, and $\symbf{\xi} \in \R^M$ is the vector of slack variables. 
+The data matrix is $X = [\symbf{x}_1, \ldots, \symbf{x}_M] \in \R^{d \times M}$ with labels $\symbf{y}=[y_1, \ldots, y_M]^\top \in \{\pm1\}^M$ and diagonal label matrix $Y = \operatorname{diag}(y_1,\ldots,y_M)$. 
+The parameter $C>0$ controls the penalty for misclassification.
+
+\begin{theorem}{Existence \& Uniqueness of Primal Solution}{existence-uniqueness-primal}
+    The primal problem \eqref{eq:primal-problem} always admits at least one global minimizer. Moreover, the weight vector $\symbf{w}^\star$ is unique due to strict convexity of the objective in $\symbf{w}$. However, the bias $b^\star$ and slack variables $\symbf{\xi}^\star$ may fail to be unique under certain degenerate configurations.
+    \end{theorem}
+    
+    \begin{proof}[Proof of Theorem~\ref{thm:existence-uniqueness-primal}]
+      \paragraph{Existence of a solution.}
+      The primal problem~\eqref{eq:primal-problem} is a convex quadratic program with affine inequality constraints. To establish existence of a minimizer, we verify feasibility and coercivity of the objective.
+    
+      \begin{itemize}
+        \item \textbf{Feasibility:} Let $\symbf{w} = \symbf{0}_d$, $b = 0$, and $\symbf{\xi} = \symbf{1}_M$. Then,
+        \[
+        \symbf{1}_M - Y\left(X\symbf{w} + b\,\symbf{1}_M\right) - \symbf{\xi} 
+        = \symbf{1}_M - Y(\symbf{0}_M) - \symbf{1}_M = \symbf{0}_M \le \symbf{0}_M,
+        \]
+        and clearly $\symbf{\xi} = \symbf{1}_M \ge \symbf{0}_M$. Thus, this choice satisfies all constraints, and the feasible region is non-empty.
+    
+        \item \textbf{Coercivity:} The objective function
+        \[
+        f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2} \|\symbf{w}\|_2^2 + C\, \symbf{1}_M^\top \symbf{\xi}
+        \]
+        is coercive in $\symbf{w}$ and $\symbf{\xi}$. As either $\|\symbf{w}\| \to \infty$ or $\|\symbf{\xi}\| \to \infty$, the objective tends to infinity. Since the feasible region is non-empty and convex, and the objective is continuous and coercive, the problem attains a minimum.
+      \end{itemize}
+    
+      \paragraph{Uniqueness of a solution.}
+      \begin{itemize}
+        \item \textbf{Uniqueness of $\symbf{w}^\star$:}  
+        The term $\tfrac{1}{2}\|\symbf{w}\|^2$ is strictly convex in $\symbf{w}$, while the remaining terms are affine. As a result, the full objective is strictly convex in $\symbf{w}$, guaranteeing that $\symbf{w}^\star$ is unique.
+    
+        \item \textbf{Possible non-uniqueness of $b^\star$:}  
+        The variable $b$ appears only linearly in the constraints and not in the objective. In cases where the constraints do not uniquely determine $b$—for example, when multiple values of $b$ yield the same classification margin—a degree of freedom in $b$ remains. This can happen, for instance, when there are no support vectors exactly on the margin.
+    
+        \item \textbf{Possible non-uniqueness of $\symbf{\xi}^\star$:}  
+        The slack variables $\xi_i$ only appear linearly in both the objective and the constraints. For points that are not support vectors (i.e., not active in the constraint), the optimal $\xi_i^\star$ may be any non-negative value satisfying the constraint, leading to potential non-uniqueness. However, for support vectors that lie within or on the margin, $\xi_i^\star$ becomes uniquely determined.
+      \end{itemize}
+    \end{proof}
+    
+  
+  
+  \section{The Dual Problem (DP)}
+  
+  The second soft-margin classification problem we are interested in solving, which will be refered
+  as the dual problem is also a convex optimization problem:
+  
+  \begin{align}\label{eq:dual-problem}
+      \min_{\symbf{\alpha}} 
+      \;\;\frac{1}{2}\,\inner*{\symbf{\alpha},\,Y\,G\,Y\,\symbf{\alpha}} 
+      \;-\;\inner*{\symbf{1}_M,\;\symbf{\alpha}}
+      \quad
+      \text{subject to}
+      \quad
+      \begin{cases}
+          \inner{\symbf{y}}{\symbf{\alpha}} = 0,\\
+          \symbf{0}_M \;\;\leq\;\; \symbf{\alpha} \;\;\leq\;\; C\,\symbf{1}_M.
+      \end{cases}
+  \end{align}
+  Here $G = \bigl(\inner*{\symbf{x}_i}{\symbf{x}_j}\bigr)_{i,j=1}^M$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
+  
+  \begin{theorem}{Existence \& Uniqueness of Dual Solution}{existence-uniqueness-dual}
+    The dual problem \eqref{eq:dual-problem} always admits at least one global minimizer. Moreover, if $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha}\mid \inner{\symbf{y}}{\symbf{\alpha}}=0\}$, then the solution $\symbf{\alpha}^\star$ is unique. In degenerate cases, multiple optimal solutions may exist.
+    \end{theorem}
+    
+    \begin{proof}
+      \paragraph{Existence of a solution.}
+      The dual problem \eqref{eq:dual-problem} is a convex quadratic program in $\symbf{\alpha}$, subject to a linear equality constraint $\langle \symbf{y}, \symbf{\alpha} \rangle = 0$ and box constraints $0 \leq \alpha_i \leq C$ for all $i = 1, \ldots, M$. We define the feasible region as:
+      \[
+      \Omega = \left\{ \alpha \in \mathbb{R}^M \;\middle|\; 0 \leq \alpha_i \leq C, \;\langle \symbf{y}, \alpha \rangle = 0 \right\},
+      \]
+      which is the intersection of the closed box $[0, C]^M$ with a hyperplane. This intersection is nonempty: because the dataset includes both positive and negative labels (i.e., $\exists\,p,n$ such that $y_p = 1$, $y_n = -1$), one can construct a feasible point by choosing $\alpha_p = \alpha_n$ and setting all other components to zero. Hence, $\Omega$ is closed, bounded, and nonempty.
+    
+      The dual objective function,
+      \[
+      f(\alpha) = \frac{1}{2} \langle \alpha, YGY \alpha \rangle - \langle \mathbf{1}_M, \alpha \rangle,
+      \]
+      is continuous and convex, being a quadratic form with symmetric matrix $YGY$ and linear term $- \mathbf{1}_M^\top \alpha$. Since $f$ is continuous and convex over a compact feasible set $\Omega$, the extreme value theorem guarantees the existence of a global minimizer $\alpha^\star$.
+    
+      \paragraph{Uniqueness of a solution.}
+      The Hessian of $f$ is $\nabla^2 f(\alpha) = YGY$, which is symmetric and positive semi-definite because $G$ is a Gram matrix and $Y$ is a diagonal matrix with $\pm 1$ entries. If $YGY$ is strictly positive-definite on the affine subspace $\{\alpha \in \mathbb{R}^M : \langle y, \alpha \rangle = 0\}$, then $f$ is strictly convex on the feasible region $\Omega$, and the minimizer $\alpha^\star$ is unique. In contrast, if $YGY$ is only positive semi-definite (e.g., if $G$ is rank-deficient), then flat directions may exist in the objective, and multiple global minimizers may be possible.
+    \end{proof}    
+
+
+% \section{Existence and Uniqueness of the Soft-Margin SVM Problem}
+% \[
+% \min_{w \in \mathbb{R}^d,\;b \in \mathbb{R},\;\xi \in \mathbb{R}^M}
+% \quad \frac{1}{2}\,\|w\|^2 \;+\; C \sum_{i=1}^M \xi_i
+% \quad\text{subject to}\quad
+% \begin{cases}
+% y_i\bigl(\langle w, x_i\rangle + b\bigr)\;\ge\;1 \;-\;\xi_i,\\[4pt]
+% \xi_i \;\ge\; 0,
+% \end{cases}
+% \quad i = 1,\dots,M,
+% \]
+
+% \[
+% \min_{\alpha \in \mathbb{R}^M} 
+% \frac{1}{2} \langle \alpha, YGY \alpha \rangle 
+% - \langle \mathbf{1}_M, \alpha \rangle
+% \quad \text{subject to} \quad
+% \begin{cases}
+% \langle y, \alpha \rangle = 0,\\[6pt]
+% 0 \le \alpha_i \le C
+% \end{cases}
+% \quad \text{for } i = 1, \dots, M.
+% \]
+
+% where each $y_i\in\{-1,+1\}$ and $C>0$ is a fixed penalty parameter.
+
+% To prove the existence and uniqueness of a minimizer for a constrained optimization problem, 
+% three properties are required. Feasibility ensures that the constraint set is non-empty, meaning 
+% that there is at least one point that satisfies all constraints. Coercivity of the objective 
+% function guarantees that the function tends to infinity as the norm of the variable tends to infinity,
+% ensuring the existence of a global minimum on the feasible set. Finally, convexity of the objective 
+% function implies that any local minimizer is also a global one, and if the function is strictly convex,
+% it ensures that the minimizer is unique. Therefore, the combination of feasibility, coercivity, and 
+% strict convexity, establishes both the existence and uniqueness of a global minimizer.
+
+
+% \subsection*{1.\ Non-emptiness and Feasibility}
+
+% The feasible set of $(w,b,\{\xi_i\})$ is non-empty. For example, one can always pick
+% \[
+% w = 0,\quad b = 0,\quad \xi_i = 1 \quad \forall\,i,
+% \]
+% so that
+% \(
+% y_i \langle w,x_i\rangle + b = 0
+% \)
+% and
+% \(\,1 - \xi_i \le 0,\)
+% thus satisfying
+% $y_i(\langle w,x_i\rangle + b)\ge 1-\xi_i.$
+% Hence there is at least one feasible point, guaranteeing the set of all feasible triples $(w,b,\xi)$ is non-empty.
+
+% \subsection*{2.\ Coercivity and Existence of a Global Minimizer}
+
+% Observe that the objective
+% \[
+% \frac{1}{2}\|w\|^2 \;+\; C\sum_{i=1}^M \xi_i
+% \]
+% is \emph{coercive} in the variables $(w,\xi)$: as $\|w\|\to\infty$ or $\sum_i \xi_i \to \infty,$ the cost grows unbounded. Together with the linear constraints $\xi_i\ge 0$ and the fact that the feasible set is not empty, standard results in convex analysis imply the existence of \emph{some} global minimizer $(w^*,b^*,\xi^*)$.
+
+% \subsection*{3.\ Convexity and (Possible) Uniqueness}
+
+% The function 
+% \[
+% \frac12 \|w\|^2 + C \sum_{i=1}^M \xi_i
+% \]
+% is convex in $(w,\xi)$, and \emph{affine} (hence convex) in $b$. Therefore, the entire objective is convex on a convex feasible region (defined by affine/linear inequalities). This guarantees that every local minimizer is also a global minimizer.
+
+% \paragraph{Uniqueness.} 
+% Strict convexity in the $w$-part implies that, \emph{for fixed $b$ and $\{\xi_i\}$}, the objective in $w$ is strictly convex, which typically ensures a unique $w^*$ \emph{conditional} on $b,\{\xi_i\}.$ However, because the objective is \emph{linear} in $b$, strict convexity does not extend to the $(b,w,\xi)$ space as a whole. In many cases, $b^*$ can still be pinned down by the margin constraints, but in some situations there may be multiple solutions that share the same minimal cost. 
+
+% Hence, if the data are in ``general position,'' one typically obtains a \emph{unique} $w^*$ and a well-defined $b^*$, but strictly speaking, the problem is not globally \emph{strictly} convex in \emph{all} variables $(w,b,\xi)$ simultaneously. Therefore, uniqueness may or may not hold in full, depending on degeneracies in the data or constraints.
+
+
+% \[
+% f(\alpha) := \min_{\alpha \in \mathbb{R}^M} \frac{1}{2} \langle \alpha, YGY \alpha \rangle - \langle \mathbf{1}_M, \alpha \rangle \quad \text{s.t.} \quad 
+% \begin{cases}
+% \langle y, \alpha \rangle = 0 \\
+% 0 \leq \alpha_i \leq C \quad \text{for } i = 1, \ldots, M
+% \end{cases}
+% \]
+
+% \[
+% Y = \text{diag}(y_1, \ldots, y_M) \quad \text{where } y_i = 1 \vee -1 \text{ for } i = 1, \ldots, m
+% \]
+
+% \[
+% G = (\langle x_i, x_j \rangle)_{i,j=1,\ldots, M}, \quad \text{thus } G \text{ is the kernel matrix and SPD}
+% \]
+
+% \[
+% \mathbf{1} = (1, \ldots, 1)^T
+% \]
+
+% \subsection*{1. Feasibility:}
+% The area where the function $f(\alpha)$ can exist is given by
+% \[
+% \Omega = \left\{ \alpha \in \mathbb{R}^M \mid 0 \leq \alpha_i \leq C, \, \langle y, \alpha \rangle = 0 \right\}
+% \]
+% Thus the feasible region is the intersection of the area $[0, C]^M$ with the area $\sum_i y_i \alpha_i = 0$.
+
+% Because there must at least be one positive and negative label, two indices, $p$ and $n$, can be picked such that $y_p = 1$ and $y_n = -1$ while $\alpha_p = \alpha_n$, letting all other $\alpha$ values be zero, satisfying both constraints. Guaranteeing that the feasible set is not zero.
+
+% Also, $\alpha_n$ and $\alpha_p$ can be set to $0$ or $C$, thus boundary and corner points are also feasible.
+
+% Thus $\Omega$ is a non-empty, closed and bounded area.
+
+% \subsection*{2. Convexity:}
+% Rewriting $f(\alpha) = \frac{1}{2} \langle \alpha, YGY \alpha \rangle - \langle \mathbf{1}_M, \alpha \rangle$ to
+
+% \[
+% f(\alpha) = \frac{1}{2} \alpha^T YGY \alpha - \mathbf{1}^T \alpha
+% \]
+
+% Finding the Hessian of this we find:
+
+% \[
+% \nabla f(\alpha) = Y G Y \alpha - \mathbf{1} \quad \Rightarrow \quad \nabla^2 f(\alpha) = Y G Y
+% \]
+
+% Where $G$ is semi-positive definite by definition as it is a gram matrix, and $Y$ is a diagonal matrix with $\pm 1$ values. Thus $YGY$ is symmetric and PSD, meaning $f$ is convex.
