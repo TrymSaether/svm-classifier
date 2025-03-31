@@ -83,7 +83,7 @@ as the dual problem, is also a convex optimization problem:
 		\symbf{0}_M \;\;\leq\;\; \symbf{\alpha} \;\;\leq\;\; C\,\symbf{1}_M.
 	\end{cases}
 \end{align}
-Here $G = \bigl(\inner*{\symbf{x}_i}{\symbf{x}_j}\bigr)_{i,j=1}^M$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
+Here $G = \bigl(\inner*{\symbf{x}_i, \symbf{x}_j}\bigr)_{i,j=1,\hdots,M} = X X^\top$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
 
 \begin{theorem}{Existence \& Uniqueness of Dual Solution}{existence-uniqueness-dual}
 	The dual problem \eqref{eq:dual-problem} always admits at least one global minimizer. Moreover, if $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha}\mid \inner{\symbf{y}}{\symbf{\alpha}}=0\}$, then the solution $\symbf{\alpha}^\star$ is unique. In degenerate cases, multiple optimal solutions may exist.
