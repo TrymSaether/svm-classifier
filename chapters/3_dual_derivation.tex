@@ -116,7 +116,11 @@ using the KKT optimality conditions.
 \begin{proposition}{From the solution of the dual, one can obtain the solution of the primal}{D2P-solution}
 	The solution of the primal problem, $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$, is given 
 	by the solution of the dual problem, $\symbf{\alpha}^\star$ from the equations:
-	
+	\begin{align}
+		\symbf{w}^\star &= \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i \\
+		b^\star &= y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle \quad \text{for any } i \text{ such that } 0 < \alpha_i^\star < C \\
+		\xi_i^\star &= \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)
+	\end{align}
 
 \end{proposition}
 
