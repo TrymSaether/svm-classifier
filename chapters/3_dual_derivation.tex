@@ -1,12 +1,34 @@
 \section{Dual Derivation}\label{chap:dual_derivation}
-The dual problem is an equivalent formulation of the primal optimization problem. 
+The dual problem is an equivalent formulation of the primal optimization problem found using Lagrangian
+multipliers\footnote{The Lagrangian is a function that combines the objective and constraints of a 
+constrained optimization problem. For a problem of the form
+\[
+\min_{x \in \mathbb{R}^n} \; f(x) \quad \text{subject to} \quad g_i(x) \le 0 \; \text{for } i = 1, 
+\ldots, m, \quad h_j(x) = 0 \; \text{for } j = 1, \ldots, p,
+\]
+the Lagrangian is defined as
+\[
+\mathcal{L}(x, \boldsymbol{\lambda}, \boldsymbol{\mu}) 
+= f(x) + \sum_{i=1}^m \lambda_i g_i(x) + \sum_{j=1}^p \mu_j h_j(x) 
+= f(x) + \boldsymbol{\lambda}^\top g(x) + \boldsymbol{\mu}^\top h(x),
+\]
+And $g(x) = [g_1(x), \ldots, g_m(x)]^\top$ and $h(x) = [h_1(x), \ldots, h_p(x)]^\top$.
+} 
+and KKT conditions\footnote{The Karush-Kuhn-Tucker (KKT) conditions are necessary conditions 
+for a point $x^\star$ to be optimal in constrained optimization, and sufficient when the problem 
+is convex. These conditions are Stationarity, Primal and Dual feasibility, and Complementary slackness. 
+Stationarity constitutes that the gradient of the Lagrangian with respect to $x$ vanishes at $x^\star$. 
+Primal feasibility is when the original constraints are satisfied. Dual feasibility requires 
+$\lambda_i \ge 0$ for all $i$. Complementary slackness is that each inequality constraint satisfies 
+$\lambda_i g_i(x^\star) = 0$.
+}
 However it offers several key advantages. In the context of support vector machines, 
 solving the dual allows the optimization to depend only on the number of data points rather than 
-the dimension of the feature space, making it efficient in high-dimensional settings. 
+the dimension of the spatial space, making it efficient in high-dimensional settings. 
 Additionally, the dual formulation naturally incorporates the kernel trick, enabling non-linear 
 decision boundaries without explicitly mapping data to higher dimensions. It also gives insight 
 into which data points are support vectors, since only the corresponding dual variables are non-zero. 
-Thus, the dual problem is usually more numerically stable and computationally tractable, than the
+Thus, the dual problem is usually more numerically stable and computationally efficient, than the
 primal formulation.
 
 \begin{proposition}{The dual problem is equivalent to the primal problem}{dual-derivation}
@@ -82,8 +104,15 @@ primal formulation.
 	This completes the derivation of the dual problem~\eqref{eq:dual-problem}.\qed
 \end{proof}
 
-Once the dual problem \eqref{eq:dual-problem} has been solved and an optimal dual variable $\symbf{\alpha}^\star$ has been obtained, we can reconstruct the corresponding solution $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem \eqref{eq:primal-problem} using the KKT optimality conditions. This section outlines the derivation of each component.
+Once the dual problem \eqref{eq:dual-problem} has been solved and an optimal dual variable 
+$\symbf{\alpha}^\star$ has been obtained, we can reconstruct the corresponding solution 
+$(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem \eqref{eq:primal-problem} 
+using the KKT optimality conditions.
 
+\begin{proposition}{From the solution of the dual problem one can obtain the solution of the primal problem}{D2P-solution}
+	
+
+\end{proposition}
 \subsection*{Lagrangian and KKT Conditions}
 
 The Lagrangian associated with the primal problem is given by:
