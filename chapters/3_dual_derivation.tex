@@ -11,10 +11,14 @@ primal formulation.
 
 \begin{proposition}{The dual problem is equivalent to the primal problem}{dual-derivation}
 	The dual problem of the primal problem~\eqref{eq:primal-problem} is given by:
-	\(\min_{\symbf{\alpha}} \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}\) subject to \(\begin{cases}
+	\[
+		\min_{\symbf{\alpha}} \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}} \text{ subject to }
+		\begin{cases}
 			0 \leq \symbf{\alpha} \leq C\symbf{1}_M \\
 			\symbf{\alpha}^\top Y = 0
-		\end{cases}\) (DP)
+		\end{cases} \tag{DP}
+	\]
+
 \end{proposition}
 \begin{proof}[Proof of Proposition~\ref{prop:dual-derivation}]
 	\paragraph{Primal problem (P)}
@@ -81,78 +85,3 @@ primal formulation.
 	\]
 	This completes the derivation of the dual problem~\eqref{eq:dual-problem}.\qed
 \end{proof}
-
-Once the dual problem \eqref{eq:dual-problem} has been solved and an optimal dual variable $\symbf{\alpha}^\star$ has been obtained, we can reconstruct the corresponding solution $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem \eqref{eq:primal-problem} using the KKT optimality conditions. This section outlines the derivation of each component.
-
-\subsection*{Lagrangian and KKT Conditions}
-
-The Lagrangian associated with the primal problem is given by:
-\[
-\mathcal{L}(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) 
-= \frac{1}{2} \|\symbf{w}\|^2 + C \sum_{i=1}^M \xi_i
-- \sum_{i=1}^M \alpha_i \bigl( y_i (\langle \symbf{w}, \symbf{x}_i \rangle + b) - 1 + \xi_i \bigr)
-- \sum_{i=1}^M \mu_i \xi_i
-\]
-where $\symbf{\alpha} \ge 0$ and $\symbf{\mu} \ge 0$ are Lagrange multipliers for the margin and non-negativity constraints, respectively.
-
-From the KKT conditions, we obtain the following:
-
-\begin{itemize}
-  \item \textbf{Stationarity}:
-  \[
-  \nabla_{\symbf{w}} \mathcal{L} = \symbf{w} - \sum_{i=1}^M \alpha_i y_i \symbf{x}_i = 0 
-  \quad \Rightarrow \quad
-  \boxed{\symbf{w}^\star = \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i}
-  \]
-  \[
-  \nabla_b \mathcal{L} = -\sum_{i=1}^M \alpha_i y_i = 0
-  \quad \Rightarrow \quad
-  \boxed{\sum_{i=1}^M \alpha_i^\star y_i = 0}
-  \]
-  \[
-  \nabla_{\xi_i} \mathcal{L} = C - \alpha_i - \mu_i = 0 
-  \quad \Rightarrow \quad
-  \boxed{\alpha_i^\star + \mu_i^\star = C}
-  \]
-
-  \item \textbf{Complementary slackness}:
-  \[
-  \alpha_i^\star \bigl( y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star) - 1 + \xi_i^\star \bigr) = 0, 
-  \qquad
-  \mu_i^\star \xi_i^\star = 0
-  \]
-\end{itemize}
-
-\subsection*{Recovering $b^\star$}
-
-For any support vector with $0 < \alpha_i^\star < C$, we know that $\xi_i^\star = 0$ and the corresponding constraint is active:
-\[
-y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star) = 1 
-\quad \Rightarrow \quad 
-\boxed{b^\star = y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle}
-\]
-In practice, $b^\star$ is often computed by averaging this quantity over all such $i$ for which $0 < \alpha_i^\star < C$.
-
-\subsection*{Recovering $\xi_i^\star$}
-
-Rewriting the margin constraint,
-\[
-\xi_i^\star \ge 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star), \quad \xi_i^\star \ge 0,
-\]
-we get:
-\[
-\boxed{\xi_i^\star = \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)}
-\]
-
-\subsection*{Summary}
-
-Given an optimal dual solution $\symbf{\alpha}^\star$, the corresponding primal solution is recovered via:
-\[
-\boxed{
-\begin{aligned}
-\symbf{w}^\star &= \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i \\
-b^\star &= y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle \quad \text{for any } i \text{ such that } 0 < \alpha_i^\star < C \\
-\xi_i^\star &= \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)
-\end{aligned}
-}
-\]
