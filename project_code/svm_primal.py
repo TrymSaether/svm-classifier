@@ -1,27 +1,37 @@
 # svm_primal.py
+from svm_base import BaseSVM
 import numpy as np
 
-class PrimalSVM:
-    """
-    Primal Soft-Margin SVM solved with subgradient descent on hinge loss.
-    ------------------------------------------------------
-    Objective:
-      min_{w,b}  0.5 * ||w||^2  +  C * sum_i max(0, 1 - y_i * (w dot x_i + b))
 
-    Parameters:
-      C: Regularization parameter
-      max_iter: Maximum number of subgradient updates
-      tol: Gradient norm tolerance for stopping
-      lr: Initial learning rate
-      lr_decay: (Optional) decaying factor if we want diminishing step sizes
-      verbose: Whether to print progress
-      bb_steps: If True, enable Barzilai-Borwein step size adaptation
-    """
+# class PrimalSVM:
+#     """
+#     Primal Soft-Margin SVM solved with subgradient descent on hinge loss.
+#     ------------------------------------------------------
+#     Objective:
+#       min_{w,b}  0.5 * ||w||^2  +  C * sum_i max(0, 1 - y_i * (w dot x_i + b))
+# 
+#     Parameters:
+#       C: Regularization parameter
+#       max_iter: Maximum number of subgradient updates
+#       tol: Gradient norm tolerance for stopping
+#       lr: Initial learning rate
+#       lr_decay: (Optional) decaying factor if we want diminishing step sizes
+#       verbose: Whether to print progress
+#       bb_steps: If True, enable Barzilai-Borwein step size adaptation
+#     """
+#     def __init__(self, C=1.0, max_iter=1000, tol=1e-4, lr=1e-2, 
+#                  lr_decay=0.0, verbose=False, bb_steps=False):
+#         self.C = C
+#         self.max_iter = max_iter
+#         self.tol = tol
+#         self.lr = lr
+#         self.lr_decay = lr_decay
+#         self.verbose = verbose
+#         self.bb_steps = bb_steps
+class PrimalSVM(BaseSVM):
     def __init__(self, C=1.0, max_iter=1000, tol=1e-4, lr=1e-2, 
-                 lr_decay=0.0, verbose=False, bb_steps=False):
-        self.C = C
-        self.max_iter = max_iter
-        self.tol = tol
+                lr_decay=0.0, verbose=False, bb_steps=False):
+        super().__init__(C=C, max_iter=max_iter, tol=tol)
         self.lr = lr
         self.lr_decay = lr_decay
         self.verbose = verbose
@@ -30,9 +40,7 @@ class PrimalSVM:
         # Learned parameters
         self.w = None
         self.b = 0.0
-        
-        # Keep track of objective history
-        self.obj_history = []
+        self.is_fitted = False 
     
     def fit(self, X, y):
         """
@@ -40,11 +48,14 @@ class PrimalSVM:
         X: (M, d) data matrix
         y: (M,) labels in {-1, +1}
         """
+        self.X = X
+        self.y = y
+        
         M, d = X.shape
         # Initialize
         self.w = np.zeros(d)
         self.b = 0.0
-        
+
         lr = self.lr
         
         # For optional BB step
@@ -110,11 +121,13 @@ class PrimalSVM:
         
         if self.verbose:
             print("Finished subgradient descent.")
+        self.is_fitted = True
         return self
     
     def decision_function(self, X):
-        """ Return w dot X + b (scores) """
-        return X.dot(self.w) + self.b
+        if not self.is_fitted:
+            raise ValueError("Model not fitted yet. Call 'fit' first.")
+        return X @ self.w + self.b
     
     def predict(self, X):
         scores = self.decision_function(X)
@@ -124,3 +137,7 @@ class PrimalSVM:
         """Margin = 1 / ||w|| if w != 0."""
         norm_w = np.linalg.norm(self.w)
         return 1.0 / norm_w if norm_w != 0 else np.inf
+      
+    def get_support_vectors(self):
+        from utils import get_support_vectors_primal
+        return get_support_vectors_primal(self.X.T, self.y, self.w, self.b)

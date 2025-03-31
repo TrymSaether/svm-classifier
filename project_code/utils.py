@@ -1,6 +1,8 @@
 # utils.py
 import numpy as np
 from numpy.random import default_rng
+import matplotlib.pyplot as plt
+
 def hinge_loss(w, b, X, y):
     """
     Compute total hinge loss = sum_i max(0, 1 - y_i*(w dot x_i + b))
@@ -27,11 +29,13 @@ def get_support_vectors_primal(w, b, X, y):
     """
     margin_vals = y * (X.dot(w) + b)
     return np.where(margin_vals <= 1.0)[0]
+
 def get_w(alpha, X, y):
     """
     Compute w from alpha.
     """
     return np.dot(alpha * y, X)
+
 def get_support_vectors_dual(alpha, eps=1e-8):
     """
     Indices i with alpha_i > 0 are support vectors in the dual context.
@@ -133,3 +137,110 @@ def test_linear(w,b,n_A,n_B,margin,**kwargs):
     X = np.vstack([list_A, list_B])
     y = np.concatenate([np.ones(n_A), -np.ones(n_B)])
     return X, y
+
+
+def make_toy_data(n=100, random_state=None, **kwargs):
+    """
+    Create a simple linearly separable dataset for SVM testing.
+    
+    Parameters:
+    -----------
+    n : int
+        Total number of samples (approximately half per class)
+    random_state : int, optional
+        Random seed for reproducibility
+    
+    Returns:
+    --------
+    X : ndarray of shape (n, 2)
+        Feature matrix with 2 dimensions for easy visualization
+    y : ndarray of shape (n,)
+        Class labels in {-1, 1}
+    """
+    # Create a simple separable dataset
+    w = np.array([1.0, 1.0])  # normal vector for hyperplane
+    b = 0.0                   # intercept
+    n_A = n // 2             # number of samples for class +1
+    n_B = n - n_A            # number of samples for class -1
+    margin = 1.0              # margin size
+    
+    # Use the existing test_linear function
+    return test_linear(w, b, n_A, n_B, margin, seed=random_state, **kwargs)
+
+# Non-linear dataset example
+def make_nonlinear_data(n=100, random_state=0):
+    np.random.seed(random_state)
+    X1 = np.random.randn(n, 2) * 0.5
+    X2 = np.random.randn(n, 2) * 0.5 + np.array([2.0, 2.0])
+    X3 = np.random.randn(n, 2) * 0.5 + np.array([-2.0, 2.0])
+    X = np.vstack([X1, X2, X3])
+    y = np.array([+1]*n + [-1]*n + [+1]*n)
+    return X, y  # Add this return statement
+
+def plot_decision_boundary_2D(model, X, y, title=""):
+    """
+    Plot decision boundary and support vectors for any SVM model
+    that follows the BaseSVM interface.
+    
+    Parameters:
+    -----------
+    model : BaseSVM
+        Fitted SVM model
+    X : array-like of shape (n_samples, 2)
+        Input samples (must be 2D for visualization)
+    y : array-like of shape (n_samples,)
+        Target labels
+    title : str, optional
+        Plot title
+    """
+    fig, (ax, ax_learn) = plt.subplots(1, 2, figsize=(12, 5), 
+                                        gridspec_kw={'width_ratios': [2, 1]})
+    fig.suptitle("SVM Decision Boundary and Learning Curve", fontsize=16)
+    # Class scatter plot
+    ax.scatter(X[y==+1,0], X[y==+1,1], label="+1 class", marker='o')
+    ax.scatter(X[y==-1,0], X[y==-1,1], label="-1 class", marker='s')
+    
+    # Create mesh
+    x_min, x_max = X[:,0].min()-1, X[:,0].max()+1
+    y_min, y_max = X[:,1].min()-1, X[:,1].max()+1
+    XX, YY = np.meshgrid(np.linspace(x_min, x_max, 200),
+                         np.linspace(y_min, y_max, 200))
+    grid_points = np.c_[XX.ravel(), YY.ravel()]
+    
+    # Predict using model's decision function
+    Z = model.decision_function(grid_points)
+    Z = Z.reshape(XX.shape)
+    
+    # Plot decision boundary (Z=0) and margins (Z=±1)
+    ax.contour(XX, YY, Z, levels=[-1.0, 0.0, 1.0],
+              colors=['r', 'k', 'r'], linestyles=['--', '-', '--'])
+    
+    # Fill regions
+    ax.contourf(XX, YY, Z, levels=[-1e9, -1, 1, 1e9], 
+                alpha=0.2, colors=['#FFCCCC', '#CCCCFF', '#CCFFCC'])
+    
+    # Highlight support vectors
+    sv_indices = model.get_support_vectors()
+    if len(sv_indices) > 0:
+        ax.scatter(X[sv_indices, 0], X[sv_indices, 1], 
+                   s=100, facecolors='none', edgecolors='k', label="Support Vectors")
+    else:
+        print("No support vectors found.")
+    
+    ax.set_title(title)
+    ax.legend()
+    ax.set_xlabel("$x_1$")
+    ax.set_ylabel("$x_2$")
+    ax.grid(True, alpha=0.3)
+    
+    # Learning curve
+    ax_learn.plot(model.obj_history, label="Objective function")
+    ax_learn.set_title("Learning curve")
+    ax_learn.set_xlabel("Iterations")
+    ax_learn.set_ylabel("Objective value")
+    ax_learn.axhline(0, color='k', linestyle='--', alpha=0.3)
+    ax_learn.legend()
+    ax_learn.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.show()

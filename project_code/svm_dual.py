@@ -1,35 +1,43 @@
 # svm_dual.py
-import numpy as np
-
 from projections import project_alpha
+from svm_base import BaseSVM
+import numpy as np
+from kernels import linear_kernel
 
-class DualSVM:
-    """
-    Dual Soft-Margin SVM solved with Projected Gradient Descent.
 
-    Dual objective:
-       min_{alpha}  0.5 alpha^T (Y G Y) alpha  -  1^T alpha
-       subject to:   sum_i y_i alpha_i = 0
-                     0 <= alpha_i <= C
-    
-    We can pass in a kernel function K(x_i, x_j). For linear SVM, K is just the dot product.
-    """
-    def __init__(self, C=1.0, kernel_func=None, max_iter=1000, tol=1e-6, 
-                 use_line_search=True, bb_steps=True, verbose=False):
-        """
-        Args:
-          C: Regularization parameter
-          kernel_func: a function K(x, z) that returns the scalar kernel value
-          max_iter: Maximum PGD iterations
-          tol: Tolerance for alpha updates
-          use_line_search: If True, do a line search when objective fails to decrease
-          bb_steps: If True, use Barzilai-Borwein step size
-          verbose: Print progress info
-        """
-        self.C = C
-        self.kernel_func = kernel_func
-        self.max_iter = max_iter
-        self.tol = tol
+# class DualSVM:
+#     """
+#     Dual Soft-Margin SVM solved with Projected Gradient Descent.
+# 
+#     Dual objective:
+#        min_{alpha}  0.5 alpha^T (Y G Y) alpha  -  1^T alpha
+#        subject to:   sum_i y_i alpha_i = 0
+#                      0 <= alpha_i <= C
+#     
+#     We can pass in a kernel function K(x_i, x_j). For linear SVM, K is just the dot product.
+#     """
+#     def __init__(self, C=1.0, kernel_func=None, max_iter=1000, tol=1e-6, 
+#                  use_line_search=True, bb_steps=True, verbose=False):
+#         """
+#         Args:
+#           C: Regularization parameter
+#           kernel_func: a function K(x, z) that returns the scalar kernel value
+#           max_iter: Maximum PGD iterations
+#           tol: Tolerance for alpha updates
+#           use_line_search: If True, do a line search when objective fails to decrease
+#           bb_steps: If True, use Barzilai-Borwein step size
+#           verbose: Print progress info
+#         """
+#        self.C = C
+#        self.kernel_func = kernel_func
+#        self.max_iter = max_iter
+#        self.tol = tol
+#        self.use_line_search = use_line_search
+#        self.bb_steps = bb_steps
+
+class DualSVM(BaseSVM):
+    def __init__(self, C=1.0, max_iter=1000, tol=1e-4, kernel=linear_kernel, use_line_search=True, bb_steps=True, verbose=False):
+        super().__init__(C=C, max_iter=max_iter, tol=tol, kernel=kernel)
         self.use_line_search = use_line_search
         self.bb_steps = bb_steps
         self.verbose = verbose
@@ -40,6 +48,7 @@ class DualSVM:
         self.X = None
         self.y = None
         self.G = None  # Gram matrix, or None if large-scale
+        
         self.obj_history = []
         
     def fit(self, X, y):
@@ -50,6 +59,8 @@ class DualSVM:
         """
         self.X = X
         self.y = y.astype(float)
+        self.X_train = X
+        self.y_train = y
         M, d = X.shape
         
         # Build Gram matrix G_ij = K(x_i, x_j)
@@ -57,7 +68,7 @@ class DualSVM:
         self.G = np.zeros((M, M))
         for i in range(M):
             for j in range(M):
-                self.G[i, j] = self.kernel_func(X[i], X[j])
+                self.G[i, j] = self.kernel(X[i], X[j])
         
         # Precompute Y G Y
         # We'll store Q = Y G Y so that gradient is Q alpha - 1
@@ -202,20 +213,29 @@ class DualSVM:
                 # For linear or kernel
                 w_xi = 0.0
                 for j in range(M):
-                    w_xi += alpha[j]*y[j]*self.kernel_func(X[j], X[i0])
+                    w_xi += alpha[j]*y[j]*self.kernel(X[j], X[i0])
                 self.b = y[i0] - w_xi
         else:
             b_vals = []
             for i0 in idx_margin:
                 w_xi = 0.0
                 for j in range(M):
-                    w_xi += alpha[j]*y[j]*self.kernel_func(X[j], X[i0])
+                    w_xi += alpha[j]*y[j]*self.kernel(X[j], X[i0])
                 b_vals.append(y[i0] - w_xi)
             self.b = np.mean(b_vals)
-        
+        self.is_fitted = True
         return self
     
-    def decision_function(self, Xtest):
+    def decision_function(self, X):
+        if not self.is_fitted:
+            raise ValueError("Model not fitted yet. Call 'fit' first.")
+        # Kernel calculation between X and support vectors
+        K = np.array([[self.kernel(x, self.X_train[i]) 
+                      for i in range(len(self.X_train))] 
+                      for x in X])
+        return np.sum(self.alpha * self.y_train * K, axis=1) + self.b
+    
+    def decision_function_1(self, Xtest):
         """
         For each x in Xtest, compute sum_{j} alpha_j y_j K(x_j, x) + b.
         """
@@ -225,7 +245,7 @@ class DualSVM:
             val = 0.0
             for j in range(M):
                 if abs(self.alpha[j]) > 1e-12:  # skip zero alphas
-                    val += self.alpha[j]*self.y[j]*self.kernel_func(self.X[j], xt)
+                    val += self.alpha[j]*self.y[j]*self.kernel(self.X[j], xt)
             val += self.b
             scores.append(val)
         return np.array(scores)
@@ -249,12 +269,11 @@ class DualSVM:
         for i in range(len(self.alpha)):
             w += self.alpha[i] * self.y[i] * self.X[i]
         return w
-    
+
     def get_support_vectors(self):
-        """
-        Get indices of support vectors.
-        """
-        return np.where(self.alpha > 1e-10)[0]
+            from utils import get_support_vectors_dual
+            return get_support_vectors_dual(self.alpha)
+        
     def get_margin(self):
         """
         Compute the margin of the SVM.
