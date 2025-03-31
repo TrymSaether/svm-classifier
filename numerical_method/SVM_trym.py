@@ -384,37 +384,3 @@ def evaluate_svm(model, X, y):
         return accuracy, w, b
     
     return accuracy, None, None
-
-def main():
-    # Set parameters for data generation
-    d = 2  # dimensions
-    w = np.array([1, 1])  # normal vector
-    b = -2  # offset
-    n_A = 100  # number of points in class A
-    n_B = 100  # number of points in class B
-    margin = 1  # margin between classes
-    
-    # Generate and prepare data
-    print("Generating data...")
-    X, y, list_A, list_B = prepare_data(w, b, n_A, n_B, margin, seed=42)
-    
-    # Train the SVM model
-    print("Training SVM model...")
-    model = train_svm(X, y, C=1.0)
-    
-    # Evaluate the model
-    print("Evaluating model...")
-    accuracy, learned_w, learned_b = evaluate_svm(model, X, y)
-    
-    # Plot the results
-    print("Plotting results...")
-    plot_svm_decision_boundary(
-        model, X, y, list_A, list_B, 
-        w=w, b=b, 
-        title=f"SVM Decision Boundary (Accuracy: {accuracy:.4f})"
-    )
-    
-    print("Done!")
-
-if __name__ == "__main__":
-    main()
