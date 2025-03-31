@@ -1,16 +1,10 @@
-\chapter{Dual Derivation}\label{chap:dual_derivation}
+\section{Dual Derivation}\label{chap:dual_derivation}
 \begin{proposition}{The dual problem of the primal problem}{dual-derivation}
 	The dual problem of the primal problem~\eqref{eq:primal-problem} is given by:
-	\begin{align}
-		\min_{\symbf{\alpha}} & \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}
-		\quad
-		\text{subject to}
-		\quad
-		\begin{cases}
+	\(\min_{\symbf{\alpha}} \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}\) subject to \(\begin{cases}
 			0 \leq \symbf{\alpha} \leq C\symbf{1}_M \\
 			\symbf{\alpha}^\top Y = 0
-		\end{cases}\tag{DP}
-	\end{align}
+		\end{cases}\) (DP)
 \end{proposition}
 \begin{proof}[Proof of Proposition~\ref{prop:dual-derivation}]
 	\paragraph{Primal problem (P)}
