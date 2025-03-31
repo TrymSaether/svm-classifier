@@ -189,3 +189,39 @@ b^\star &= y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle \quad \text{for an
 \end{aligned}
 }
 \]
+
+\begin{proof}{}{}
+	\begin{align*}
+		\min_{\symbf{w}, b, \symbf{\xi}} \quad
+		 & f(\symbf{w}, b, \symbf{\xi})
+		= \frac{1}{2}\|\symbf{w}\|_2^2 + C\,\symbf{1}_M^\top \symbf{\xi}
+		\quad
+		\text{subject to}
+		\quad
+		\begin{cases}
+			\symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi} & \le \symbf{0}_M, \\[6pt]
+			\symbf{\xi} \;\;                                                       & \ge \symbf{0}_M,
+		\end{cases}\tag{P}
+	\end{align*}
+	\[
+		\symbf{w}^\star = \symbf{y}^\top \symbf{\alpha}^\star \symbf{x} \tag{8}
+	\]
+	\[
+		\symbf{b}^\star = \symbf{y} - {\symbf{w}^\star}^\top \symbf{x} = \symbf{y} - (\symbf{y}^\top \symbf{\alpha}^\star \symbf{x})^\top \symbf{x} = \symbf{y} - \symbf{x}^\top \symbf{\alpha}^{\star \top} \symbf{y} \symbf{x}
+		= \symbf{y} - \inner*{\symbf{\alpha}^\star \symbf{x}, \symbf{y} \symbf{x}} \tag{9}
+	\]
+
+	\begin{align*}
+		&\min_{\symbf{w}, b, \symbf{\xi}} \quad
+		 f(\symbf{y}^\top \symbf{\alpha}^\star \symbf{x},\symbf{y} - {\symbf{w}^\star}^\top \symbf{x}, \symbf{\xi})
+		= \frac{1}{2}\|\symbf{y}^\top \symbf{\alpha}^\star \symbf{x}\|_2^2 + C\,\symbf{1}_M^\top \symbf{\xi}
+		\quad\\
+		&\text{subject to}
+		\quad
+		\begin{cases}
+			\symbf{1}_M - Y\bigl(X\,\symbf{y}^\top \symbf{\alpha}^\star \symbf{x} + (\symbf{y} - \inner*{\symbf{\alpha}^\star \symbf{x}, \symbf{y} \symbf{x}})\,\symbf{1}_M\bigr) - \symbf{\xi} & \le \symbf{0}_M, \\[6pt]
+			\symbf{\xi} \;\;                                                                                     & \ge \symbf{0}_M,
+		\end{cases}\\
+	\end{align*}
+
+\end{proof}
