@@ -74,7 +74,7 @@ class DualSVM(BaseSVM):
         # We'll store Q = Y G Y so that gradient is Q alpha - 1
         diag_y = self.y
         # shape (M,M)
-        Q = np.einsum('i,ij,j->ij', diag_y, self.G, diag_y)
+        Q = np.einsum('i,ij,j->ij', diag_y, self.G, diag_y, optimize='greedy')
         
         # Initialize alpha = 0 which is feasible if y^T alpha=0
         alpha = np.zeros(M)
@@ -234,21 +234,6 @@ class DualSVM(BaseSVM):
                       for i in range(len(self.X_train))] 
                       for x in X])
         return np.sum(self.alpha * self.y_train * K, axis=1) + self.b
-    
-    def decision_function_1(self, Xtest):
-        """
-        For each x in Xtest, compute sum_{j} alpha_j y_j K(x_j, x) + b.
-        """
-        M = len(self.y)
-        scores = []
-        for xt in Xtest:
-            val = 0.0
-            for j in range(M):
-                if abs(self.alpha[j]) > 1e-12:  # skip zero alphas
-                    val += self.alpha[j]*self.y[j]*self.kernel(self.X[j], xt)
-            val += self.b
-            scores.append(val)
-        return np.array(scores)
     
     def predict(self, Xtest):
         """ Sign of decision_function. """
