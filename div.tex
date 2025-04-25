@@ -171,3 +171,303 @@ Then finally we can write the dual problem as:
 		\symbf{\alpha}^\top Y = 0
 	\end{cases}\tag{DP}
 \end{align}
+
+
+% \section{Existence and Uniqueness of the Soft-Margin SVM Problem}
+% \[
+% \min_{w \in \mathbb{R}^d,\;b \in \mathbb{R},\;\xi \in \mathbb{R}^M}
+% \quad \frac{1}{2}\,\|w\|^2 \;+\; C \sum_{i=1}^M \xi_i
+% \quad\text{subject to}\quad
+% \begin{cases}
+% y_i\bigl(\langle w, x_i\rangle + b\bigr)\;\ge\;1 \;-\;\xi_i,\\[4pt]
+% \xi_i \;\ge\; 0,
+% \end{cases}
+% \quad i = 1,\dots,M,
+% \]
+
+% \[
+% \min_{\alpha \in \mathbb{R}^M} 
+% \frac{1}{2} \langle \alpha, YGY \alpha \rangle 
+% - \langle \mathbf{1}_M, \alpha \rangle
+% \quad \text{subject to} \quad
+% \begin{cases}
+% \langle y, \alpha \rangle = 0,\\[6pt]
+% 0 \le \alpha_i \le C
+% \end{cases}
+% \quad \text{for } i = 1, \dots, M.
+% \]
+
+% where each $y_i\in\{-1,+1\}$ and $C>0$ is a fixed penalty parameter.
+
+% To prove the existence and uniqueness of a minimizer for a constrained optimization problem, 
+% three properties are required. Feasibility ensures that the constraint set is non-empty, meaning 
+% that there is at least one point that satisfies all constraints. Coercivity of the objective 
+% function guarantees that the function tends to infinity as the norm of the variable tends to infinity,
+% ensuring the existence of a global minimum on the feasible set. Finally, convexity of the objective 
+% function implies that any local minimizer is also a global one, and if the function is strictly convex,
+% it ensures that the minimizer is unique. Therefore, the combination of feasibility, coercivity, and 
+% strict convexity, establishes both the existence and uniqueness of a global minimizer.
+
+
+% \subsection*{1.\ Non-emptiness and Feasibility}
+
+% The feasible set of $(w,b,\{\xi_i\})$ is non-empty. For example, one can always pick
+% \[
+% w = 0,\quad b = 0,\quad \xi_i = 1 \quad \forall\,i,
+% \]
+% so that
+% \(
+% y_i \langle w,x_i\rangle + b = 0
+% \)
+% and
+% \(\,1 - \xi_i \le 0,\)
+% thus satisfying
+% $y_i(\langle w,x_i\rangle + b)\ge 1-\xi_i.$
+% Hence there is at least one feasible point, guaranteeing the set of all feasible triples $(w,b,\xi)$ is non-empty.
+
+% \subsection*{2.\ Coercivity and Existence of a Global Minimizer}
+
+% Observe that the objective
+% \[
+% \frac{1}{2}\|w\|^2 \;+\; C\sum_{i=1}^M \xi_i
+% \]
+% is \emph{coercive} in the variables $(w,\xi)$: as $\|w\|\to\infty$ or $\sum_i \xi_i \to \infty,$ the cost grows unbounded. Together with the linear constraints $\xi_i\ge 0$ and the fact that the feasible set is not empty, standard results in convex analysis imply the existence of \emph{some} global minimizer $(w^*,b^*,\xi^*)$.
+
+% \subsection*{3.\ Convexity and (Possible) Uniqueness}
+
+% The function 
+% \[
+% \frac12 \|w\|^2 + C \sum_{i=1}^M \xi_i
+% \]
+% is convex in $(w,\xi)$, and \emph{affine} (hence convex) in $b$. Therefore, the entire objective is convex on a convex feasible region (defined by affine/linear inequalities). This guarantees that every local minimizer is also a global minimizer.
+
+% \paragraph{Uniqueness.} 
+% Strict convexity in the $w$-part implies that, \emph{for fixed $b$ and $\{\xi_i\}$}, the objective in $w$ is strictly convex, which typically ensures a unique $w^*$ \emph{conditional} on $b,\{\xi_i\}.$ However, because the objective is \emph{linear} in $b$, strict convexity does not extend to the $(b,w,\xi)$ space as a whole. In many cases, $b^*$ can still be pinned down by the margin constraints, but in some situations there may be multiple solutions that share the same minimal cost. 
+
+% Hence, if the data are in ``general position,'' one typically obtains a \emph{unique} $w^*$ and a well-defined $b^*$, but strictly speaking, the problem is not globally \emph{strictly} convex in \emph{all} variables $(w,b,\xi)$ simultaneously. Therefore, uniqueness may or may not hold in full, depending on degeneracies in the data or constraints.
+
+
+% \[
+% f(\alpha) := \min_{\alpha \in \mathbb{R}^M} \frac{1}{2} \langle \alpha, YGY \alpha \rangle - \langle \mathbf{1}_M, \alpha \rangle \quad \text{s.t.} \quad 
+% \begin{cases}
+% \langle y, \alpha \rangle = 0 \\
+% 0 \leq \alpha_i \leq C \quad \text{for } i = 1, \ldots, M
+% \end{cases}
+% \]
+
+% \[
+% Y = \text{diag}(y_1, \ldots, y_M) \quad \text{where } y_i = 1 \vee -1 \text{ for } i = 1, \ldots, m
+% \]
+
+% \[
+% G = (\langle x_i, x_j \rangle)_{i,j=1,\ldots, M}, \quad \text{thus } G \text{ is the kernel matrix and SPD}
+% \]
+
+% \[
+% \mathbf{1} = (1, \ldots, 1)^T
+% \]
+
+% \subsection*{1. Feasibility:}
+% The area where the function $f(\alpha)$ can exist is given by
+% \[
+% \Omega = \left\{ \alpha \in \mathbb{R}^M \mid 0 \leq \alpha_i \leq C, \, \langle y, \alpha \rangle = 0 \right\}
+% \]
+% Thus the feasible region is the intersection of the area $[0, C]^M$ with the area $\sum_i y_i \alpha_i = 0$.
+
+% Because there must at least be one positive and negative label, two indices, $p$ and $n$, can be picked such that $y_p = 1$ and $y_n = -1$ while $\alpha_p = \alpha_n$, letting all other $\alpha$ values be zero, satisfying both constraints. Guaranteeing that the feasible set is not zero.
+
+% Also, $\alpha_n$ and $\alpha_p$ can be set to $0$ or $C$, thus boundary and corner points are also feasible.
+
+% Thus $\Omega$ is a non-empty, closed and bounded area.
+
+% \subsection*{2. Convexity:}
+% Rewriting $f(\alpha) = \frac{1}{2} \langle \alpha, YGY \alpha \rangle - \langle \mathbf{1}_M, \alpha \rangle$ to
+
+% \[
+% f(\alpha) = \frac{1}{2} \alpha^T YGY \alpha - \mathbf{1}^T \alpha
+% \]
+
+% Finding the Hessian of this we find:
+
+% \[
+% \nabla f(\alpha) = Y G Y \alpha - \mathbf{1} \quad \Rightarrow \quad \nabla^2 f(\alpha) = Y G Y
+% \]
+
+% Where $G$ is semi-positive definite by definition as it is a gram matrix, and $Y$ is a diagonal matrix with $\pm 1$ values. Thus $YGY$ is symmetric and PSD, meaning $f$ is convex.
+
+
+
+% \subsection{Lagrangian and KKT Conditions}
+
+% The Lagrangian associated with the primal problem is given by:
+% \[
+% \mathcal{L}(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}, \symbf{\mu}) 
+% = \frac{1}{2} \|\symbf{w}\|^2 + C \sum_{i=1}^M \xi_i
+% - \sum_{i=1}^M \alpha_i \bigl( y_i (\langle \symbf{w}, \symbf{x}_i \rangle + b) - 1 + \xi_i \bigr)
+% - \sum_{i=1}^M \mu_i \xi_i
+% \]
+% where $\symbf{\alpha} \ge 0$ and $\symbf{\mu} \ge 0$ are Lagrange multipliers for the margin and non-negativity constraints, respectively.
+
+% From the KKT conditions, we obtain the following:
+
+% \begin{itemize}
+%   \item \textbf{Stationarity}:
+%   \[
+%   \nabla_{\symbf{w}} \mathcal{L} = \symbf{w} - \sum_{i=1}^M \alpha_i y_i \symbf{x}_i = 0 
+%   \quad \Rightarrow \quad
+%   \boxed{\symbf{w}^\star = \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i}
+%   \]
+%   \[
+%   \nabla_b \mathcal{L} = -\sum_{i=1}^M \alpha_i y_i = 0
+%   \quad \Rightarrow \quad
+%   \boxed{\sum_{i=1}^M \alpha_i^\star y_i = 0}
+%   \]
+%   \[
+%   \nabla_{\xi_i} \mathcal{L} = C - \alpha_i - \mu_i = 0 
+%   \quad \Rightarrow \quad
+%   \boxed{\alpha_i^\star + \mu_i^\star = C}
+%   \]
+
+%   \item \textbf{Complementary slackness}:
+%   \[
+%   \alpha_i^\star \bigl( y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star) - 1 + \xi_i^\star \bigr) = 0, 
+%   \qquad
+%   \mu_i^\star \xi_i^\star = 0
+%   \]
+% \end{itemize}
+
+% \subsection{Recovering $b^\star$}
+
+% For any support vector with $0 < \alpha_i^\star < C$, we know that $\xi_i^\star = 0$ and the corresponding constraint is active:
+% \[
+% y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star) = 1 
+% \quad \Rightarrow \quad 
+% \boxed{b^\star = y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle}
+% \]
+% In practice, $b^\star$ is often computed by averaging this quantity over all such $i$ for which $0 < \alpha_i^\star < C$.
+
+% \subsection{Recovering $\xi_i^\star$}
+
+% Rewriting the margin constraint,
+% \[
+% \xi_i^\star \ge 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star), \quad \xi_i^\star \ge 0,
+% \]
+% we get:
+% \[
+% \boxed{\xi_i^\star = \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)}
+% \]
+
+% \subsection{Summary}
+
+% Given an optimal dual solution $\symbf{\alpha}^\star$, the corresponding primal solution is recovered via:
+% \[
+% \boxed{
+% \begin{aligned}
+% \symbf{w}^\star &= \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i \\
+% b^\star &= y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle \quad \text{for any } i \text{ such that } 0 < \alpha_i^\star < C \\
+% \xi_i^\star &= \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)
+% \end{aligned}
+% }
+% \]
+
+% \begin{proof}{}{}
+% 	\begin{align*}
+% 		\min_{\symbf{w}, b, \symbf{\xi}} \quad
+% 		 & f(\symbf{w}, b, \symbf{\xi})
+% 		= \frac{1}{2}\|\symbf{w}\|_2^2 + C\,\symbf{1}_M^\top \symbf{\xi}
+% 		\quad
+% 		\text{subject to}
+% 		\quad
+% 		\begin{cases}
+% 			\symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi} & \le \symbf{0}_M, \\[6pt]
+% 			\symbf{\xi} \;\;                                                       & \ge \symbf{0}_M,
+% 		\end{cases}\tag{P}
+% 	\end{align*}
+% 	\[
+% 		\symbf{w}^\star = \symbf{y}^\top \symbf{\alpha}^\star \symbf{x} \tag{8}
+% 	\]
+% 	\[
+% 		\symbf{b}^\star = \symbf{y} - {\symbf{w}^\star}^\top \symbf{x} = \symbf{y} - (\symbf{y}^\top \symbf{\alpha}^\star \symbf{x})^\top \symbf{x} = \symbf{y} - \symbf{x}^\top \symbf{\alpha}^{\star \top} \symbf{y} \symbf{x}
+% 		= \symbf{y} - \inner*{\symbf{\alpha}^\star \symbf{x}, \symbf{y} \symbf{x}} \tag{9}
+% 	\]
+
+% 	\begin{align*}
+% 		&\min_{\symbf{w}, b, \symbf{\xi}} \quad
+% 		 f(\symbf{y}^\top \symbf{\alpha}^\star \symbf{x},\symbf{y} - {\symbf{w}^\star}^\top \symbf{x}, \symbf{\xi})
+% 		= \frac{1}{2}\|\symbf{y}^\top \symbf{\alpha}^\star \symbf{x}\|_2^2 + C\,\symbf{1}_M^\top \symbf{\xi}
+% 		\quad\\
+% 		&\text{subject to}
+% 		\quad
+% 		\begin{cases}
+% 			\symbf{1}_M - Y\bigl(X\,\symbf{y}^\top \symbf{\alpha}^\star \symbf{x} + (\symbf{y} - \inner*{\symbf{\alpha}^\star \symbf{x}, \symbf{y} \symbf{x}})\,\symbf{1}_M\bigr) - \symbf{\xi} & \le \symbf{0}_M, \\[6pt]
+% 			\symbf{\xi} \;\;                                                                                     & \ge \symbf{0}_M,
+% 		\end{cases}\\
+% 	\end{align*}
+
+% \end{proof}
+
+% The dual of the primal problem~\eqref{eq:primal-problem} is obtained by forming the Lagrangian and eliminating $\symbf{w},b,\symbf{\xi}$:
+
+% \begin{align}\label{eq:dual-problem}
+% 	\min_{\symbf{\alpha}} 
+% 	\;\;\frac{1}{2}\,\inner*{\symbf{\alpha},\,Y\,G\,Y\,\symbf{\alpha}} 
+% 	\;-\;\inner*{\symbf{1}_M,\;\symbf{\alpha}}
+% 	\quad
+% 	\text{subject to}
+% 	\quad
+% 	\begin{cases}
+% 		\inner{\symbf{y}}{\symbf{\alpha}} = 0,\\
+% 		\symbf{0}_M \;\;\leq\;\; \symbf{\alpha} \;\;\leq\;\; C\,\symbf{1}_M.
+% 	\end{cases}
+% \end{align}
+
+% Here $G = \bigl(\inner*{\symbf{x}_i}{\symbf{x}_j}\bigr)_{i,j=1}^M$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
+
+% \begin{theorem}{Existence \& Uniqueness of Dual Solution}{existence-uniqueness-dual}
+% The dual problem \eqref{eq:dual-problem} always admits at least one global minimizer. Moreover, if $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha}\mid \inner{\symbf{y}}{\symbf{\alpha}}=0\}$, then its solution $\symbf{\alpha}^\star$ is unique. In degenerate cases, multiple $\symbf{\alpha}^\star$ can yield the same minimum.
+% \end{theorem}
+
+% \begin{proof}
+% 	\paragraph{Existence of a solution.}
+% 	The dual \eqref{eq:dual-problem} is a convex quadratic program in $\symbf{\alpha}$, subject to box constraints $0 \le \alpha_i \le C$ and the linear equality $\inner{\symbf{y}}{\symbf{\alpha}}=0$. Thus:
+% 	\begin{itemize}
+% 		\item The feasible region (a slice of a hyperbox) is closed and bounded.
+% 		\item The dual objective 
+% 		\(
+% 		  \tfrac12\, \symbf{\alpha}^\top (YGY)\,\symbf{\alpha}\;-\;\symbf{1}_M^\top \symbf{\alpha}
+% 		\)
+% 		is continuous and convex over that compact set.
+% 	\end{itemize}
+% 	By the extreme-value theorem, a global minimizer $\symbf{\alpha}^\star$ must exist.
+% 	\paragraph{Uniqueness of a solution.}
+% 	\begin{itemize}
+% 		\item If $Y\,G\,Y$ is positive-definite on the subspace $\{\symbf{\alpha}\mid \inner{\symbf{y}}{\symbf{\alpha}}=0\}$, then the quadratic objective is strictly convex there, guaranteeing a single minimizer.
+% 		\item In degenerate situations, e.g.\ if $G$ is positive semidefinite but not definite on that subspace, there can be infinitely many optimal $\symbf{\alpha}^\star$.
+% 	\end{itemize}
+% \end{proof}
+
+
+
+\footnote{The Lagrangian is a function that combines the objective and constraints of a 
+constrained optimization problem. For a problem of the form
+\[
+\min_{x \in \mathbb{R}^n} \; f(x) \quad \text{subject to} \quad g_i(x) \le 0 \; \text{for } i = 1, 
+\ldots, m, \quad h_j(x) = 0 \; \text{for } j = 1, \ldots, p,
+\]
+the Lagrangian is defined as
+\[
+\mathcal{L}(x, \boldsymbol{\lambda}, \boldsymbol{\mu}) 
+= f(x) + \sum_{i=1}^m \lambda_i g_i(x) + \sum_{j=1}^p \mu_j h_j(x) 
+= f(x) + \boldsymbol{\lambda}^\top g(x) + \boldsymbol{\mu}^\top h(x),
+\]
+And $g(x) = [g_1(x), \ldots, g_m(x)]^\top$ and $h(x) = [h_1(x), \ldots, h_p(x)]^\top$.
+}
+
+\footnote{The Karush-Kuhn-Tucker (KKT) conditions are necessary conditions 
+for a point $x^\star$ to be optimal in constrained optimization, and sufficient when the problem 
+is convex. These conditions are Stationarity, Primal and Dual feasibility, and Complementary slackness. 
+Stationarity constitutes that the gradient of the Lagrangian with respect to $x$ vanishes at $x^\star$. 
+Primal feasibility is when the original constraints are satisfied. Dual feasibility requires 
+$\lambda_i \ge 0$ for all $i$. Complementary slackness is that each inequality constraint satisfies 
+$\lambda_i g_i(x^\star) = 0$.
+}
