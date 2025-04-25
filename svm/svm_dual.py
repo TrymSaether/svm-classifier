@@ -1,39 +1,8 @@
 # svm_dual.py
-from projections import project_alpha
 from svm_base import BaseSVM
 import numpy as np
 from kernels import linear_kernel
-
-
-# class DualSVM:
-#     """
-#     Dual Soft-Margin SVM solved with Projected Gradient Descent.
-# 
-#     Dual objective:
-#        min_{alpha}  0.5 alpha^T (Y G Y) alpha  -  1^T alpha
-#        subject to:   sum_i y_i alpha_i = 0
-#                      0 <= alpha_i <= C
-#     
-#     We can pass in a kernel function K(x_i, x_j). For linear SVM, K is just the dot product.
-#     """
-#     def __init__(self, C=1.0, kernel_func=None, max_iter=1000, tol=1e-6, 
-#                  use_line_search=True, bb_steps=True, verbose=False):
-#         """
-#         Args:
-#           C: Regularization parameter
-#           kernel_func: a function K(x, z) that returns the scalar kernel value
-#           max_iter: Maximum PGD iterations
-#           tol: Tolerance for alpha updates
-#           use_line_search: If True, do a line search when objective fails to decrease
-#           bb_steps: If True, use Barzilai-Borwein step size
-#           verbose: Print progress info
-#         """
-#        self.C = C
-#        self.kernel_func = kernel_func
-#        self.max_iter = max_iter
-#        self.tol = tol
-#        self.use_line_search = use_line_search
-#        self.bb_steps = bb_steps
+from utils import project_alpha
 
 class DualSVM(BaseSVM):
     def __init__(self, C=1.0, max_iter=1000, tol=1e-4, kernel=linear_kernel, use_line_search=True, bb_steps=True, verbose=False):

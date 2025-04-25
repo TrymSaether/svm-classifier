@@ -32,3 +32,5 @@ def make_laplacian_kernel(gamma=1.0):
     def kernel(x, z):
         return laplacian_kernel(x, z, gamma=gamma)
     return kernel
+
+
