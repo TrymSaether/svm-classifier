@@ -1,2 +1,18 @@
 \section{Numerical Methods}
 \label{chap:numerical_methods}
+We first began by implementing a classifier for the dual problem. This was done by using a projected gradient descent method. 
+The descent direction is given by the projection of the gradient of the dual objective function. 
+We implemented a simple way to calculate these projections by setting it up as a constrained optimization problem. 
+Converting this to the lagrangian form with the lagrange parameter $\lambda$, we could then solve this using a simple bisection method. 
+
+To find the steplength for the gradient descent we could have solely used a line search method. 
+However due to the large computational cost we chose to implement a Barzilai-Borwein method. 
+This method uses the previous gradients to calculate a steplength. 
+If however the steplength is not feasible, we revert to a some fixed pre-defined steplength.
+
+In some cases it is still necessary to perform a line search e.g. if the objective function is not decreasing. 
+Moreover we do not wish to perform this line search for every iteration. We instead store a reference function and only perform a line search if the next step is above this reference function. 
+We also add the criteria that if the Barzilai-Borwein method has not improved the function value in a certain number of iterations, we update the reference function and potentially perform a line search to ensure the function value decreases.
+We decided to plot the function value for the iterations, and we can see that with this method that the function value does increase in some iterations, but quickly reverts to decreasing again.
+
+Using these methods allows us to classify large datasets in a reasonable time.
