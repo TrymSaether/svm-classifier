@@ -1,6 +1,17 @@
 \section{Introduction}\label{chap:introduction}
-Support Vector Machines (SVMs) are a widely used and theoretically grounded method for binary classification, particularly effective in high-dimensional settings. Given a set of labelled training data, the aim is to construct a decision function that separates the two classes with maximal margin while tolerating potential misclassifications. This leads to the formulation of the soft-margin SVM, a convex optimization problem balancing model complexity and classification error via a regularization parameter.
+Support Vector Machines (SVMs) is a theoretically grounded method 
+for binary classification, particularly effective in high-dimensional 
+settings. Given a set of labelled training data, the aim is to 
+construct a decision function that separates the two classes with 
+maximal margin while tolerating potential misclassifications. This 
+leads to the formulation of the soft-margin SVM, a convex 
+optimization problem balancing model complexity and classification 
+error via a regularization parameter.
 
-The optimization problem underlying the SVM has both a primal and a dual form. The primal problem involves minimizing a regularized hinge loss over the parameters defining a separating hyperplane. The dual problem, derived via Lagrangian duality, provides computational and theoretical advantages, especially when expressed in terms of inner products between data points.
-
-This report presents a theoretical and numerical investigation of the soft-margin SVM formulation. We analyze the existence and uniqueness of solutions to both the primal and dual problems and implement a projected gradient descent method for solving the dual. The structure and behavior of the optimization landscape are explored through convex analysis, and numerical experiments demonstrate the performance of the algorithm on synthetic data.
+This report presents a theoretical and numerical investigation of 
+the soft-margin SVM formulation. The existence and uniqueness of 
+solutions is discussed through exploration of the structure and 
+behavior of the optimization landscape using convex analysis.
+A numerical method is implemented for solving for soft-margin SVMs,
+and tested on numerical experiments demonstrate the performance of 
+the algorithm.
