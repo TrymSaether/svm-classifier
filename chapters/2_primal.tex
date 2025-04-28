@@ -28,10 +28,11 @@ coercivity, and strict convexity together ensure that a global minimizer exists 
 Feasibility guarantees a non-empty constraint set, coercivity prevents minimizers from 
 escaping to infinity, and strict convexity ensures both global optimality and uniqueness.
 
-However, for constrained optimization, these traits do not by themselves guarantee uniqueness 
-of the minimizer, because the structure of the feasible set can allow multiple solutions 
-even when the objective is strictly convex. Constraints can disconnect or restrict the 
-domain in ways that create multiple global minimizers despite the objective's properties.
+However, for constrained optimization, these traits do not by themselves guarantee existence or 
+uniqueness of the minimizer, because the structure of the feasible set can allow none or 
+multiple solutions even when the objective is strictly convex. Constraints can disconnect or 
+restrict the domain in ways that create no or multiple global minimizers despite the objective's 
+properties.
 
 \begin{theorem}{Existence and Uniqueness of the Primal Solution}{existence-uniqueness-primal}
 	The primal problem \eqref{eq:primal-problem} always admits at least one global minimizer. 
