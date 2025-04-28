@@ -9,7 +9,7 @@ class BaseSVM(ABC):
     for both primal and dual SVM formulations.
     """
     
-    def __init__(self, C=1.0, max_iter=1000, tol=1e-4, kernel=None):
+    def __init__(self, C=1.0, max_iter=1000, tol=1e-12, kernel=None):
         """
         Initialize base SVM parameters.
         
@@ -25,7 +25,7 @@ class BaseSVM(ABC):
             Kernel function (for dual formulation)
         """
         self.C = C
-        self.max_iter = max_iter
+        self.max_iter = max_iter + 1
         self.tol = tol
         self.kernel = kernel
         self.obj_history = []

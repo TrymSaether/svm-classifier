@@ -5,7 +5,41 @@ from kernels import linear_kernel
 from utils import project_alpha
 
 class DualSVM(BaseSVM):
+    """
+    Support Vector Machine solver using the dual formulation with Projected Gradient Descent.
+    
+    This implementation solves the dual SVM optimization problem:
+        min_α 0.5 * α^T Q α - 1^T α
+        subject to: 0 ≤ α_i ≤ C for all i
+                  y^T α = 0
+                  
+    Where Q_ij = y_i y_j K(x_i, x_j) and K is the kernel function.
+    
+    The solution yields the weights through the relation w = Σ_i α_i y_i x_i
+    and supports both linear and non-linear kernels.
+    """
     def __init__(self, C=1.0, max_iter=1000, tol=1e-4, kernel=linear_kernel, use_line_search=True, bb_steps=True, verbose=False):
+        """
+        Initialize the Dual SVM.
+        
+        Parameters
+        ----------
+        C : float, default=1.0
+            Regularization parameter. The strength of the regularization is
+            inversely proportional to C. Must be strictly positive.
+        max_iter : int, default=1000
+            Maximum number of iterations for the optimization algorithm.
+        tol : float, default=1e-4
+            Tolerance for stopping criterion.
+        kernel : callable, default=linear_kernel
+            Kernel function to use. Default is the linear kernel.
+        use_line_search : bool, default=True
+            Whether to use line search for step size selection.
+        bb_steps : bool, default=True
+            Whether to use Barzilai-Borwein step size selection.
+        verbose : bool, default=False
+            Whether to print progress during optimization.
+        """
         super().__init__(C=C, max_iter=max_iter, tol=tol, kernel=kernel)
         self.use_line_search = use_line_search
         self.bb_steps = bb_steps
@@ -23,8 +57,26 @@ class DualSVM(BaseSVM):
     def fit(self, X, y):
         """
         Fit the Dual SVM using Projected Gradient Descent.
-        X: shape (M, d)
-        y: shape (M,), entries in {-1, +1}
+        
+        This method solves the dual optimization problem using projected gradient descent
+        with optional line search and Barzilai-Borwein step sizes. The algorithm performs
+        the following steps:
+        1. Computes the Gram matrix using the specified kernel function
+        2. Initializes alpha to zeros
+        3. Iteratively updates alpha using gradient descent with projection
+        4. Computes the bias term b from support vectors
+        
+        Parameters
+        ----------
+        X : array-like of shape (M, d)
+            Training data, where M is the number of samples and d is the number of features.
+        y : array-like of shape (M,)
+            Target values, must contain only {-1, +1} values.
+            
+        Returns
+        -------
+        self : object
+            Returns self.
         """
         self.X = X
         self.y = y.astype(float)
@@ -41,9 +93,10 @@ class DualSVM(BaseSVM):
         
         # Precompute Y G Y
         # We'll store Q = Y G Y so that gradient is Q alpha - 1
-        diag_y = self.y
+        
+        diag_Y = self.y
         # shape (M,M)
-        Q = np.einsum('i,ij,j->ij', diag_y, self.G, diag_y, optimize='greedy')
+        Q = np.einsum('i,ij,j->ij', diag_Y, self.G, diag_Y, optimize='greedy')
         
         # Initialize alpha = 0 which is feasible if y^T alpha=0
         alpha = np.zeros(M)
@@ -61,6 +114,7 @@ class DualSVM(BaseSVM):
             # grad f(a) = Q a - 1
             return Q.dot(a) - np.ones(M)
         
+        # Projected gradient descent
         current_obj = dual_objective(alpha)
         self.obj_history = [current_obj]
         
@@ -85,6 +139,7 @@ class DualSVM(BaseSVM):
             
             # Optional line search if f(alpha_new) > fref or first iteration
             new_obj = dual_objective(alpha_new)
+            
             if (self.use_line_search and (new_obj > fref or k == 0)):
                 # exact line search for quadratic
                 d = alpha_new - alpha  # search direction
@@ -153,8 +208,7 @@ class DualSVM(BaseSVM):
                 denom = np.dot(s, yv)
                 if abs(denom) > 1e-12:
                     step_bb = np.dot(s, s) / denom
-                    # clamp
-                    step = np.clip(step_bb, 1e-12, 1e12)
+                    step = np.clip(step_bb, 1e-5, 1e5)
                 else:
                     step = 1e-2
                 

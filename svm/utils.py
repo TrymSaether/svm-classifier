@@ -104,7 +104,7 @@ def get_support_vectors_primal(w, b, X, y):
     Points with y_i*(w dot x_i + b) <= 1 are support vectors for primal.
     """
     margin_vals = y * (X.dot(w) + b)
-    return np.where(margin_vals <= 1.0)[0]
+    return np.where(margin_vals - 1.0 <= 0)[0]
 
 def get_w(alpha, X, y):
     """
@@ -213,7 +213,6 @@ def test_linear(w,b,n_A,n_B,margin,**kwargs):
     X = np.vstack([list_A, list_B])
     y = np.concatenate([np.ones(n_A), -np.ones(n_B)])
     return X, y
-
 
 def make_toy_data(n=100, random_state=None, **kwargs):
     """
