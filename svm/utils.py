@@ -252,7 +252,7 @@ def make_nonlinear_data(n=100, random_state=0):
     y = np.array([+1]*n + [-1]*n + [+1]*n)
     return X, y  # Add this return statement
 
-def plot_decision_boundary_2D(model, X, y, title=""):
+def plot_decision_boundary_2D(model, X, y, title="", save_path=None):
     """
     Plot decision boundary and support vectors for any SVM model
     that follows the BaseSVM interface.
@@ -316,7 +316,10 @@ def plot_decision_boundary_2D(model, X, y, title=""):
     ax_learn.axhline(0, color='k', linestyle='--', alpha=0.3)
     ax_learn.legend()
     ax_learn.grid(True, alpha=0.3)
-    
     plt.tight_layout()
+    if save_path:
+        plt.savefig(save_path, dpi=200)
+    
     plt.show()
+        
    
