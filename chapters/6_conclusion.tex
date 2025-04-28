@@ -1,1 +1,26 @@
 \section{Conclusion}\label{chap:conclusion}
+This project explored Support Vector Machines (SVMs) theoretically and practically. We formulated the primal optimization problem, derived the dual formulation, and demonstrated how the kernel trick enables effective non-linear classification.
+
+Key theoretical properties of SVMs include:
+\begin{itemize}
+    \item The convex nature of the primal problem guarantees a global optimum
+    \item The dual formulation offers computational advantages, particularly with high-dimensional data
+    \item Kernel functions enable implicit mapping to high-dimensional spaces without computational burden
+    \item The sparse solution relies only on support vectors, increasing prediction efficiency
+\end{itemize}
+
+Our experiments confirmed these foundations, with primal and dual approaches converging to nearly identical solutions for linearly separable data. Regularization parameter experiments demonstrated the expected bias-variance trade-off. For non-linear data, RBF, polynomial, and Laplacian kernels achieved perfect classification where linear kernels failed, confirming the kernel trick's effectiveness.
+
+Application to the Breast Cancer Wisconsin dataset yielded 98.25\% accuracy with an RBF kernel, demonstrating SVMs' value in medical diagnostics. PCA visualization showed tumor concavity features as important discriminators.
+
+Despite their effectiveness, SVMs have limitations regarding optimization requirements, scaling issues with large datasets, and binary classification constraints.
+
+Future work could include:
+\begin{itemize}
+    \item More efficient optimization techniques like Sequential Minimal Optimization
+    \item Extension to multi-class classification
+    \item Automatic kernel selection and parameter tuning methods
+    \item Hybrid models combining SVMs with deep learning
+\end{itemize}
+
+In conclusion, this project demonstrated SVMs' mathematical elegance and practical utility. Their theoretical guarantees and strong empirical performance justify their continued relevance despite newer machine learning approaches.
