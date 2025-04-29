@@ -2,22 +2,33 @@
 \label{chap:numerical_methods}
 
 \subsection{Gradient Descent for Primal SVM}
+We are now interested in implementing a numerical solution to the primal SVM problem. Since the objective is convex, gradient-based optimization methods can be used to reliably find a global minimum.
+
+To handle non-separable data, we use a soft-margin formulation, which allows some margin violations at a cost controlled by a regularization parameter. This cost is incorporated using a loss function, e.g., the hinge loss, which penalizes misclassified points.
+However the hinge loss function is non-smooth, so we instead use a smooth approximation—specifically the logistic loss:
+\begin{align*}
+\mathcal{l}_{log}(t) := ln(1 + e^{(-t)})
+\end{align*}
+which penalizes misclassified points in a differentiable way. The gradient is computed from the contributions of all training points, weighted by how much they violate the margin, and scaled by the regularization term.
+Using this gradient, we update the weights iteratively in the direction of steepest descent until convergence to an optimal solution.
 
 \subsection{Projected Gradient Descent for Dual SVM}
-We first began by implementing a classifier for the dual problem. This was done by using a projected gradient descent method.
-The descent direction is given by the projection of the gradient of the dual objective function.
-We implemented a simple way to calculate these projections by setting it up as a constrained optimization problem.
-Converting this to the lagrangian form with the lagrange parameter $\lambda$, we could then solve this using a simple bisection method.
+We are now interested in implementing a solution to the dual problem numerically. 
+The reason we are interested in the dual problem numerically is that it allows us to use different kernels, to classify non-linearly which may give us a more accurate classification.
+We solved the dual SVM problem using projected gradient descent, where each update projects the gradient step back onto the feasible set defined by the constraints.
+The projection was implemented by converting the problem into a constrained minimization problem given by:
+\begin{align*}
+\min_{\alpha \in \mathbb{R}^M} \frac{1}{2} \|\alpha - \beta\|_2^2 \quad \text{s.t.} \quad
+\begin{cases}
+\langle y, \alpha \rangle = 0 \\
+0 \leq \alpha_i \leq C \quad \text{for } i = 1, \dots, M
+\end{cases}
+\end{align*}
 
-To find the steplength for the gradient descent we could have solely used a line search method.
-However due to the large computational cost we chose to implement a Barzilai-Borwein method.
-This method uses the previous gradients to calculate a steplength.
-If however the steplength is not feasible, we revert to a some fixed pre-defined steplength.
-
-In some cases it is still necessary to perform a line search e.g. if the objective function is not decreasing.
-Moreover we do not wish to perform this line search for every iteration. We instead store a reference function and only perform a line search if the next step is above this reference function.
-We also add the criteria that if the Barzilai-Borwein method has not improved the function value in a certain number of iterations, we update the reference function and potentially perform a line search to ensure the function value decreases.
-We decided to plot the function value for the iterations, and we can see that with this method that the function value does increase in some iterations, but quickly reverts to decreasing again.
-
-Using these methods allows us to classify large datasets in a reasonable time.
+This way we can use the Lagrangian method with one lagrange mulitplier, $\lambda$, and solve the projection efficiently via bisection.
+For step size, we used the Barzilai-Borwein method, which estimates the step length from previous steps. However if the BB step was invalid, we defaulted to a fixed step size.
+In some cases where the step length was not satisfactory it would be necessary to perform a line search. This does come at a higher computational cost.
+So to avoid unnecessary line searches, we tracked a reference function value, $f_{ref}$, and only triggered a line search when the objective increased beyond this threshold.
+If the function hadn't improved after a set number of steps, we updated the reference and potentially performed a line search.
+This approach gave fast convergence while keeping computational cost low.
 

@@ -4,12 +4,13 @@ import numpy as np
 
 class PrimalSVM(BaseSVM):
     def __init__(self, C=1.0, max_iter=1000, tol=1e-12, lr=1e-5, 
-                lr_decay=0.0, verbose=False, bb_steps=False):
+                lr_decay=0.0, verbose=False, bb_steps=False, use_smooth = True):
         super().__init__(C=C, max_iter=max_iter, tol=tol)
         self.lr = lr
         self.lr_decay = lr_decay
         self.verbose = verbose
         self.bb_steps = bb_steps
+        self.use_smooth = use_smooth
         
         # Learned parameters
         self.w = None
@@ -61,7 +62,10 @@ class PrimalSVM(BaseSVM):
                 grad_b -= self.C * np.sum(y_viol)
             
             # Record objective
-            hinge_loss = np.sum(np.maximum(0.0, 1.0 - margin))
+            hinge_loss = np.sum(np.log(1 + np.exp(-margin))) # smooth hinge loss 
+            if not self.use_smooth:                            # non-smooth hinge loss
+                hinge_loss =  np.sum(np.maximum(0.0, 1.0 - margin)) 
+
             obj_val = 0.5 * np.sum(self.w**2) + self.C * hinge_loss
             self.obj_history.append(obj_val)
             
