@@ -34,6 +34,16 @@ We trained the Dual SVM with the same $C=1.0$ parameter using a linear kernel. T
 When we recovered the weight vector from the dual solution using $\mathbf{w} = \sum_{i=1}^{n} \alpha_i y_i \mathbf{x}_i$, we obtained $\mathbf{w} \approx [0.7071, 0.7071]$, which is just the normalized primal solution. 
 This confirms the theoretical equivalence of the primal and dual formulations for linear separable data.
 
+\subsubsection{Dual SVM with RBF Kernel}
+We trained the Dual SVM with an RBF kernel ($C=1.0$, $\gamma=0.5$) on the same dataset. The model achieved 100\% accuracy, and the decision boundary is shown in Figure~\ref{fig:dual_svm_rbf}.
+The RBF kernel allows the model to create a non-linear decision boundary, which perfectly separates the two classes with 100\% accuracy. The support vectors are again highlighted, and we observe that they are not necessarily on the margin boundaries as in the linear case.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth]{figures/dual_svm_rbf.png}
+    \caption{Dual SVM with RBF kernel ($C=1.0$, $\gamma=0.5$). The decision boundary is non-linear, effectively separating the two classes.}
+    \label{fig:dual_svm_rbf}
+\end{figure}
+
 \subsection{Effect of Regularization Parameter}
 To understand the impact of the regularization parameter $C$, we trained the primal SVM with three different values: $C = \{0.1, 1.0, 10.0\}$. 
 Figure~\ref{fig:c_values} shows how the decision boundaries and margins change with different $C$ values.
