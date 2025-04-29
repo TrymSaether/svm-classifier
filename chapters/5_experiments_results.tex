@@ -6,7 +6,9 @@ The SVM algorithms were implemented as described in Section~\ref{chap:problem}, 
 For optimization, both our primal and dual SVM implementations utilize gradient-based methods. The primal problem employs subgradient descent, while the dual problem uses projected gradient descent. Both implementations support various step-size strategies including line-search methods, Barzilai-Borwein steps, and bisection methods.
 
 \subsection{Linear Separable Data}
-We first generate a linearly separable synthetic dataset with $n = 100$ points in 2D using \texttt{make\_toy\_data} function to create data with a clear margin between the two classes. Our optimization problem yielded the following solution:
+We first generate a linearly separable synthetic dataset with $100$ points in 2D using \texttt{make\_toy\_data} function to create data with a clear margin between the two classes. 
+
+Our optimization problem yielded the following solution:
 \[
     \symbf{w}^\star = [1, 1], \quad b^\star = 0
 \]
@@ -81,6 +83,32 @@ As expected, the linear kernel performs the \enquote{worst} on the non-linear da
 The RBF kernel with $\gamma=0.5$ perfectly captures the circular decision boundary with 100\% accuracy. The polynomial kernel (degree 3) also performs well but creates a more complex decision boundary. The Laplacian kernel ($\gamma=0.1$) also achieves 100\% accuracy with a smooth decision boundary.
 
 This demonstrates the flexibility of SVMs with different kernel functions, allowing them to adapt to various data distributions.
+
+\subsection{Convergence Analysis of Different Kernels}
+To better understand the optimization properties of our SVM implementation with different kernels, we conducted a convergence analysis. We tracked the convergence behavior of the dual SVM algorithm with each kernel on the non-linear dataset and visualized the results in Figure~\ref{fig:kernel_convergence}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth]{figures/kernel_convergence_comparison.png}
+    \caption{Convergence comparison of different kernels on the non-linear dataset. The y-axis shows the log-scaled distance to the optimum objective value ($\log|f(\alpha) - f^*|$) as the optimization progresses. Lower values indicate closer proximity to the optimal solution.}
+    \label{fig:kernel_convergence}
+\end{figure}
+
+As evident from Figure~\ref{fig:kernel_convergence}, the choice of kernel significantly impacts not only the final decision boundary but also the optimization trajectory:
+
+\begin{itemize}
+    \item \textbf{RBF kernel} (green line) demonstrates the fastest and most stable convergence, reaching near-optimal values within approximately 80 iterations. After reaching a threshold (around $10^{-10}$), it maintains a steady optimal value.
+    
+    \item \textbf{Linear kernel} (blue line) shows reasonable convergence speed but requires more iterations (about 100) to converge compared to the RBF kernel. It also exhibits some oscillations during the optimization process.
+    
+    \item \textbf{Laplacian kernel} (red line) displays a slower but relatively stable convergence pattern with periodic minor oscillations. It requires significantly more iterations (about 200) to reach convergence.
+    
+    \item \textbf{Polynomial kernel} (orange line) exhibits the most erratic convergence behavior with significant spikes and fluctuations. This suggests numerical instability in the optimization process, likely due to the higher-order polynomial terms causing ill-conditioning in the kernel matrix. Despite this, it eventually converges after approximately 200 iterations.
+\end{itemize}
+
+These observations align with theoretical expectations: RBF kernels generally provide well-conditioned optimization problems due to their smooth, positive definite nature. Polynomial kernels, especially with higher degrees, can lead to ill-conditioned systems that cause numerical challenges during optimization.
+
+The convergence patterns also highlight the importance of algorithm selection based on the kernel function. For polynomial kernels, more sophisticated optimization techniques or preconditioning might be beneficial, while simpler methods like standard projected gradient descent work well with RBF and linear kernels.
 
 \subsection{Breast Cancer Wisconsin Dataset}
 Finally, we applied our SVM implementation to the Breast Cancer Wisconsin dataset, which contains 30 features computed from digitized images of fine needle aspirates (FNA) of breast mass, with binary labels indicating benign or malignant tumors.
