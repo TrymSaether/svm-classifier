@@ -1,11 +1,7 @@
 \subsection{The Dual Problem (DP)}
 The primal problem involves minimizing a regularized hinge loss over the parameters defining a separating hyperplane. The dual problem, derived via Lagrangian duality, provides computational and theoretical advantages, especially when expressed in terms of inner products between data points.
 
-\subsubsection{Dual Derivation}
-The dual problem is an equivalent formulation of the primal optimization problem found using Lagrangian
-multipliers and KKT conditions.
-
-However it offers several key advantages. In the context of support vector machines, 
+The dual formulation offers several key advantages. In the context of support vector machines, 
 solving the dual allows the optimization to depend only on the number of data points rather than 
 the dimension of the spatial space, making it efficient in high-dimensional settings. 
 Additionally, the dual formulation naturally incorporates the kernel trick, enabling non-linear 
@@ -14,8 +10,11 @@ into which data points are support vectors, since only the corresponding dual va
 Thus, the dual problem is usually more numerically stable and computationally efficient, than the
 primal formulation.
 
-\begin{proposition}{Equivalence of the Primal Problem and its Dual}{dual-derivation}
-	The dual problem of the primal problem~\eqref{eq:primal-problem} is given by:
+\subsubsection{Dual Derivation}
+The dual problem is an equivalent formulation of the primal optimization problem derived using Lagrangian multipliers and KKT conditions. It can be expressed as:
+
+\begin{theorem}{The Dual Problem}{dual-problem}
+	The dual of the primal problem~\eqref{eq:primal-problem} is given by:
 	\[
 		\min_{\symbf{\alpha}} \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}} \text{ subject to }
 		\begin{cases}
@@ -23,10 +22,10 @@ primal formulation.
 			\symbf{\alpha}^\top Y = 0
 		\end{cases} \tag{DP}
 	\]
+	Where $G = \bigl(\inner*{\symbf{x}_i, \symbf{x}_j}\bigr)_{i,j=1,\hdots,M} = X X^\top$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
+\end{theorem}
 
-\end{proposition}
-
-\begin{proof}[Proof of Proposition~\ref{prop:dual-derivation}]
+\begin{proof}{}{}
 	\paragraph{Primal problem (P)}
 	We begin with the soft-margin SVM primal:
 	\[
@@ -53,10 +52,10 @@ primal formulation.
 	\begin{align*}
 		\min_{\symbf{w},b,\symbf{\xi}}\max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)= \max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\min_{\symbf{w},b,\symbf{\xi}}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)
 	\end{align*}
-
-	\begin{remark}{Slater's condition}{slater}
-        Note that Slater's condition is satisfied for our problem, as we can easily construct a strictly feasible point. For any dataset, we can choose $\symbf{w} = \symbf{0}$, $b = 0$, and $\xi_i > 1$ for all $i$, which strictly satisfies all inequality constraints. This guarantees that strong duality holds and justifies our application of the minimax theorem.
-    \end{remark}
+	
+	% \begin{remark}{Slater's condition}{slater}
+    %     Note that Slater's condition is satisfied for our problem, as we can easily construct a strictly feasible point. For any dataset, we can choose $\symbf{w} = \symbf{0}$, $b = 0$, and $\xi_i > 1$ for all $i$, which strictly satisfies all inequality constraints. This guarantees that strong duality holds and justifies our application of the minimax theorem.
+    % \end{remark}
 	
 	We now define
 	\[
@@ -108,31 +107,17 @@ using the KKT optimality conditions.
 		b^\star &= y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle \quad \text{for any } i \text{ such that } 0 < \alpha_i^\star < C \\
 		\xi_i^\star &= \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)
 	\end{align}
+	DETTE MÅ BEVISES!
 \end{proposition}
 
 %Dette er chata som jeg bruker til skrive et faktisk svar
 
 \subsubsection{Existence and Uniqueness of the Dual Solution}
-
-The second soft-margin classification problem we are interested in solving, which will be refered
-as the dual problem, is also a convex optimization problem:
-
-\begin{align}\label{eq:dual-problem}
-	\min_{\symbf{\alpha}}
-	\;\;\frac{1}{2}\,\inner*{\symbf{\alpha},\,Y\,G\,Y\,\symbf{\alpha}}
-	\;-\;\inner*{\symbf{1}_M,\;\symbf{\alpha}}
-	\quad
-	\text{subject to}
-	\quad
-	\begin{cases}
-		\inner{\symbf{y}}{\symbf{\alpha}} = 0, \\
-		\symbf{0}_M \;\;\leq\;\; \symbf{\alpha} \;\;\leq\;\; C\,\symbf{1}_M.
-	\end{cases}
-\end{align}
-Here $G = \bigl(\inner*{\symbf{x}_i, \symbf{x}_j}\bigr)_{i,j=1,\hdots,M} = X X^\top$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
+The dual problem is a convex quadratic program with linear constraints. 
+The existence and uniqueness of the solution depend on the properties of the Gram matrix $G$ and the constraints imposed by the labels $Y$.
 
 \begin{theorem}{Existence \& Uniqueness of Dual Solution}{existence-uniqueness-dual}
-	The dual problem \eqref{eq:dual-problem} always admits at least one global minimizer. Moreover, if $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha}\mid \inner{\symbf{y}}{\symbf{\alpha}}=0\}$, then the solution $\symbf{\alpha}^\star$ is unique. In degenerate cases, multiple optimal solutions may exist.
+	The dual problem \eqref{eq:dual-problem} always admits at least one global minimizer. Moreover, if $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha}\mid \inner{\symbf{y}, \symbf{\alpha}}=0\}$, then the solution $\symbf{\alpha}^\star$ is unique. In degenerate cases, multiple optimal solutions may exist.
 \end{theorem}
 
 \begin{proof}

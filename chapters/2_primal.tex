@@ -1,8 +1,8 @@
 \section{Problem Formulations}\label{chap:problem}
 
 \subsection{The Primal Problem (P)} % TODO
-We begin with the first soft-margin classification problem we are interested in solving, which is
-formulated as a convex optimization problem. This will serve as the primal problem in our analysis.
+We begin by formulating the Soft-Margin classification as a constrained optimization problem, 
+which will serve as our primal problem (P).
 
 \begin{align*}\label{eq:primal-problem}
 	\min_{\symbf{w}, b, \symbf{\xi}} \quad
@@ -12,19 +12,40 @@ formulated as a convex optimization problem. This will serve as the primal probl
 	\text{subject to}
 	\quad
 	\begin{cases}
-		\symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi} & \le \symbf{0}_M, \\[6pt]
-		\symbf{\xi} \;\;                                                       & \ge \symbf{0}_M,
+		\symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi}  \le \symbf{0}_M, \\[6pt]
+		\symbf{\xi} \;\;                                                        \ge \symbf{0}_M,
 	\end{cases}\tag{P}
 \end{align*}
-
-Here, $\symbf{w} \in \R^d$ represents the weight vector, $b \in \R$ is the bias term, and $\symbf{\xi} \in \R^M$ is the vector of slack variables.
-The data matrix is $X = [\symbf{x}_1, \ldots, \symbf{x}_M] \in \R^{d \times M}$ with labels $\symbf{y}=[y_1, \ldots, y_M]^\top \in \{\pm1\}^M$ and diagonal label matrix $Y = \operatorname{diag}(y_1,\ldots,y_M)$.
-The parameter $C>0$ controls the penalty for misclassification.
+\begin{table}[htbp]
+	\centering
+	\begin{tabular}{|c|l|}
+		\hline
+		\textbf{Symbol} & \textbf{Description} \\
+		\hline
+		$\symbf{w} \in \R^d$ & Weight vector \\
+		\hline
+		$b \in \R$ & Bias term \\
+		\hline
+		$\symbf{\xi} \in \R^M$ & Vector of slack variables \\
+		\hline
+		$X = [\symbf{x}_1, \ldots, \symbf{x}_M] \in \R^{d \times M}$ & Data matrix \\
+		\hline
+		$\symbf{y}=[y_1, \ldots, y_M]^\top \in \{\pm1\}^M$ & Label vector \\
+		\hline
+		$Y = \operatorname{diag}(y_1,\ldots,y_M)$ & Diagonal label matrix \\
+		\hline
+		$C > 0$ & Penalty parameter for misclassification \\
+		\hline
+	\end{tabular}
+	\caption{Notation for the Soft-Margin classification problem}
+	\label{tab:notation}
+\end{table}
 
 \subsubsection{Existence and Uniqueness of Constrained Optimization Problems}
 For an unconstrained optimization problem, three properties are required to prove the existence 
-and uniqueness of a minimizer. Feasibility, Coercivity, and Convexity. Feasibility, 
-coercivity, and strict convexity together ensure that a global minimizer exists and is unique. 
+and uniqueness of a minimizer; \emph{Feasibility, Coercivity, and Strict Convexity}. 
+Together these properties ensure that a unique global minimizer exists.
+ 
 Feasibility guarantees a non-empty constraint set, coercivity prevents minimizers from 
 escaping to infinity, and strict convexity ensures both global optimality and uniqueness.
 
@@ -42,7 +63,7 @@ properties.
   \end{theorem}
 
 
-\begin{proof}[Proof of Theorem~\ref{thm:existence-uniqueness-primal}]
+\begin{proof}{Proof of Theorem~\ref{thm:existence-uniqueness-primal}}{}
 	\paragraph{Existence of a minimizer.}
 	To show the existence of a minimizer in a constrained optimization problem, the following properties 
 	must be met: The objective function must be continuous and the feasible set must be non-empty and closed.
@@ -63,7 +84,7 @@ properties.
 		\]
 		is continuous as it is the sum of continuous functions.
 		\item \textbf{Feasibility:} Setting $\symbf{w} = \symbf{0}_d$, $b = 0$, and 
-		$\symbf{\xi} = \symbf{1}_M$ satisfies all constraints. Thus, the feasible set is nonempty.
+		$\symbf{\xi} = \symbf{1}_M$ satisfies all constraints. Thus, the feasible set is nonempty, \(\Omega \neq \emptyset\).
 		\item \textbf{Closedness:} A feasible set defined by continuous inequality constraints, such as 
 		affine inequalities, is closed. Since affine functions are continuous, if a sequence $(x_k)$ in 
 		the feasible set converges to a point $x$, then by continuity $g_i(x) = \lim_{k\to\infty} g_i(x_k)$.

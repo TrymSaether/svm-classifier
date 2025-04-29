@@ -1,5 +1,9 @@
 \section{Numerical Methods}
 \label{chap:numerical_methods}
+
+\subsection{Gradient Descent for Primal SVM}
+
+\subsection{Projected Gradient Descent for Dual SVM}
 We first began by implementing a classifier for the dual problem. This was done by using a projected gradient descent method.
 The descent direction is given by the projection of the gradient of the dual objective function.
 We implemented a simple way to calculate these projections by setting it up as a constrained optimization problem.
@@ -16,74 +20,4 @@ We also add the criteria that if the Barzilai-Borwein method has not improved th
 We decided to plot the function value for the iterations, and we can see that with this method that the function value does increase in some iterations, but quickly reverts to decreasing again.
 
 Using these methods allows us to classify large datasets in a reasonable time.
-
-% \subsection{Algorithm}
-
-% We now present a pseudo-code implementation of our projected gradient descent solver for the dual SVM problem. The algorithm incorporates the Barzilai-Borwein method for step size calculation and selective line search strategies to balance efficiency and convergence.
-
-% \begin{algorithm}[H]
-% \caption{Projected Gradient Descent Solver for Dual SVM}
-% \SetAlgoLined
-% \DontPrintSemicolon
-% \KwIn{Data matrix $X$, labels $Y$, regularization parameter $C$, tolerance $\epsilon$, max iterations $T$}
-% \KwOut{Optimal dual variables $\boldsymbol{\alpha}^*$}
-
-% Initialize $\boldsymbol{\alpha}_0 \gets \boldsymbol{0}_M$, $k \gets 0$\;
-% Compute Gram matrix $G \gets XX^T$ (or kernel matrix $G_{ij} \gets K(\boldsymbol{x}_i, \boldsymbol{x}_j)$)\;
-% $f_{\text{ref}} \gets f(\boldsymbol{\alpha}_0)$ \tcc*[r]{Initialize reference function value}
-% $\gamma_0 \gets \gamma_{\text{default}}$ \tcc*[r]{Initial step size}
-% $\text{noImprov} \gets 0$ \tcc*[r]{Counter for iterations without improvement}
-
-% \While{$k < T$ \textbf{and} not converged}{
-%     $\nabla f_k \gets YGY\boldsymbol{\alpha}_k - \boldsymbol{1}_M$ \tcc*[r]{Compute gradient}
-    
-%     $\boldsymbol{d}_k \gets \text{Project}(\boldsymbol{\alpha}_k - \gamma_k \nabla f_k) - \boldsymbol{\alpha}_k$ \tcc*[r]{Projection via bisection}
-    
-%     \If{$k > 0$}{
-%         $\boldsymbol{s} \gets \boldsymbol{\alpha}_k - \boldsymbol{\alpha}_{k-1}$\;
-%         $\boldsymbol{y} \gets \nabla f_k - \nabla f_{k-1}$\;
-%         $\gamma_{\text{BB}} \gets \frac{\boldsymbol{s}^T\boldsymbol{s}}{\boldsymbol{s}^T\boldsymbol{y}}$ \tcc*[r]{Barzilai-Borwein step size}
-%         \If{$\gamma_{\text{BB}} > 0$ \textbf{and} $\gamma_{\text{BB}} < \gamma_{\text{max}}$}{
-%             $\gamma_k \gets \gamma_{\text{BB}}$\;
-%         }
-%         \Else{
-%             $\gamma_k \gets \gamma_{\text{default}}$ \tcc*[r]{Use default step size if BB is not feasible}
-%         }
-%     }
-    
-%     $\boldsymbol{\alpha}_{k+1} \gets \boldsymbol{\alpha}_k + \gamma_k\boldsymbol{d}_k$\;
-%     $f_{k+1} \gets f(\boldsymbol{\alpha}_{k+1})$ \tcc*[r]{Evaluate objective function}
-    
-%     \If{$f_{k+1} > f_{\text{ref}}$ \textbf{or} $\text{noImprov} > \text{maxNoImprov}$}{
-%         Perform line search along $\boldsymbol{d}_k$ to find better $\gamma_k$\;
-%         $\boldsymbol{\alpha}_{k+1} \gets \boldsymbol{\alpha}_k + \gamma_k\boldsymbol{d}_k$ \tcc*[r]{Update with new step size}
-%         $f_{k+1} \gets f(\boldsymbol{\alpha}_{k+1})$\;
-%         $f_{\text{ref}} \gets f_{k+1}$ \tcc*[r]{Update reference value}
-%         $\text{noImprov} \gets 0$\;
-%     }
-%     \ElseIf{$f_{k+1} < f_k$}{
-%         $\text{noImprov} \gets 0$\;
-%     }
-%     \Else{
-%         $\text{noImprov} \gets \text{noImprov} + 1$\;
-%     }
-    
-%     Check convergence: $\|\boldsymbol{\alpha}_{k+1} - \boldsymbol{\alpha}_k\| < \epsilon$\;
-%     $k \gets k + 1$\;
-% }
-
-% $\boldsymbol{\alpha}^* \gets \boldsymbol{\alpha}_k$\;
-% $\boldsymbol{w}^* \gets \sum_{i=1}^M \alpha_i^* y_i \boldsymbol{x}_i$ \tcc*[r]{Recover primal solution}
-% Compute $b^*$ using support vectors\;
-
-% \Return{$\boldsymbol{\alpha}^*$}\;
-% \end{algorithm}
-
-% \subsubsection{Projection via Bisection}
-% The projection operation in line 8 ensures that the dual variables satisfy the constraints $\boldsymbol{0}_M \leq \boldsymbol{\alpha} \leq C\boldsymbol{1}_M$ and $\boldsymbol{y}^T\boldsymbol{\alpha} = 0$. This is implemented using Lagrangian formulation and a bisection method to find the appropriate Lagrange multiplier that enforces the equality constraint.
-
-% \subsubsection{Efficiency Considerations}
-% For large datasets, the computational bottleneck is typically the gradient calculation, which involves matrix-vector multiplication with the kernel matrix. Our implementation takes advantage of vectorized operations and avoids unnecessary recalculation of the gradient during line searches by storing intermediate results.
-
-% This algorithm demonstrates how selective use of line search combined with the Barzilai-Borwein method creates an effective balance between computational efficiency and optimization performance, allowing us to handle large-scale classification tasks with up to $10^4$ data points.
 

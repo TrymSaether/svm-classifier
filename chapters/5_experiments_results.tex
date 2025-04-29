@@ -1,16 +1,20 @@
 \section{Experiments and Results}\label{chap:experiments_results}
-In this section, we present the experimental validation of our SVM implementations. We start with a synthetic linearly separable dataset to compare the primal and dual formulations, followed by experiments with non-linear data using various kernels, and finally evaluate performance on the real-world Breast Cancer Wisconsin dataset.
+In this section, we present the experimental validation of our SVM implementations. We start with a synthetic linearly separable dataset to compare the primal and dual formulations, followed by experiments with non-linear data using various kernels, and finally evaluate performance on the real-world Breast Cancer Wisconsin dataset\cite{breast_cancer}.
 
 \subsection{Experimental Setup}
 The SVM algorithms were implemented as described in Section~\ref{chap:problem}, with both primal and dual formulations. 
-For optimization, we used subgradient descent with Barzilai-Borwein step sizing for the primal problem and a projected gradient ascent algorithm for the dual problem.
+For optimization, both our primal and dual SVM implementations utilize gradient-based methods. The primal problem employs subgradient descent, while the dual problem uses projected gradient descent. Both implementations support various step-size strategies including line-search methods, Barzilai-Borwein steps, and bisection methods.
 
 \subsection{Linear Separable Data}
-We first generate a linearly separable synthetic dataset with $n = 52$ points in 2D using \texttt{make\_toy\_data} function to create data with a clear margin between the two classes.
+We first generate a linearly separable synthetic dataset with $n = 100$ points in 2D using \texttt{make\_toy\_data} function to create data with a clear margin between the two classes. Our optimization problem yielded the following solution:
+\[
+    \symbf{w}^\star = [1, 1], \quad b^\star = 0
+\]
+with noise parameter $\sigma = 0.1$ used in data generation.
 
 \subsubsection{Primal SVM}
-We trained the Primal SVM with $C=1.0$ using subgradient descent for 10,000 iterations with a learning rate of 0.001 and Barzilai-Borwein steps. 
-Figure~\ref{fig:primal_svm} shows the decision boundary, margins, and support vectors identified by the model.
+We trained the Primal SVM with $C=1.0$ using subgradient descent for $10,000$ iterations with a learning rate (lr) of 0.001 and Barzilai-Borwein steps. 
+Figure~\ref{fig:primal_svm} shows the decision boundary, margins, and support vectors identified by the model. 
 
 \begin{figure}[H]
     \centering
@@ -19,10 +23,11 @@ Figure~\ref{fig:primal_svm} shows the decision boundary, margins, and support ve
     \label{fig:primal_svm}
 \end{figure}
 
-The primal formulation achieved 100\% accuracy on the training data. The algorithm correctly identified two support vectors (one from each class), which lie exactly on the margin boundaries. The weight vector $\mathbf{w}$ converged to approximately $[0.7069, 0.7073]$ with a bias term $b = -0.001$, resulting in a maximum margin hyperplane.
+The primal formulation achieved 100\% accuracy on the training data. The algorithm correctly identified two support vectors (one from each class), which lie exactly on the margin boundaries. The weight vector converged approximately to $\mathbf{w} \approx [0.7069, 0.7073]$, which is just the normalized primal solution. with a bias term $b = -0.001$, resulting in a maximum margin hyperplane.
 
 \subsubsection{Dual SVM with Linear Kernel}
-We trained the Dual SVM with the same $C=1.0$ parameter using a linear kernel. The dual formulation also achieved 100\% accuracy and identified the same support vectors as the primal approach. Figure~\ref{fig:dual_svm} shows the resulting decision boundary.
+We trained the Dual SVM with the same $C=1.0$ parameter using a linear kernel. 
+The dual formulation also achieved 100\% accuracy and identified the same support vectors as the primal approach. Figure~\ref{fig:dual_svm} shows the resulting decision boundary.
 
 \begin{figure}[H]
     \centering
@@ -31,7 +36,7 @@ We trained the Dual SVM with the same $C=1.0$ parameter using a linear kernel. T
     \label{fig:dual_svm}
 \end{figure}
 
-When we recovered the weight vector from the dual solution using $\mathbf{w} = \sum_{i=1}^{n} \alpha_i y_i \mathbf{x}_i$, we obtained $\mathbf{w} \approx [0.7071, 0.7071]$, which is just the normalized primal solution. 
+When we recovered the weight vector from the dual solution we again obtained $\mathbf{w} \approx [0.7071, 0.7071]$. 
 This confirms the theoretical equivalence of the primal and dual formulations for linear separable data.
 
 \subsubsection{Dual SVM with RBF Kernel}

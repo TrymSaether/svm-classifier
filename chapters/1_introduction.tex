@@ -4,20 +4,20 @@
 % Because the resulting optimisation problem is convex, advanced techniques from numerical optimisation—rather than statistical learning alone—determine practical performance.  
 % In this project we therefore concentrate on algorithmic aspects: deriving the dual quadratic programme, analysing its properties, and designing scalable solvers.
 
-Support Vector Machines (SVMs) are a theoretically grounded method 
-for binary classification, particularly effective in high-dimensional 
-settings. Given a set of labelled training data, the aim is to 
-construct a decision function that separates the two classes with 
-maximal margin while tolerating potential misclassifications. This 
-leads to the formulation of the soft-margin SVM, a convex 
-optimization problem balancing model complexity and classification 
+Support Vector Machines (SVMs) are a theoretically grounded method
+for binary classification, particularly effective in high-dimensional
+settings. Given a set of labelled training data, the aim is to
+construct a decision function that separates the two classes with
+maximal margin while tolerating potential misclassifications. This
+leads to the formulation of the soft-margin SVM, a convex
+optimization problem balancing model complexity and classification
 error via a regularization parameter.
 
-This report presents a theoretical and numerical investigation of 
-the soft-margin SVM formulation. The existence and uniqueness of 
-solutions is discussed through exploration of the structure and 
+This report presents a theoretical and numerical investigation of
+the soft-margin SVM formulation. The existence and uniqueness of
+solutions is discussed through exploration of the structure and
 behavior of the optimization landscape using convex analysis.
 A numerical method is implemented for solving soft-margin SVMs,
-and tested on numerical experiments demonstrating the performance of 
+and tested on numerical experiments demonstrating the performance of
 the algorithm.
 

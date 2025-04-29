@@ -321,5 +321,213 @@ def plot_decision_boundary_2D(model, X, y, title="", save_path=None):
         plt.savefig(save_path, dpi=200)
     
     plt.show()
+
+def plot_convergence(history, save_path=None):
+    """
+    Creates convergence plots for optimization algorithms.
+    
+    Parameters:
+    -----------
+    history : dict
+        Dictionary containing optimization history with keys:
+        - 'objective': list of objective function values
+        - 'grad_norm': list of gradient norm values (optional)
+        - 'step_size': list of step sizes (optional)
+        - 'alpha_diff': list of parameter changes between iterations (optional)
+    save_path : str, optional
+        Path to save the figure
+    """
+    n_plots = sum(key in history for key in ['objective', 'grad_norm', 'step_size', 'alpha_diff'])
+    fig, axes = plt.subplots(1, n_plots, figsize=(5*n_plots, 5))
+    
+    if n_plots == 1:
+        axes = [axes]
+    
+    plot_idx = 0
+    iterations = np.arange(1, len(history.get('objective', [])) + 1) if 'objective' in history else None
+    
+    # Plot objective function values
+    if 'objective' in history:
+        ax = axes[plot_idx]
+        obj_values = history['objective']
         
-   
+        # Linear scale
+        ax.plot(iterations, obj_values, 'b-', label='Objective')
+        ax.set_xlabel('Iterations')
+        ax.set_ylabel('Objective Value')
+        ax.set_title('Objective Function Convergence')
+        ax.grid(True, alpha=0.3)
+        
+        # Add log scale inset
+        if len(obj_values) > 10:
+            opt_val = min(obj_values) if min(obj_values) < 0 else 0
+            inset = ax.inset_axes([0.55, 0.55, 0.4, 0.4])
+            inset.semilogy(iterations, [abs(v - opt_val) + 1e-10 for v in obj_values], 'r-')
+            inset.set_title('Log Scale', fontsize=8)
+            inset.grid(True, alpha=0.3)
+        
+        plot_idx += 1
+    
+    # Plot gradient norm
+    if 'grad_norm' in history:
+        ax = axes[plot_idx]
+        grad_values = history['grad_norm']
+        
+        ax.semilogy(iterations, grad_values, 'g-', label='Gradient Norm')
+        ax.set_xlabel('Iterations')
+        ax.set_ylabel('Gradient Norm')
+        ax.set_title('Gradient Norm Convergence')
+        ax.grid(True, alpha=0.3)
+        
+        plot_idx += 1
+    
+    # Plot step size
+    if 'step_size' in history:
+        ax = axes[plot_idx]
+        step_sizes = history['step_size']
+        
+        ax.semilogy(iterations[:len(step_sizes)], step_sizes, 'm-', label='Step Size')
+        ax.set_xlabel('Iterations')
+        ax.set_ylabel('Step Size')
+        ax.set_title('Step Size Variation')
+        ax.grid(True, alpha=0.3)
+        
+        plot_idx += 1
+    
+    # Plot alpha differences
+    if 'alpha_diff' in history:
+        ax = axes[plot_idx]
+        alpha_diffs = history['alpha_diff']
+        
+        ax.semilogy(iterations[:len(alpha_diffs)], alpha_diffs, 'c-', label='Parameter Change')
+        ax.set_xlabel('Iterations')
+        ax.set_ylabel('||α_{k+1} - α_k||')
+        ax.set_title('Parameter Change')
+        ax.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    if save_path:
+        plt.savefig(save_path, dpi=200)
+    
+    return fig, axes
+
+def analyze_convergence(history, window_size=10, save_path=None):
+    """
+    Analyzes convergence rates and provides diagnostics for optimization algorithms.
+    
+    Parameters:
+    -----------
+    history : dict
+        Dictionary containing optimization history with keys:
+        - 'objective': list of objective function values
+        - 'grad_norm': list of gradient norm values (optional)
+        - 'step_size': list of step sizes (optional)
+        - 'alpha_diff': list of parameter changes between iterations (optional)
+    window_size : int, optional
+        Window size for rolling rate calculations
+    save_path : str, optional
+        Path to save the figure
+        
+    Returns:
+    --------
+    dict
+        Dictionary containing convergence analysis metrics
+    """
+    results = {}
+    
+    if 'objective' not in history:
+        print("Objective function history not provided, cannot analyze convergence")
+        return results
+    
+    obj_values = np.array(history['objective'])
+    iterations = np.arange(1, len(obj_values) + 1)
+    
+    # Compute optimal value estimate (minimum observed)
+    opt_val_est = min(obj_values)
+    results['optimal_value_est'] = opt_val_est
+    
+    # Calculate distance to optimum
+    dist_to_opt = np.abs(obj_values - opt_val_est) + 1e-15  # Add small constant to avoid log(0)
+    results['dist_to_opt'] = dist_to_opt
+    
+    # Compute convergence rates in sliding windows
+    lin_rates = []
+    quad_rates = []
+    for i in range(window_size, len(obj_values)):
+        window = dist_to_opt[i-window_size:i]
+        # Linear rate: f_{k+1} - f* ≤ r * (f_k - f*)
+        if all(window[:-1] > 0):
+            rates = window[1:] / window[:-1]
+            lin_rates.append(np.mean(rates))
+        
+        # Quadratic rate: f_{k+1} - f* ≤ c * (f_k - f*)^2
+        if all(window[:-1] > 0):
+            rates = window[1:] / (window[:-1]**2)
+            quad_rates.append(np.mean(rates))
+    
+    results['linear_rates'] = lin_rates
+    results['quadratic_rates'] = quad_rates
+    
+    # Estimate overall convergence rate
+    if len(lin_rates) > 0:
+        results['avg_linear_rate'] = np.mean(lin_rates)
+    if len(quad_rates) > 0:
+        results['avg_quadratic_rate'] = np.mean(quad_rates)
+    
+    # Create convergence plot
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    
+    # Plot 1: Objective value vs. iterations
+    ax = axes[0, 0]
+    ax.plot(iterations, obj_values, 'b-')
+    ax.set_xlabel('Iterations')
+    ax.set_ylabel('Objective Value')
+    ax.set_title('Objective Function Convergence')
+    ax.grid(True, alpha=0.3)
+    
+    # Plot 2: Log of distance to optimum
+    ax = axes[0, 1]
+    ax.semilogy(iterations, dist_to_opt, 'r-')
+    ax.set_xlabel('Iterations')
+    ax.set_ylabel('log|f(x_k) - f*|')
+    ax.set_title('Distance to Optimum (Log Scale)')
+    ax.grid(True, alpha=0.3)
+    
+    # Plot 3: Estimated local convergence rate
+    ax = axes[1, 0]
+    if len(lin_rates) > 0:
+        ax.plot(range(window_size, window_size + len(lin_rates)), lin_rates, 'g-', label='Linear Rate')
+        ax.axhline(results.get('avg_linear_rate', 0), color='g', linestyle='--', 
+                  label=f'Avg: {results.get("avg_linear_rate", 0):.4f}')
+        ax.set_xlabel('Iterations')
+        ax.set_ylabel('Rate')
+        ax.set_title(f'Local Linear Convergence Rate (window={window_size})')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+    
+    # Plot 4: Additional convergence diagnostics
+    ax = axes[1, 1]
+    
+    # Include gradient norm if available
+    if 'grad_norm' in history:
+        grad_norms = history['grad_norm']
+        ax.semilogy(iterations[:len(grad_norms)], grad_norms, 'c-', label='Gradient Norm')
+    
+    # Include parameter changes if available
+    if 'alpha_diff' in history:
+        alpha_diffs = history['alpha_diff']
+        ax.semilogy(iterations[:len(alpha_diffs)], alpha_diffs, 'm-', label='||α_{k+1} - α_k||')
+    
+    ax.set_xlabel('Iterations')
+    ax.set_title('Additional Convergence Metrics')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    if save_path:
+        plt.savefig(save_path, dpi=200)
+    
+    results['figure'] = fig
+    
+    return results
+
