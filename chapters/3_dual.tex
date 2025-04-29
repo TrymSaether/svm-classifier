@@ -50,37 +50,34 @@ The dual problem is an equivalent formulation of the primal optimization problem
 	Because $\mathcal{L}$ is convex in $(\symbf{w},b,\symbf{\xi})$ and concave in $(\symbf{\alpha}_1,\symbf{\alpha}_2)$, the minimax theorem~\cite{vonNeumann1928} implies
 
 	\begin{align*}
-		\min_{\symbf{w},b,\symbf{\xi}}\max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)= \max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\min_{\symbf{w},b,\symbf{\xi}}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)
+		\min_{\symbf{w},b,\symbf{\xi}}\max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)= \max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\min_{\symbf{w},b,\symbf{\xi}}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2) = \max_{\symbf{\alpha}_1,\symbf{\alpha}_2} g(\symbf{\alpha}_1,\symbf{\alpha}_2)
 	\end{align*}
-	
-	% \begin{remark}{Slater's condition}{slater}
-    %     Note that Slater's condition is satisfied for our problem, as we can easily construct a strictly feasible point. For any dataset, we can choose $\symbf{w} = \symbf{0}$, $b = 0$, and $\xi_i > 1$ for all $i$, which strictly satisfies all inequality constraints. This guarantees that strong duality holds and justifies our application of the minimax theorem.
-    % \end{remark}
-	
-	We now define
-	\[
-		g(\symbf{\alpha}_1,\symbf{\alpha}_2) =\min_{(\symbf{w},b,\symbf{\xi})}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)
-	\]
 
 	\paragraph{KKT conditions}
-	Setting the gradients of the constraints to zero gives us the KKT conditions:
-	\begin{align*}
-		\nabla_{\symbf{w}} \Lcal = \symbf{w} -  (X^\top Y) \symbf{\alpha}_1 = \symbf{0}, \quad \nabla_{b} \Lcal = - \symbf{\alpha}_1^\top Y = \symbf{0}^\top, \quad \nabla_{\symbf{\xi}} \Lcal  = C \symbf{1}_M^\top - \symbf{\alpha}_1^\top - \symbf{\alpha}_2^\top = \symbf{0}_M^\top
-	\end{align*}
+	To find the minimum of the Lagrangian, we need to satisfy the KKT conditions. The KKT conditions are a set of necessary and sufficient conditions for optimality in constrained optimization problems. They consist of three components:
+	\begin{itemize}
+		\item \textbf{Stationarity} The gradients of the Lagrangian with respect to the primal variables $(\symbf{w}, b, \symbf{\xi})$ must vanish:
+		\begin{align*}
+			\nabla_{\symbf{w}} \Lcal = \symbf{w} -  (X^\top Y) \symbf{\alpha}_1 = \symbf{0}, \quad \nabla_{b} \Lcal = - \symbf{\alpha}_1^\top Y = \symbf{0}^\top, \quad \nabla_{\symbf{\xi}} \Lcal  = C \symbf{1}_M^\top - \symbf{\alpha}_1^\top - \symbf{\alpha}_2^\top = \symbf{0}_M^\top
+		\end{align*}
+		\item \textbf{Complementary slackness} The Lagrange multipliers $\symbf{\alpha}_1$ and $\symbf{\alpha}_2$ must satisfy the complementary slackness conditions:
+		\begin{align*}
+			\symbf{\alpha}_1^\top c_1(\symbf{w},b,\symbf{\xi}) = \symbf{0}_M^\top, \quad \symbf{\alpha}_2^\top c_2(\symbf{\xi}) = \symbf{0}_M^\top
+		\end{align*}
+		\item \textbf{Feasibility} The primal variables $(\symbf{w}, b, \symbf{\xi})$ must satisfy the primal constraints:
+		\begin{align*}
+			c_1(\symbf{w},b,\symbf{\xi}) = \symbf{1}_M - Y\left(X\symbf{w} + b\symbf{1}_M\right)-\symbf{\xi}\le\symbf{0}_M, \\
+			c_2(\symbf{\xi}) = -\symbf{\xi}\le\symbf{0}_M.
+		\end{align*}
+	\end{itemize}
 	Thus, we have the following conditions:
 	\begin{align*}
-		\symbf{w} = X^\top Y \symbf{\alpha}_1 , \quad \symbf{\alpha}_1^\top Y  = \symbf{0}_M^\top, \quad \symbf{0}_M \leq \symbf{\alpha}_1 + \underset{=\symbf{0}}{\symbf{\alpha}_2} \leq C\symbf{1}_M
+		\symbf{w} &= X^\top Y \symbf{\alpha}_1 , \quad \symbf{\alpha}_1^\top Y  = \symbf{0}_M^\top, \quad \symbf{0}_M \leq \symbf{\alpha}_1 + \underset{=\symbf{0}}{\symbf{\alpha}_2} \leq C\symbf{1}_M \; \text{where} \\
+		\norm*{\symbf{w}}_2^2 &= \norm{X^\top Y \symbf{\alpha}_1}_2^2 = \left(X^\top Y \symbf{\alpha}_1\right)^\top \left(X^\top Y \symbf{\alpha}_1\right) = \symbf{\alpha}_1^\top Y [X X^\top] Y \symbf{\alpha}_1 = \inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1}
 	\end{align*}
-
-	Then we have that:
-	\[
-		\norm*{\symbf{w}}_2^2 = \norm{X^\top Y \symbf{\alpha}_1}_2^2 = \left(X^\top Y \symbf{\alpha}_1\right)^\top \left(X^\top Y \symbf{\alpha}_1\right) = \symbf{\alpha}_1^\top Y [X X^\top] Y \symbf{\alpha}_1 = \inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1}
-	\]
 	Substituting this into the Lagrangian gives:
 	\begin{align*}
-		g(\symbf{\alpha}_1,\symbf{\alpha}_2) & = \tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 -\symbf{\alpha}_1^\top YGY\symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M \\
-		                                     & = -\tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M                                           \\
-		                                     & = -\tfrac12\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} + \inner*{\symbf{1}_M, \symbf{\alpha}_1}
+		g(\symbf{\alpha}_1) = \tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 -\symbf{\alpha}_1^\top YGY\symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M = -\tfrac12\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} + \inner*{\symbf{1}_M, \symbf{\alpha}_1}
 	\end{align*}
 	\paragraph{Dual problem (DP)}
 	Flipping signs for a minimization form, gives us the dual problem is
@@ -98,19 +95,14 @@ Once the dual problem \eqref{eq:dual-problem} has been solved and an optimal dua
 $\symbf{\alpha}^\star$ has been obtained, we can reconstruct the corresponding solution 
 $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem \eqref{eq:primal-problem} 
 using the KKT optimality conditions.
-
-\begin{proposition}{From the solution of the dual, one can obtain the solution of the primal}{D2P-solution}
-	The solution of the primal problem, $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$, is given 
-	by the solution of the dual problem, $\symbf{\alpha}^\star$ from the equations:
-	\begin{align}
-		\symbf{w}^\star &= \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i \\
-		b^\star &= y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle \quad \text{for any } i \text{ such that } 0 < \alpha_i^\star < C \\
-		\xi_i^\star &= \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)
-	\end{align}
-	DETTE MÅ BEVISES!
+\begin{proposition}{Recovering Primal Solution from Dual Solution}{D2P-solution}
+	Given an optimal solution $\symbf{\alpha}^\star$ to the dual problem, the corresponding optimal solution $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem can be recovered through:
+	\begin{align*}
+		\symbf{w}^\star &= X^\top Y \symbf{\alpha}^\star \\
+		b^\star &= y_i - \symbf{x}_i^\top\symbf{w}^\star \quad \text{for any index } i \text{ such that } 0 < \alpha_i^\star < C \\
+		\symbf{\xi}^\star &= \max\left\{\symbf{0}_M,\; \symbf{1}_M - Y(X\symbf{w}^\star + b^\star\symbf{1}_M)\right\}
+	\end{align*}
 \end{proposition}
-
-%Dette er chata som jeg bruker til skrive et faktisk svar
 
 \subsubsection{Existence and Uniqueness of the Dual Solution}
 The dual problem is a convex quadratic program with linear constraints. 
@@ -120,20 +112,30 @@ The existence and uniqueness of the solution depend on the properties of the Gra
 	The dual problem \eqref{eq:dual-problem} always admits at least one global minimizer. Moreover, if $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha}\mid \inner{\symbf{y}, \symbf{\alpha}}=0\}$, then the solution $\symbf{\alpha}^\star$ is unique. In degenerate cases, multiple optimal solutions may exist.
 \end{theorem}
 
-\begin{proof}
+\begin{proof}{}{}
 	\paragraph{Existence of a solution:}
-	The dual problem \eqref{eq:dual-problem} is a convex quadratic program in $\symbf{\alpha}$, subject to a linear equality constraint $\langle \symbf{y}, \symbf{\alpha} \rangle = 0$ and box constraints $0 \leq \alpha_i \leq C$ for all $i = 1, \ldots, M$. We define the feasible region as:
+	The dual problem \eqref{eq:dual-problem} is a convex quadratic program in $\symbf{\alpha}$, subject to a linear equality constraint $\symbf{\alpha}^\top Y = \symbf{0}^\top$ and box constraints $0 \leq \symbf{\alpha} \leq C\symbf{1}_M$. We define the feasible region as:
 	\[
-		\Omega = \left\{ \alpha \in \mathbb{R}^M \;\middle|\; 0 \leq \alpha_i \leq C, \;\langle \symbf{y}, \alpha \rangle = 0 \right\},
+		\Omega = \left\{ \symbf{\alpha} \in \mathbb{R}^M \;\middle|\; 0 \leq \symbf{\alpha} \leq C\symbf{1}_M, \;\symbf{\alpha}^\top Y = \symbf{0}^\top \right\},
 	\]
 	which is the intersection of the closed box $[0, C]^M$ with a hyperplane. This intersection is nonempty: because the dataset includes both positive and negative labels (i.e., $\exists\,p,n$ such that $y_p = 1$, $y_n = -1$), one can construct a feasible point by choosing $\alpha_p = \alpha_n$ and setting all other components to zero. Hence, $\Omega$ is closed, bounded, and nonempty.
 
 	The dual objective function,
 	\[
-		f(\alpha) = \frac{1}{2} \langle \alpha, YGY \alpha \rangle - \langle \mathbf{1}_M, \alpha \rangle,
+		f(\symbf{\alpha}) = \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} - \inner*{\symbf{1}_M, \symbf{\alpha}},
 	\]
-	is continuous and convex, being a quadratic form with symmetric matrix $YGY$ and linear term $- \mathbf{1}_M^\top \alpha$. Since $f$ is continuous and convex over a compact feasible set $\Omega$, the extreme value theorem guarantees the existence of a global minimizer $\alpha^\star$.
+	is continuous and convex, being a quadratic form with symmetric matrix $YGY$ and linear term $-\symbf{1}_M^\top \symbf{\alpha}$. Since $f$ is continuous and convex over a compact feasible set $\Omega$, the extreme value theorem guarantees the existence of a global minimizer $\symbf{\alpha}^\star$.
 
-	\paragraph{Uniqueness of a solution.}
-	The Hessian of $f$ is $\nabla^2 f(\alpha) = YGY$, which is symmetric and positive semi-definite because $G$ is a Gram matrix and $Y$ is a diagonal matrix with $\pm 1$ entries. If $YGY$ is strictly positive-definite on the affine subspace $\{\alpha \in \mathbb{R}^M : \langle y, \alpha \rangle = 0\}$, then $f$ is strictly convex on the feasible region $\Omega$, and the minimizer $\alpha^\star$ is unique. In contrast, if $YGY$ is only positive semi-definite (e.g., if $G$ is rank-deficient), then flat directions may exist in the objective, and multiple global minimizers may be possible.
+	\paragraph{Uniqueness of a solution:}
+	The Hessian of $f$ is $\nabla^2 f(\symbf{\alpha}) = YGY$, which is symmetric and positive semi-definite because $G$ is a Gram matrix and $Y$ is a diagonal matrix with $\pm 1$ entries. 
+	If $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha} \in \mathbb{R}^M : \symbf{\alpha}^\top Y = \symbf{0}^\top\}$, then $f$ is strictly convex on the feasible region $\Omega$, and the minimizer $\symbf{\alpha}^\star$ is unique. 
+	In contrast, if $YGY$ is only positive semi-definite (e.g., if $G$ is rank-deficient), then flat directions may exist in the objective, and multiple global minimizers may be possible.
+
+	\paragraph{Degenerate cases:}
+	Degenerate cases occur when $YGY$ is positive semi-definite but not positive-definite on the constraint subspace. This happens in several scenarios:
+	\begin{enumerate}
+	\item When the data vectors $\{\symbf{x}_i\}$ are linearly dependent, making the Gram matrix $G$ rank-deficient. For example, if two feature vectors are identical but have the same label, or if one feature vector is a linear combination of others.
+	\item When the number of data points $M$ exceeds the dimension $N$ of the feature space, necessarily creating linear dependencies.
+	\end{enumerate}
+	In these cases, there exist non-zero directions $\symbf{v}$ satisfying $\symbf{v}^\top YGY \symbf{v} = 0$ and $\symbf{v}^\top Y = 0$. Moving along such directions from one optimal solution leads to another optimal solution, creating a flat region (typically a face or edge) of the feasible region where all points are global minimizers. Although $\symbf{w}^\star$ remains unique due to the form $\symbf{w}^\star = X^\top Y \symbf{\alpha}^\star$, the values of $\symbf{\alpha}^\star$ corresponding to this unique $\symbf{w}^\star$ are not unique.
 \end{proof}
