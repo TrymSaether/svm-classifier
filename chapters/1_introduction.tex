@@ -1,5 +1,10 @@
 \section{Introduction}\label{chap:introduction}
-Support Vector Machines (SVMs) is a theoretically grounded method 
+% Support Vector Machines (SVMs) \cite{cortes1995support} are a cornerstone of convex learning theory.  
+% Given labelled data $(x_i,y_i)_{i=1}^M\subset \mathbb{R}^d\times\{-1,+1\}$, an SVM seeks the decision function $F(x)=\operatorname{sgn}(\langle w,x\rangle+b)$ that maximises the geometric margin while tolerating controlled violations via slack variables.  
+% Because the resulting optimisation problem is convex, advanced techniques from numerical optimisation—rather than statistical learning alone—determine practical performance.  
+% In this project we therefore concentrate on algorithmic aspects: deriving the dual quadratic programme, analysing its properties, and designing scalable solvers.
+
+Support Vector Machines (SVMs) are a theoretically grounded method 
 for binary classification, particularly effective in high-dimensional 
 settings. Given a set of labelled training data, the aim is to 
 construct a decision function that separates the two classes with 
@@ -15,3 +20,4 @@ behavior of the optimization landscape using convex analysis.
 A numerical method is implemented for solving soft-margin SVMs,
 and tested on numerical experiments demonstrating the performance of 
 the algorithm.
+

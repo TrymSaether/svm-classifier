@@ -164,7 +164,7 @@ class PrimalSVM(BaseSVM):
         norm_w = np.linalg.norm(self.w)
         return 1.0 / norm_w if norm_w != 0 else np.inf
         
-    def get_support_vectors(self, eps=1e-3):
+    def get_support_vectors(self, eps=1e-2):
         if self.verbose:
             print(f'b: {self.b}, w: {self.w}')
         margin = self.y * (self.X.dot(self.w) + self.b)

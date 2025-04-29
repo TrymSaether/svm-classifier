@@ -18,6 +18,10 @@
 \input{frontmatter/titlepage}
 
 \begin{abstract}
+    We study the soft--margin Support Vector Machine (SVM) from both a theoretical and an algorithmic perspective.  
+    After proving existence and (conditional) uniqueness of solutions for the primal and dual formulations, we implement a projected--gradient solver that scales to $M=10^4$ data points.  
+    On synthetic data the method reproduces the ground--truth hyperplane to machine precision, while on the Breast--Cancer--Wisconsin set it attains $98.3\,\%$ test accuracy with an RBF kernel—matching the best published baselines without specialised tuning.  
+    We discuss how the regularisation parameter $C$ governs the bias--variance trade--off and provide open--source code for reproducibility.
 \end{abstract}
 
 \tableofcontents

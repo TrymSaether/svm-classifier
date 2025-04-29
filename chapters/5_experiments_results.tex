@@ -62,9 +62,10 @@ We next evaluate our dual SVM implementation on non-linearly separable data usin
     \label{fig:kernels}
 \end{figure}
 
-As expected, the linear kernel performs poorly on this non-linear dataset, achieving only around 50\% accuracy. The RBF kernel with $\gamma=0.5$ perfectly captures the circular decision boundary with 100\% accuracy. The polynomial kernel (degree 3) also performs well but creates a more complex decision boundary. The Laplacian kernel ($\gamma=0.1$) also achieves 100\% accuracy with a smooth decision boundary.
+As expected, the linear kernel performs the \enquote{worst} on the non-linear dataset, but with just 0.33\% offset. 
+The RBF kernel with $\gamma=0.5$ perfectly captures the circular decision boundary with 100\% accuracy. The polynomial kernel (degree 3) also performs well but creates a more complex decision boundary. The Laplacian kernel ($\gamma=0.1$) also achieves 100\% accuracy with a smooth decision boundary.
 
-This experiment demonstrates the power of the kernel trick in handling non-linear classification tasks without explicitly mapping features into a higher-dimensional space.
+This demonstrates the flexibility of SVMs with different kernel functions, allowing them to adapt to various data distributions.
 
 \subsection{Breast Cancer Wisconsin Dataset}
 Finally, we applied our SVM implementation to the Breast Cancer Wisconsin dataset, which contains 30 features computed from digitized images of fine needle aspirates (FNA) of breast mass, with binary labels indicating benign or malignant tumors.

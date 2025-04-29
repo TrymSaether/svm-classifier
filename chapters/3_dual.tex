@@ -35,12 +35,10 @@ primal formulation.
 		+ C\symbf{1}_M^\top \symbf{\xi}
 		\quad\text{subject to}\quad
 		\begin{cases}
-			\symbf{1}_M - Y\left(X\symbf{w} + b\symbf{1}_M\right)-\symbf{\xi}\le\symbf{0}_M, \\
-			-\symbf{\xi}\le\symbf{0}_M.
+			c_1(\symbf{w}, b, \symbf{\xi}) &= \symbf{1}_M - Y\left(X\symbf{w} + b\symbf{1}_M\right)-\symbf{\xi}\le\symbf{0}_M, \\
+			c_2(\symbf{\xi}) &= -\symbf{\xi}\le\symbf{0}_M.
 		\end{cases}
 	\]
-	Denote these constraints as \(c_1(\symbf{w}, b, \symbf{\xi}) \le \symbf{0}_M\) and \(c_2(\symbf{\xi}) \le \symbf{0}_M.\)
-
 	\paragraph{Lagrangian}
 	We introduce the Lagrange multipliers
 	\(\symbf{\alpha}_1,\symbf{\alpha}_2 \ge \symbf{0}_M.
@@ -55,6 +53,11 @@ primal formulation.
 	\begin{align*}
 		\min_{\symbf{w},b,\symbf{\xi}}\max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)= \max_{\symbf{\alpha}_1,\symbf{\alpha}_2}\min_{\symbf{w},b,\symbf{\xi}}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)
 	\end{align*}
+
+	\begin{remark}{Slater's condition}{slater}
+        Note that Slater's condition is satisfied for our problem, as we can easily construct a strictly feasible point. For any dataset, we can choose $\symbf{w} = \symbf{0}$, $b = 0$, and $\xi_i > 1$ for all $i$, which strictly satisfies all inequality constraints. This guarantees that strong duality holds and justifies our application of the minimax theorem.
+    \end{remark}
+	
 	We now define
 	\[
 		g(\symbf{\alpha}_1,\symbf{\alpha}_2) =\min_{(\symbf{w},b,\symbf{\xi})}\mathcal{L}(\symbf{w},b,\symbf{\xi},\symbf{\alpha}_1,\symbf{\alpha}_2)
@@ -106,9 +109,7 @@ using the KKT optimality conditions.
 		\xi_i^\star &= \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)
 	\end{align}
 \end{proposition}
-\begin{proof}{}{}
 
-\end{proof}
 %Dette er chata som jeg bruker til skrive et faktisk svar
 
 \subsubsection{Existence and Uniqueness of the Dual Solution}
