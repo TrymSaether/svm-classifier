@@ -29,12 +29,13 @@ into which data points are support vectors, since only the corresponding dual va
 Thus, the dual problem is usually more numerically stable and computationally efficient, than the
 primal formulation.
 
-\begin{theorem}{The Dual Problem}{dual-problem}
+\begin{theorem}{Dual Problem Derivation}{dual-problem}
 	The dual problem~\eqref{eq:dual-problem} is derived from the primal 
 	problem~\eqref{eq:primal-problem} using Lagrangian multipliers and KKT conditions.
 \end{theorem}
 
 \begin{proof}[Proof of Theorem~\ref{thm:dual-problem}]{}
+	\vspace{-0.4cm}
 	\paragraph{Lagrangian} To derive the dual problem, we start with the primal problem~\eqref{eq:primal-problem}.
 	We introduce Lagrange multipliers $\symbf{\alpha}_1,\symbf{\alpha}_2 \geq 0$ for the constraints $c_1(\symbf{w},b,\symbf{\xi}) \leq \symbf{0}_M$ and $c_2(\symbf{\xi}) \leq \symbf{0}_M$, respectively. The Lagrangian is given by:
 	\[
@@ -101,46 +102,38 @@ using the KKT optimality conditions.
 		\symbf{\xi}^\star & = \max\left\{\symbf{0}_M,\; \symbf{1}_M - Y(X\symbf{w}^\star + b^\star\symbf{1}_M)\right\}
 	\end{align*}
 \end{proposition}
-\begin{proof}
+\begin{proof}[Proof of Proposition~\ref{prop:D2P-solution}]{}{}
 	From the KKT conditions, the optimal weight vector $\symbf{w}^\star$ is given by:
 	\[
-	\symbf{w}^\star = \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i = X^\top Y \symbf{\alpha}^\star.
+	\symbf{w}^\star = X^\top Y \symbf{\alpha}^\star.
 	\]
-	To determine $b^\star$, we use the complementary slackness condition, which tells us that for any support vector (i.e.\ an index $i$ such that $0 < \alpha_i^\star < C$), the margin constraint is active and satisfies
-	\[
-	y_i (\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star) = 1.
-	\]
-	Solving for $b^\star$ yields:
-	\[
-	b^\star = y_i - \symbf{x}_i^\top \symbf{w}^\star,
-	\]
-	which holds for any $i$ with $0 < \alpha_i^\star < C$. 
-	To recover the slack variables $\symbf{\xi}^\star$, we rearrange the primal constraints:
-	\[
-	y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star) \ge 1 - \xi_i^\star, \quad \xi_i^\star \ge 0.
-	\]
-	Solving for $\xi_i^\star$, we obtain:
-	\[
-	\xi_i^\star = \max\left(0,\; 1 - y_i (\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\right),
-	\]
-	which in vector form becomes:
-	\[
-	\symbf{\xi}^\star = \max\left\{ \symbf{0}_M,\; \symbf{1}_M - Y(X \symbf{w}^\star + b^\star \symbf{1}_M) \right\}.
-	\]
+	To determine $b^\star$, we use the complementary slackness condition. For any support vector with $0 < \alpha_i^\star < C$, the corresponding constraint is active, yielding:
+	\begin{align*}
+	Y_{ii}(X_i\symbf{w}^\star + b^\star) &= 1 \quad \Rightarrow \quad b^\star = Y_{ii} - X_i\symbf{w}^\star
+	\end{align*}
+	which holds for any $i$ where $0 < \alpha_i^\star < C$. 
+	\medskip
+	For the slack variables $\symbf{\xi}^\star$, we use the primal constraints:
+	\begin{align*}
+	\begin{cases}
+	\symbf{1}_M - Y(X\symbf{w}^\star + b^\star\symbf{1}_M) - \symbf{\xi}^\star \leq \symbf{0}_M \\
+	-\symbf{\xi}^\star \leq \symbf{0}_M
+	\end{cases}
+	\quad \Rightarrow \quad \symbf{\xi}^\star = \max\{\symbf{0}_M,\; \symbf{1}_M - Y(X\symbf{w}^\star + b^\star\symbf{1}_M)\}
+	\end{align*}
+	Thus, the primal solution $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ can be recovered from the dual solution $\symbf{\alpha}^\star$ using the KKT conditions. \qed
 \end{proof}
-	
-
 \medskip
-
 \subsubsection{Existence and Uniqueness of the Dual Solution}
-The dual problem is a convex quadratic program with linear constraints.
+The dual problem is a convex quadratic problem (program) with linear constraints.
 The existence and uniqueness of the solution depend on the properties of the Gram matrix $G$ and the constraints imposed by the labels $Y$.
 
 \begin{theorem}{Existence \& Uniqueness of Dual Solution}{existence-uniqueness-dual}
 	The dual problem \eqref{eq:dual-problem} always admits at least one global minimizer. Moreover, if $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha}\mid \inner{\symbf{y}, \symbf{\alpha}}=0\}$, then the solution $\symbf{\alpha}^\star$ is unique. In degenerate cases, multiple optimal solutions may exist.
 \end{theorem}
 
-\begin{proof}{}{}
+\begin{proof}[Proof of Theorem~\ref{thm:existence-uniqueness-dual}]{}
+	\vspace{-0.4cm}
 	\paragraph{Existence of a solution:}
 	The dual problem \eqref{eq:dual-problem} is a convex quadratic program in $\symbf{\alpha}$, subject to a linear equality constraint $\symbf{\alpha}^\top Y = \symbf{0}^\top$ and box constraints $0 \leq \symbf{\alpha} \leq C\symbf{1}_M$. We define the feasible region as:
 	\[
@@ -149,7 +142,9 @@ The existence and uniqueness of the solution depend on the properties of the Gra
 	which is the intersection of the closed box $[0, C]^M$ with a hyperplane. This intersection is nonempty: because the dataset includes both positive and negative labels (i.e., $\exists\,p,n$ such that $y_p = 1$, $y_n = -1$), one can construct a feasible point by choosing $\alpha_p = \alpha_n$ and setting all other components to zero. Hence, $\Omega$ is closed, bounded, and nonempty.
 	
 	The dual objective function, \(\tilde{f}(\symbf{\alpha})\), is continuous and convex, being a quadratic form with symmetric matrix $YGY$ and linear term $-\symbf{1}_M^\top \symbf{\alpha}$. Since $f$ is continuous and convex over a compact feasible set $\Omega$, the extreme value theorem guarantees the existence of a global minimizer $\symbf{\alpha}^\star$.
-	
+\end{proof}
+\begin{proof}[]
+	\vspace{-0.7cm}
 	\paragraph{Uniqueness of a solution:} The Hessian of $f$ is $\nabla^2 f(\symbf{\alpha}) = YGY$, which is symmetric and positive semi-definite because $G$ is a Gram matrix and $Y$ is a diagonal matrix with $\pm 1$ entries.
 	If $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha} \in \mathbb{R}^M : \symbf{\alpha}^\top Y = \symbf{0}^\top\}$, then $f$ is strictly convex on the feasible region $\Omega$, and the minimizer $\symbf{\alpha}^\star$ is unique.
 	In contrast, if $YGY$ is only positive semi-definite (e.g., if $G$ is rank-deficient), then flat directions may exist in the objective, and multiple global minimizers may be possible.
