@@ -126,7 +126,7 @@ using the KKT optimality conditions.
 \end{proof}
 \medskip
 \subsubsection{Existence and Uniqueness of the Dual Solution}
-The dual problem is a convex quadratic problem (program) with linear constraints.
+The dual problem is a convex quadratic problem with linear constraints.
 The existence and uniqueness of the solution depend on the properties of the Gram matrix $G$ and the constraints imposed by the labels $Y$.
 
 \begin{theorem}{Existence \& Uniqueness of Dual Solution}{existence-uniqueness-dual}
@@ -136,7 +136,7 @@ The existence and uniqueness of the solution depend on the properties of the Gra
 \begin{proof}[Proof of Theorem~\ref{thm:existence-uniqueness-dual}]{}
 	\vspace{-0.4cm}
 	\paragraph{Existence of a solution:}
-	The dual problem \eqref{eq:dual-problem} is a convex quadratic program in $\symbf{\alpha}$, subject to a linear equality constraint $\symbf{\alpha}^\top Y = \symbf{0}^\top$ and box constraints $0 \leq \symbf{\alpha} \leq C\symbf{1}_M$. We define the feasible region as:
+	The dual problem \eqref{eq:dual-problem} is a convex quadratic problem in $\symbf{\alpha}$, subject to a linear equality constraint $\symbf{\alpha}^\top Y = \symbf{0}^\top$ and box constraints $0 \leq \symbf{\alpha} \leq C\symbf{1}_M$. We define the feasible region as:
 	\[
 		\Omega = \left\{ \symbf{\alpha} \in \mathbb{R}^M \;\middle|\; 0 \leq \symbf{\alpha} \leq C\symbf{1}_M, \;\symbf{\alpha}^\top Y = \symbf{0}^\top \right\},
 	\]

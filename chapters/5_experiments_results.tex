@@ -83,7 +83,8 @@ This aligns with theory that RBF is usually better-conditioned, while polynomial
 \subsection{Breast Cancer Wisconsin Dataset}
 Finally, we applied our SVM implementation to the Breast Cancer Wisconsin dataset, which contains 30 features computed from digitized images of fine needle aspirates (FNA) of breast mass, with binary labels indicating benign or malignant tumors.
 \vspace{-0.4cm}
-\paragraph{Model Selection:}
+\subsubsection{Kernel Selection and Hyperparameter Tuning}
+\vspace{-0.2cm}
 We evaluated multiple kernel types (Linear, RBF, Polynomial, Laplacian) with different $C$ values (0.1, 1.0, 10.0) on this dataset. Table~\ref{tab:cancer_results} shows the results.
 \begin{table}[H]
     \centering
@@ -108,6 +109,7 @@ The RBF kernel with $C=10.0$ achieved the best test accuracy of 98.25\%. Interes
     \caption{Decision boundary visualization of the Breast Cancer dataset after PCA reduction. Red points represent benign tumors, blue points represent malignant tumors, and black circles indicate support vectors.}
     \label{fig:cancer_pca}
 \end{figure}
-\vspace{-0.4cm}
-\vspace{-0.4cm}
-\paragraph{Discussion:} Our experiments showed that primal and dual SVMs yield identical solutions for linearly separable data. The parameter $C$ strikes a balance between margin width and misclassifications, thus impacting generalization. Non-linear kernels greatly improve performance on data sets with complex decision boundaries. When applied to real data like Breast Cancer, the RBF kernel generally performs best, though the linear kernel also worked well. Convergence relies on careful tuning of learning rates, tolerance thresholds, and iterations. These findings illustrate SVMs’ flexibility and effectiveness, especially when paired with suitable kernels for non-linear tasks.
+\vspace{-0.6cm}
+\subsubsection{Discussion}
+\vspace{-0.2cm}
+Our experiments showed that primal and dual SVMs yield identical solutions for linearly separable data. The parameter $C$ strikes a balance between margin width and misclassifications, thus impacting generalization. Non-linear kernels greatly improve performance on data sets with complex decision boundaries. When applied to real data like Breast Cancer, the RBF kernel generally performs best, though the linear kernel also worked well. Convergence relies on careful tuning of learning rates, tolerance thresholds, and iterations. These findings illustrate SVMs’ flexibility and effectiveness, especially when paired with suitable kernels for non-linear tasks.
