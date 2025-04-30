@@ -3,9 +3,8 @@ The primal problem involves minimizing a regularized hinge loss over three sets 
 the weight vector $\symbf{w} \in \mathbb{R}^d$, the bias $b \in \mathbb{R}$, and the slack variables 
 $\symbf{\xi} \in \mathbb{R}^M$. Solving this problem directly can be computationally inefficient, 
 especially in high-dimensional settings. An alternative formulation, derived via Lagrangian duality, 
-recasts the problem in terms of a single dual variable $\symbf{\alpha} \in \mathbb{R}^M$, 
-which provides both computational and theoretical advantages. Notably, the dual problem depends 
-only on inner products between data points, enabling the use of kernel methods. This alternative 
+reformulates the problem in terms of a single dual variable $\symbf{\alpha} \in \mathbb{R}^M$, 
+which provides both computational and theoretical advantages.This alternative 
 formulation, shown below, will be referred to as the dual problem (DP).
 
 \begin{equation}\label{eq:dual-problem}
