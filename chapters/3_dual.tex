@@ -6,15 +6,18 @@ over just one larger parameter providing computational and theoretical advantage
 especially when expressed in terms of inner products between data points. This alternate
 formulation, expressed below, will be refered to as the dual problem (DP).
 
-\begin{align}\label{eq:dual-problem}
-	\min_{\symbf{\alpha}} \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}} \text{ subject to }
+\begin{equation}\label{eq:dual-problem}
+	\min_{\symbf{\alpha} \in \R^M} \tilde{f}(\symbf{\alpha}) = \frac12 \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}
+	\;
+	\text{ subject to }
+	\;
 	\begin{cases}
 		0 \leq \symbf{\alpha} \leq C\symbf{1}_M,\\
 		\symbf{\alpha}^\top Y = 0.
-	\end{cases} \tag{DP}
-\end{align}
-	
-Where $G = \bigl(\inner*{\symbf{x}_i, \symbf{x}_j}\bigr)_{i,j=1,\hdots,M} = X X^\top$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
+	\end{cases}
+	\tag{DP}
+\end{equation}
+
 
 \subsubsection{Dual Derivation}
 The dual formulation offers several key advantages. In the context of support vector machines,
@@ -48,98 +51,56 @@ primal formulation.
 
 \end{proof}
 \begin{proof}[]
-	\subparagraph{Stationarity} The gradients of the Lagrangian with respect to the primal variables $(\symbf{w}, b, \symbf{\xi})$ must vanish:
+	\vspace{-0.7cm}
+	\subparagraph{Stationarity:} The gradients of the Lagrangian with respect to the primal variables $(\symbf{w}, b, \symbf{\xi})$ must vanish:
 	\begin{align*}
-		\nabla_{\symbf{w}} \Lcal = \symbf{w} -  (X^\top Y) \symbf{\alpha}_1 = \symbf{0}, \quad \nabla_{b} \Lcal = - \symbf{\alpha}_1^\top Y = \symbf{0}^\top, \quad \nabla_{\symbf{\xi}} \Lcal  = C \symbf{1}_M^\top - \symbf{\alpha}_1^\top - \symbf{\alpha}_2^\top = \symbf{0}_M^\top
+		\nabla_{\symbf{w}} \Lcal &= \symbf{w} -  X^\top Y \symbf{\alpha}_1 = \symbf{0}_M,\\
+		\nabla_{b} \Lcal &= - \symbf{\alpha}_1^\top Y = \symbf{0}_M^\top,\\
+		\nabla_{\symbf{\xi}} \Lcal  &= C \symbf{1}_M^\top - \symbf{\alpha}_1^\top - \symbf{\alpha}_2^\top = \symbf{0}_M^\top.
+	\end{align*}
+	\subparagraph{Complementary slackness:} The Lagrange multipliers $\symbf{\alpha}_1$ and $\symbf{\alpha}_2$ must satisfy the complementary slackness conditions:
+	\begin{align*}
+		\symbf{\alpha}_1^\top c_1(\symbf{w},b,\symbf{\xi}) &= \symbf{\alpha}_1^\top \left(\symbf{1}_M - Y\left(X\symbf{w} + b\symbf{1}_M\right)-\symbf{\xi}\right) = \symbf{0}_M^\top, \\
+		\symbf{\alpha}_2^\top c_2(\symbf{\xi}) &= -\symbf{\alpha}_2^\top \symbf{\xi}= \symbf{0}_M^\top.
 	\end{align*}
 
-	\subparagraph{Complementary slackness} The Lagrange multipliers $\symbf{\alpha}_1$ and $\symbf{\alpha}_2$ must satisfy the complementary slackness conditions:
+	\subparagraph{Feasibility:} The primal variables $(\symbf{w}, b, \symbf{\xi})$ must satisfy the original constraints:
 	\begin{align*}
-		\symbf{\alpha}_1^\top c_1(\symbf{w},b,\symbf{\xi}) = \symbf{0}_M^\top, \quad \symbf{\alpha}_2^\top c_2(\symbf{\xi}) = \symbf{0}_M^\top
+		c_1(\symbf{w},b,\symbf{\xi}) &= \symbf{1}_M - Y\left(X\symbf{w} + b\symbf{1}_M\right)-\symbf{\xi} \le \symbf{0}_M,\\
+		c_2(\symbf{\xi}) &= -\symbf{\xi} \le \symbf{0}_M.
 	\end{align*}
-
-	\subparagraph{Feasibility} The primal variables $(\symbf{w}, b, \symbf{\xi})$ must satisfy the primal constraints:
+	Thus, we get the following KKT conditions:
 	\begin{align*}
-		c_1(\symbf{w},b,\symbf{\xi}) = \symbf{1}_M - Y\left(X\symbf{w} + b\symbf{1}_M\right)-\symbf{\xi}\le\symbf{0}_M, \\
-		c_2(\symbf{\xi}) = -\symbf{\xi}\le\symbf{0}_M.
+		\symbf{w}             & = X^\top Y \symbf{\alpha}_1.\\
+		\quad \symbf{\alpha}_1^\top Y  &= \symbf{0}_M^\top,\\
+		\symbf{0}_M \leq \symbf{\alpha}_1 &\leq C\symbf{1}_M.
 	\end{align*}
-
-	Thus, we have the following conditions:
+	Where $\symbf{\alpha}_2 = \symbf{0}_M$ because of the complementary slackness condition.
+	Substituting this in to the Lagrangian, denoting $\symbf{\alpha} = \symbf{\alpha}_1$ and flipping signs for a minimization problem, we get:
 	\begin{align*}
-		\symbf{w}             & = X^\top Y \symbf{\alpha}_1 , \quad \symbf{\alpha}_1^\top Y  = \symbf{0}_M^\top, \quad \symbf{0}_M \leq \symbf{\alpha}_1 + \underset{=\symbf{0}}{\symbf{\alpha}_2} \leq C\symbf{1}_M \; \text{where}                                                               \\
-		\norm*{\symbf{w}}_2^2 & = \norm{X^\top Y \symbf{\alpha}_1}_2^2 = \left(X^\top Y \symbf{\alpha}_1\right)^\top \left(X^\top Y \symbf{\alpha}_1\right) = \symbf{\alpha}_1^\top Y [X X^\top] Y \symbf{\alpha}_1 = \inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1}
+		\min_{\symbf{\alpha}} \tilde{f}(\symbf{\alpha}) := \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}
+		\;
+		\text{ subject to }
+		\;
+		\begin{cases}
+			0 \leq \symbf{\alpha} \leq C\symbf{1}_M,\\
+			\symbf{\alpha}_1^\top Y = 0.
+		\end{cases}
 	\end{align*}
-	Substituting this into the Lagrangian gives:
-	\begin{align*}
-		g(\symbf{\alpha}_1) = \tfrac12\symbf{\alpha}_1^\top YGY \symbf{\alpha}_1 -\symbf{\alpha}_1^\top YGY\symbf{\alpha}_1 +\symbf{\alpha}_1^\top \symbf{1}_M = -\tfrac12\inner*{\symbf{\alpha}_1, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}_1} + \inner*{\symbf{1}_M, \symbf{\alpha}_1}
-	\end{align*}
-	Flipping signs for a minimization form, gives us the dual problem is
-	\[
-		\min_{\symbf{\alpha}} \tfrac12\symbf{\alpha}^\top YGY \symbf{\alpha}
-		-\symbf{1}_M^\top \symbf{\alpha}
-		\quad\text{subject to}\quad
-		0\le\symbf{\alpha}\le C\symbf{1}_M,
-		\symbf{\alpha}^\top Y =0.
-	\]
-	This completes the derivation of the dual problem~\eqref{thm:dual-problem}.\qed
+	This completes the derivation of the dual problem~\eqref{eq:dual-problem}. \qed
 \end{proof}
-
 Once the dual problem \eqref{thm:dual-problem} has been solved and an optimal dual variable
 $\symbf{\alpha}^\star$ has been obtained, we can reconstruct the corresponding solution
 $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem \eqref{eq:primal-problem}
 using the KKT optimality conditions.
-
 \begin{proposition}{Recovering Primal Solution from Dual Solution}{D2P-solution}
-	Given an optimal solution $\symbf{\alpha}^\star$ to the dual problem 
-	\eqref{eq:dual-problem}, the corresponding optimal solution 
-	$(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem 
-	\eqref{eq:primal-problem} can be recovered as:
-
+	Given an optimal solution $\symbf{\alpha}^\star$ to the dual problem \eqref{eq:dual-problem}, the corresponding optimal solution  $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem\eqref{eq:primal-problem} can be recovered as:
 	\begin{align*}
 		\symbf{w}^\star   & = X^\top Y \symbf{\alpha}^\star                                                                                 \\
 		b^\star           & = y_i - \symbf{x}_i^\top\symbf{w}^\star \quad \text{for any index } i \text{ such that } 0 < \alpha_i^\star < C \\
 		\symbf{\xi}^\star & = \max\left\{\symbf{0}_M,\; \symbf{1}_M - Y(X\symbf{w}^\star + b^\star\symbf{1}_M)\right\}
 	\end{align*}
 \end{proposition}
-
-\begin{proof}{}{}
-	\paragraph{Recovering $b^\star$}
-
-	For any support vector with $0 < \alpha_i^\star < C$, we know that $\xi_i^\star = 0$ and the corresponding constraint is active:
-	\begin{align*}
-		y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star) & = 1                                                  \\
-		b^\star                                                     & = y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle
-	\end{align*}
-	In practice, $b^\star$ is often computed by averaging this quantity over all such $i$ for which $0 < \alpha_i^\star < C$.
-
-	\paragraph{Recovering $\xi_i^\star$} Rewriting the margin constraint,
-	\begin{align*}
-		\xi_i^\star \ge 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star), \quad \xi_i^\star & \ge 0                                                                                \\
-		\xi_i^\star                                                                                        & = \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)
-	\end{align*}
-
-	Given an optimal dual solution $\symbf{\alpha}^\star$, the corresponding primal solution is recovered via:
-	\begin{align*}
-		\symbf{w}^\star & = \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i = \symbf{y}^\top \symbf{\alpha}^\star \symbf{x}                                                                  \\
-		b^\star         & = y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle = \symbf{y} - {\symbf{w}^\star}^\top \symbf{x} = \symbf{y} - \inner*{\symbf{\alpha}^\star \symbf{x}, \symbf{y} \symbf{x}} \quad \text{for any } i \text{ such that } 0 < \alpha_i^\star < C \\
-		\xi_i^\star     & = \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)
-	\end{align*}
-	\paragraph{Recovering the Primal Problem:}
-	\begin{align*}
-		 & \min_{\symbf{w}, b, \symbf{\xi}} \quad
-		f(\symbf{y}^\top \symbf{\alpha}^\star \symbf{x},\symbf{y} - {\symbf{w}^\star}^\top \symbf{x}, \symbf{\xi})
-		= \frac{1}{2}\|\symbf{y}^\top \symbf{\alpha}^\star \symbf{x}\|_2^2 + C\,\symbf{1}_M^\top \symbf{\xi}
-		\quad                                                                                                                                                                                                                                                            \\
-		 & \text{subject to}
-		\quad
-		\begin{cases}
-			\symbf{1}_M - Y\bigl(X\,\symbf{y}^\top \symbf{\alpha}^\star \symbf{x} + (\symbf{y} - \inner*{\symbf{\alpha}^\star \symbf{x}, \symbf{y} \symbf{x}})\,\symbf{1}_M\bigr) - \symbf{\xi} & \le \symbf{0}_M, \\[6pt]
-			\symbf{\xi} \;\;                                                                                                                                                                    & \ge \symbf{0}_M,
-		\end{cases} \\
-	\end{align*}
-	This shows that the primal problem can be recovered from the dual solution $\symbf{\alpha}^\star$. \qed
-\end{proof}
-	
 \begin{proof}
 	From the KKT conditions, the optimal weight vector $\symbf{w}^\star$ is given by:
 	\[
@@ -186,20 +147,13 @@ The existence and uniqueness of the solution depend on the properties of the Gra
 		\Omega = \left\{ \symbf{\alpha} \in \mathbb{R}^M \;\middle|\; 0 \leq \symbf{\alpha} \leq C\symbf{1}_M, \;\symbf{\alpha}^\top Y = \symbf{0}^\top \right\},
 	\]
 	which is the intersection of the closed box $[0, C]^M$ with a hyperplane. This intersection is nonempty: because the dataset includes both positive and negative labels (i.e., $\exists\,p,n$ such that $y_p = 1$, $y_n = -1$), one can construct a feasible point by choosing $\alpha_p = \alpha_n$ and setting all other components to zero. Hence, $\Omega$ is closed, bounded, and nonempty.
-
-	The dual objective function,
-	\[
-		f(\symbf{\alpha}) = \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} - \inner*{\symbf{1}_M, \symbf{\alpha}},
-	\]
-	is continuous and convex, being a quadratic form with symmetric matrix $YGY$ and linear term $-\symbf{1}_M^\top \symbf{\alpha}$. Since $f$ is continuous and convex over a compact feasible set $\Omega$, the extreme value theorem guarantees the existence of a global minimizer $\symbf{\alpha}^\star$.
-
-	\paragraph{Uniqueness of a solution:}
-	The Hessian of $f$ is $\nabla^2 f(\symbf{\alpha}) = YGY$, which is symmetric and positive semi-definite because $G$ is a Gram matrix and $Y$ is a diagonal matrix with $\pm 1$ entries.
+	
+	The dual objective function, \(\tilde{f}(\symbf{\alpha})\), is continuous and convex, being a quadratic form with symmetric matrix $YGY$ and linear term $-\symbf{1}_M^\top \symbf{\alpha}$. Since $f$ is continuous and convex over a compact feasible set $\Omega$, the extreme value theorem guarantees the existence of a global minimizer $\symbf{\alpha}^\star$.
+	
+	\paragraph{Uniqueness of a solution:} The Hessian of $f$ is $\nabla^2 f(\symbf{\alpha}) = YGY$, which is symmetric and positive semi-definite because $G$ is a Gram matrix and $Y$ is a diagonal matrix with $\pm 1$ entries.
 	If $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha} \in \mathbb{R}^M : \symbf{\alpha}^\top Y = \symbf{0}^\top\}$, then $f$ is strictly convex on the feasible region $\Omega$, and the minimizer $\symbf{\alpha}^\star$ is unique.
 	In contrast, if $YGY$ is only positive semi-definite (e.g., if $G$ is rank-deficient), then flat directions may exist in the objective, and multiple global minimizers may be possible.
-
-	\paragraph{Degenerate cases:}
-	Degenerate cases occur when $YGY$ is positive semi-definite but not positive-definite on the constraint subspace. This happens in several scenarios:
+	\paragraph{Degenerate cases:} Degenerate cases occur when $YGY$ is positive semi-definite but not positive-definite on the constraint subspace. This happens in several scenarios:
 	\begin{enumerate}
 		\item When the data vectors $\{\symbf{x}_i\}$ are linearly dependent, making the Gram matrix $G$ rank-deficient. For example, if two feature vectors are identical but have the same label, or if one feature vector is a linear combination of others.
 		\item When the number of data points $M$ exceeds the dimension $N$ of the feature space, necessarily creating linear dependencies.

@@ -2,9 +2,11 @@
 \usepackage{bib/trymtex}
 \usepackage{csquotes}
 \usepackage[backend=biber]{biblatex}
-\addbibresource{bib/references.bib}
 \usepackage[short]{optidef}
 \usepackage{wrapfig}
+\usepackage{optidef}
+
+\addbibresource{bib/references.bib}
 
 \begin{document}
 
@@ -12,6 +14,37 @@
 
 \tableofcontents
 
+\section*{Notation}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|l|}
+		\hline
+		\textbf{Symbol}                                               & \textbf{Description}                    \\
+		\hline
+		$\symbf{w} \in \R^d$                                          & Weight vector                           \\
+		\hline
+		$b \in \R$                                                    & Bias term                               \\
+		\hline
+		$\symbf{\xi} \in \R^M$                                        & Vector of slack variables               \\
+		\hline
+		$X = [\symbf{x}_1, \ldots, \symbf{x}_M] \in \R^{d \times M}$  & Data matrix                             \\
+		\hline
+		$G = X^\top X \in \R^{M \times M}$                            & Gram matrix                             \\
+		\hline
+		$\symbf{y}=[y_1, \ldots, y_M]^\top \in \{\pm1\}^M$            & Label vector                            \\
+		\hline
+		$Y = \operatorname{diag}(y_1,\ldots,y_M) \in \R^{M \times M}$ & Label/diagonal matrix                   \\
+		\hline
+		$Y = \operatorname{diag}(y_1,\ldots,y_M)$                     & Diagonal label matrix                   \\
+		\hline
+		$C > 0$                                                       & Penalty parameter for misclassification \\
+		\hline
+	\end{tabular}
+	\caption{Notation for the Soft-Margin classification problem}
+	\label{tab:notation}
+\end{table}
+\clearpage
 \input{chapters/1_introduction}
 \input{chapters/2_primal}
 \input{chapters/3_dual}
@@ -20,6 +53,7 @@
 \input{chapters/6_conclusion}
 
 \printbibliography[title={References}]
+
 
 \appendix
 

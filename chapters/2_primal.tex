@@ -1,138 +1,85 @@
 \section{Problem Formulations}\label{chap:problem}
-
 \subsection{The Primal Problem (P)} % TODO
 We begin by formulating the Soft-Margin classification as a constrained optimization problem, 
-which will serve as our primal problem (P).
-
+which will be referred to as the \emph{Primal Problem} (P).
 \begin{align*}\label{eq:primal-problem}
-	\min_{\symbf{w}, b, \symbf{\xi}} \quad
-	 & f(\symbf{w}, b, \symbf{\xi})
-	= \frac{1}{2}\|\symbf{w}\|_2^2 + C\,\symbf{1}_M^\top \symbf{\xi}
-	\quad
-	\text{subject to}
-	\quad
+	\min_{\symbf{w}, b, \symbf{\xi}} f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\,\symbf{1}_M^\top \symbf{\xi}
+	\;
+	\text{ subject to } 
+	\;
 	\begin{cases}
-		c_1(\symbf{w}, b, \symbf{\xi}) = \symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi}  \le \symbf{0}_M, \\[6pt]
-		c_2(\symbf{\xi}) = -\symbf{\xi} \leq \symbf{0}_M,
+		c_1(\symbf{w}, b, \symbf{\xi}) = \symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi}  \le \symbf{0}_M \\
+		c_2(\symbf{\xi}) = -\symbf{\xi} \leq \symbf{0}_M
 	\end{cases}\tag{P}
 \end{align*}
-\begin{table}[H]
-	\centering
-	\begin{tabular}{|c|l|}
-		\hline
-		\textbf{Symbol} & \textbf{Description} \\
-		\hline
-		$\symbf{w} \in \R^d$ & Weight vector \\
-		\hline
-		$b \in \R$ & Bias term \\
-		\hline
-		$\symbf{\xi} \in \R^M$ & Vector of slack variables \\
-		\hline
-		$X = [\symbf{x}_1, \ldots, \symbf{x}_M] \in \R^{d \times M}$ & Data matrix \\
-		\hline
-		$\symbf{y}=[y_1, \ldots, y_M]^\top \in \{\pm1\}^M$ & Label vector \\
-		\hline
-		$Y = \operatorname{diag}(y_1,\ldots,y_M)$ & Diagonal label matrix \\
-		\hline
-		$C > 0$ & Penalty parameter for misclassification \\
-		\hline
-	\end{tabular}
-	\caption{Notation for the Soft-Margin classification problem}
-	\label{tab:notation}
-\end{table}
-
 \subsubsection{Existence and Uniqueness of Constrained Optimization Problems}
-For an unconstrained optimization problem, three properties are required to prove the existence 
-and uniqueness of a minimizer; \emph{Feasibility, Coercivity, and Strict Convexity}. 
-Together these properties ensure that a unique global minimizer exists.
- 
-Feasibility guarantees a non-empty constraint set, coercivity prevents minimizers from 
+For an unconstrained optimization problem, three properties are required to prove the existence
+and uniqueness of a minimizer; \emph{Feasibility, Coercivity, and Strict Convexity}.
+Feasibility guarantees a non-empty constraint set, coercivity prevents minimizers from
 escaping to infinity, and strict convexity ensures both global optimality and uniqueness.
+Together these properties ensure that a unique global minimizer exists.
 
-However, for constrained optimization, these traits do not by themselves guarantee existence or 
-uniqueness of the minimizer, because the structure of the feasible set can allow none or 
-multiple solutions even when the objective is strictly convex. Constraints can disconnect or 
-restrict the domain in ways that create no or multiple global minimizers despite the objective's 
+However, for constrained optimization, these traits do not by themselves guarantee existence or
+uniqueness of the minimizer, because the structure of the feasible set can allow none or
+multiple solutions even when the objective is strictly convex. Constraints can disconnect or
+restrict the domain in ways that create no or multiple global minimizers despite the objective's
 properties.
 
 \begin{theorem}{Existence and Uniqueness of the Primal Solution}{existence-uniqueness-primal}
-	The primal problem \eqref{eq:primal-problem} always admits at least one global minimizer. 
-	Additionally, if the feasible set is convex and the objective is strictly convex in $\symbf{w}$, 
-	then the optimal weight vector $\symbf{w}^\star$ is unique. However, the optimal bias $b^\star$ 
+	The primal problem \eqref{eq:primal-problem} always admits at least one global minimizer,
+	given that the feasible set is non-empty, closed and bounded, and the objective function is continuous.
+	Additionally, if the feasible set is convex and the objective is strictly convex in $\symbf{w}$,
+	then the optimal weight vector $\symbf{w}^\star$ is unique. However, the optimal bias $b^\star$
 	and slack variables $\symbf{\xi}^\star$ may not be uniquely determined in general.
-  \end{theorem}
+\end{theorem}
 
 
 \begin{proof}{Proof of Theorem~\ref{thm:existence-uniqueness-primal}}{}
-	\paragraph{Existence of a minimizer.}
-	To show the existence of a minimizer in a constrained optimization problem, the following properties 
-	must be met: The objective function must be continuous and the feasible set must be non-empty and closed.
+	\vspace{-0.4cm}
+	\paragraph{Existence of a minimizer:}
+	To show the existence of a minimizer in a constrained optimization problem, the objective function must be continuous and the feasible set must be non-empty and closed.
 	Additionally, either the feasible set must be bounded or the objective function must be coercive in order
-	guarantee that the minimizer does not escape to infinity, effectively bounding the feasible set.\\
+	guarantee that the minimizer does not escape to infinity, effectively bounding the feasible set.
 
-	From the constraints given in \ref{eq:primal-problem}, the feasible set is defined by two sets of 
-	affine inequalities:
-	\[
-	Y(X\symbf{w} + b\symbf{1}_M) + \symbf{\xi} \ge \symbf{1}_M, \qquad \symbf{\xi} \ge \symbf{0}_M.
-	\]
+	\medskip
 
-	Verifing the required properties:
+	From the constraints given in \eqref{eq:primal-problem}, the feasible set is defined by two sets of affine inequalities:
+	\begin{equation*}
+		\Omega = \bigl\{(\symbf{w}, b, \symbf{\xi}) \in \R^{d+1+M} \mid
+		Y(X\symbf{w} + b\symbf{1}_M) + \symbf{\xi} \ge \symbf{1}_M, \symbf{\xi} \ge \symbf{0}_M
+		\bigr\}
+	\end{equation*}
 	\begin{itemize}
-		\item \textbf{Continuity:} The objective function
-		\[
-		f(\symbf{w}, b, \symbf{\xi}) = \frac{1}{2}\|\symbf{w}\|_2^2 + C\symbf{1}_M^\top\symbf{\xi}
-		\]
-		is continuous as it is the sum of continuous functions.
-		\item \textbf{Feasibility:} Setting $\symbf{w} = \symbf{0}_d$, $b = 0$, and 
-		$\symbf{\xi} = \symbf{1}_M$ satisfies all constraints. Thus, the feasible set is nonempty, \(\Omega \neq \emptyset\).
-		\item \textbf{Closedness:} A feasible set defined by continuous inequality constraints, such as 
-		affine inequalities, is closed. Since affine functions are continuous, if a sequence $(x_k)$ in 
-		the feasible set converges to a point $x$, then by continuity $g_i(x) = \lim_{k\to\infty} g_i(x_k)$.
-		As $g_i(x_k) \leq 0$ for all $k$, it follows that $g_i(x) \leq 0$ for each constraint function. 
-		Thus, $x$ also satisfies all the constraints, and therefore belongs to the feasible set. Hence, 
-		the feasible set is closed.
-		\item \textbf{Boundedness:} Although the feasible set may not be bounded, the objective function is 
-		coercive, as
-		\[
-		f(\symbf{w},b,\symbf{\xi}) 
-		= \frac{1}{2}\|\symbf{w}\|_2^2 
-		  + C\symbf{1}_M^\top\symbf{\xi}
-		\]
-		grows unboundedly whenever $\|\symbf{w}\| \to \infty$ or $\|\symbf{\xi}\| \to \infty$, 
-		with $C > 0$ and $\xi_i \ge 0$. Thus, coercivity prevents minimizers from escaping to infinity, 
-		ensuring they lie in a bounded region.
+		\item \textbf{Continuity:} The objective function \(f(\symbf{w}, b, \symbf{\xi})\) is continuous, as it is the sum of continuous functions.
+		\item \textbf{Feasibility:} Setting $\symbf{w} = \symbf{0}_d$, $b = 0$, and
+		      $\symbf{\xi} = \symbf{1}_M$ satisfies all constraints. Thus, the feasible set is nonempty, \(\Omega \neq \emptyset\).
+		\item \textbf{Closedness:} The feasible set is defined by continuous affine inequality constraints, making it closed. For any convergent sequence $(x_k)$ in the feasible set with limit $x$, the continuity of the constraint functions ensures $g_i(x) = \lim_{k\to\infty} g_i(x_k) \leq 0$ for all constraints, thus $x$ remains feasible and the set is closed.
+		\item \textbf{Boundedness:} Although the feasible set may not be bounded, the objective function is
+		      coercive, as it grows unboundedly \(\lim_{\|\symbf{w}\|, \|\symbf{\xi}\| \to \infty} f(\symbf{w}, b, \symbf{\xi}) \to \infty\)
+		      with $C > 0$ and $\xi_i \ge 0$. Thus, coercivity prevents minimizers from escaping to infinity,
+		      ensuring they lie in a bounded region.
 	\end{itemize}
-	By the Extreme Value Theorem, since the feasible set is non-empty and closed, and since coercivity 
-	prevents escape to infinity while the objective is continuous, a global minimizer must exist.
-
-	
-	\paragraph{Uniqueness of a minimizer.}
-	To show the uniqueness of a minimizer in a constrained optimization problem, the following properties 
-	must be satisfied: The objective function must be strictly convex, and the feasible set must be convex. 
-	Strict convexity ensures that the objective cannot have two distinct minimizers achieving the same 
-	value, while convexity of the feasible set guarantees that any convex combination of feasible points 
-	remains feasible. Together, these properties imply that if a minimizer exists, it must be unique.\\
-
-	Verifying the required properties:
+	By the \emph{Extreme Value Theorem}, since the feasible set is non-empty and closed, and since coercivity
+	prevents escape to infinity while the objective is continuous, a global minimizer must exist\cite{ev-theorem}.
+	\paragraph{Uniqueness of a minimizer:} To show the uniqueness of a minimizer in a constrained optimization problem, the objective function must be strictly convex, and the feasible set must be convex.
+	Strict convexity ensures that the objective cannot have two distinct minimizers achieving the same
+	value, while convexity of the feasible set guarantees that any convex combination of feasible points
+	remains feasible. Together, these properties imply that if a minimizer exists, it must be unique.
 	\begin{itemize}
-		\item \textbf{Strict Convexity:} The objective function is strictly convex in $\symbf{w}$, since it 
-		includes the term $\frac{1}{2}\|\symbf{w}\|_2^2$, which is strictly convex. 
-		The dependence on $b$ and $\symbf{\xi}$ is affine, which does not affect strict convexity in 
-		$\symbf{w}$.
+		\item \textbf{Strict Convexity:} The objective function is strictly convex in $\symbf{w}$, since it
+		      includes the term $\frac{1}{2}\|\symbf{w}\|_2^2$, which is strictly convex.
+		      The dependence on $b$ and $\symbf{\xi}$ is affine, which does not affect strict convexity in
+		      $\symbf{w}$.
 
-		\item \textbf{Convexity of the Feasible Set:} The feasible set is defined by affine inequalities, 
-		and sets defined by affine inequalities are convex. Hence, the feasible region is convex.
+		\item \textbf{Convexity of the Feasible Set:} The feasible set is defined by affine inequalities,
+		      and sets defined by affine inequalities are convex. Hence, the feasible region is convex.
 
-		\item \textbf{Behavior of $b$ and $\symbf{\xi}$:} Since $b$ and $\symbf{\xi}$ appear linearly in 
-		the objective and constraints, and because strict convexity is only in $\symbf{w}$, the 
-		variables $b^\star$ and $\symbf{\xi}^\star$ may not be uniquely determined, especially in 
-		degenerate cases.
+		\item \textbf{Behavior of $b$ and $\symbf{\xi}$:} Since $b$ and $\symbf{\xi}$ appear linearly in
+		      the objective and constraints, and because strict convexity is only in $\symbf{w}$, the
+		      variables $b^\star$ and $\symbf{\xi}^\star$ may not be uniquely determined, especially in
+		      degenerate cases.
 	\end{itemize}
-
-	Thus, by strict convexity of the objective in $\symbf{w}$ and convexity of the feasible set, the 
-	minimizer $\symbf{w}^\star$ is unique. Furthermore, since the problem is convex, any local minimizer 
-	is also a global minimizer.
+	Thus, by strict convexity of the objective in $\symbf{w}$ and convexity of the feasible set, the
+	minimizer $\symbf{w}^\star$ is unique. Furthermore, since the problem is convex, any local minimizer
+	is also a global minimizer. \qed
 \end{proof}
-
-
-	
