@@ -1,10 +1,12 @@
 \subsection{The Dual Problem (DP)}
-The primal problem involves minimizing a regularized hinge loss over the three parameters 
-defining a separating hyperplane. Optimizing over three parameters can be computationally
-ineffcient. Using an alternate formulation, derived via Lagrangian duality, allows minimizing 
-over just one larger parameter providing computational and theoretical advantages, 
-especially when expressed in terms of inner products between data points. This alternate
-formulation, expressed below, will be refered to as the dual problem (DP).
+The primal problem involves minimizing a regularized hinge loss over three sets of variables: 
+the weight vector $\symbf{w} \in \mathbb{R}^d$, the bias $b \in \mathbb{R}$, and the slack variables 
+$\symbf{\xi} \in \mathbb{R}^M$. Solving this problem directly can be computationally inefficient, 
+especially in high-dimensional settings. An alternative formulation, derived via Lagrangian duality, 
+recasts the problem in terms of a single dual variable $\symbf{\alpha} \in \mathbb{R}^M$, 
+which provides both computational and theoretical advantages. Notably, the dual problem depends 
+only on inner products between data points, enabling the use of kernel methods. This alternative 
+formulation, shown below, will be referred to as the dual problem (DP).
 
 \begin{equation}\label{eq:dual-problem}
 	\min_{\symbf{\alpha} \in \R^M} \tilde{f}(\symbf{\alpha}) = \frac12 \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}}
