@@ -20,11 +20,9 @@ The primal formulation achieved almost \(\approx 100\%\) accuracy on the trainin
 The algorithm correctly identified two support vectors (one from each class), which lie exactly on the margin boundaries. 
 The weight vector converged approximately to $\mathbf{w} \approx [0.7069, 0.7073]$, which is just the normalized primal solution. with a bias term $b = -0.001$, resulting in a maximum margin hyperplane.
 \subsubsection{Dual SVM with Linear Kernel}
-We trained the Dual SVM with the same $C=1.0$ parameter using a linear kernel. 
-The dual formulation actually achieved 100\% accuracy, and identified the same support vectors as the primal approach.
+We trained the Dual SVM with the same $C=1.0$ parameter using a linear kernel, and achieved 100\% accuracy, and identified the same support vectors as the primal approach.
 When we recovered the weight vector from the dual solution we obtained $\mathbf{w} \approx [0.7071, 0.7071]$.
 This confirms the theoretical equivalence of the primal and dual formulations for linear separable data.
-Figure~\ref{fig:dual_svm} shows the resulting decision boundary.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\textwidth]{figures/dual_svm.png}
@@ -52,7 +50,7 @@ Figure~\ref{fig:c_values} shows how the decision boundaries and margins change w
     \caption{Comparison of different $C$ values in Primal SVM. Lower $C$ values (left) result in wider margins but may allow more training errors, while higher $C$ values (right) enforce stricter classification at the cost of narrower margins.}
     \label{fig:c_values}
 \end{figure}
-\vspace{-0.4cm}
+\vspace{-0.8cm}
 \begin{itemize}
     \item With $C = 0.1$ (low regularization), the model prioritizes a wider margin at the potential cost of misclassifications.
     \item With $C = 1.0$ (balanced), we achieve a good trade-off between margin width and classification accuracy.
@@ -67,23 +65,24 @@ We next evaluate our dual SVM implementation on non-linearly separable data usin
     \label{fig:kernels}
 \end{figure}
 \vspace{-0.4cm}
-\begin{wrapfigure}{r}{0.45\textwidth}
-    \centering
-    \includegraphics[width=0.45\textwidth]{figures/kernel_convergence_comparison.png}
-    \caption{Convergence behavior of different kernels during optimization.}
-    \label{fig:kernel_convergence}
-\end{wrapfigure}
 As expected, the linear kernel performs the \enquote{worst} on the non-linear dataset, with a 99.67\% accuracy.
 The RBF kernel with $\gamma=0.5$ perfectly captures the circular decision boundary with 100\% accuracy.
 The polynomial kernel (degree 3) also performs well with 100\% accuracy but creates a more complex decision boundary.
 The Laplacian kernel ($\gamma=0.1$) also achieves 100\% accuracy with a smooth decision boundary.
 This demonstrates the flexibility of SVMs with different kernel functions, allowing them to adapt to various data distributions.
 \subsection{Convergence Analysis of Different Kernels}
+\begin{wrapfigure}[16]{R}{0.50\textwidth}
+    \centering
+    \includegraphics[width=0.49\textwidth]{figures/kernel_convergence_comparison.png}
+    \caption{Convergence behavior of different kernels during optimization.}
+    \label{fig:kernel_convergence}
+\end{wrapfigure}
 To examine kernel-specific optimization, we tracked dual SVM convergence on the non-linear dataset (Fig.~\ref{fig:kernel_convergence}).
 RBF converged fastest (~80 iterations), linear took ~100 with mild oscillations, Laplacian needed ~200 stable steps, and polynomial exhibited the most instability, converging after ~200.
 This aligns with theory that RBF is usually better-conditioned, while polynomial kernels may be numerically challenging\cite{svm_convergence}.
 \subsection{Breast Cancer Wisconsin Dataset}
 Finally, we applied our SVM implementation to the Breast Cancer Wisconsin dataset, which contains 30 features computed from digitized images of fine needle aspirates (FNA) of breast mass, with binary labels indicating benign or malignant tumors.
+\vspace{-0.4cm}
 \paragraph{Model Selection:}
 We evaluated multiple kernel types (Linear, RBF, Polynomial, Laplacian) with different $C$ values (0.1, 1.0, 10.0) on this dataset. Table~\ref{tab:cancer_results} shows the results.
 \begin{table}[H]
@@ -102,6 +101,7 @@ We evaluated multiple kernel types (Linear, RBF, Polynomial, Laplacian) with dif
     \caption{Performance of different SVM configurations on the Breast Cancer Wisconsin dataset.}
     \label{tab:cancer_results}
 \end{table}
+The RBF kernel with $C=10.0$ achieved the best test accuracy of 98.25\%. Interestingly, the linear kernel with $C=0.1$ performed nearly as well, suggesting that the data might be largely linearly separable in the original feature space. The dramatic drop in performance for the linear kernel with $C=10.0$ indicates possible numerical issues or instability with high regularization values.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.45\textwidth]{figures/breast_cancer_pca.png}
@@ -109,6 +109,5 @@ We evaluated multiple kernel types (Linear, RBF, Polynomial, Laplacian) with dif
     \label{fig:cancer_pca}
 \end{figure}
 \vspace{-0.4cm}
-The RBF kernel with $C=10.0$ achieved the best test accuracy of 98.25\%. Interestingly, the linear kernel with $C=0.1$ performed nearly as well, suggesting that the data might be largely linearly separable in the original feature space. The dramatic drop in performance for the linear kernel with $C=10.0$ indicates possible numerical issues or instability with high regularization values.
-\paragraph{PCA Visualization:} We applied PCA to reduce the dataset to two dimensions and trained an RBF SVM on this reduced space (Fig.~\ref{fig:cancer_pca}). The first two components explain about 63\% of the variance, driven mainly by mean concavity, mean concave points, and worst concave points, which aid in distinguishing benign and malignant tumors.
+\vspace{-0.4cm}
 \paragraph{Discussion:} Our experiments showed that primal and dual SVMs yield identical solutions for linearly separable data. The parameter $C$ strikes a balance between margin width and misclassifications, thus impacting generalization. Non-linear kernels greatly improve performance on data sets with complex decision boundaries. When applied to real data like Breast Cancer, the RBF kernel generally performs best, though the linear kernel also worked well. Convergence relies on careful tuning of learning rates, tolerance thresholds, and iterations. These findings illustrate SVMs’ flexibility and effectiveness, especially when paired with suitable kernels for non-linear tasks.
