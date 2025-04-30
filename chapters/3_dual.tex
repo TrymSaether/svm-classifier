@@ -141,13 +141,13 @@ The existence and uniqueness of the solution depend on the properties of the Gra
 		\Omega = \left\{ \symbf{\alpha} \in \mathbb{R}^M \;\middle|\; 0 \leq \symbf{\alpha} \leq C\symbf{1}_M, \;\symbf{\alpha}^\top Y = \symbf{0}^\top \right\},
 	\]
 	which is the intersection of the closed box $[0, C]^M$ with a hyperplane. This intersection is nonempty: because the dataset includes both positive and negative labels (i.e., $\exists\,p,n$ such that $y_p = 1$, $y_n = -1$), one can construct a feasible point by choosing $\alpha_p = \alpha_n$ and setting all other components to zero. Hence, $\Omega$ is closed, bounded, and nonempty.
-	
+	\medskip
 	The dual objective function, \(\tilde{f}(\symbf{\alpha})\), is continuous and convex, being a quadratic form with symmetric matrix $YGY$ and linear term $-\symbf{1}_M^\top \symbf{\alpha}$. Since $f$ is continuous and convex over a compact feasible set $\Omega$, the extreme value theorem guarantees the existence of a global minimizer $\symbf{\alpha}^\star$.
 	\paragraph{Uniqueness of a solution:} The Hessian of $f$ is $\nabla^2 f(\symbf{\alpha}) = YGY$, which is symmetric and positive semi-definite because $G$ is a Gram matrix and $Y$ is a diagonal matrix with $\pm 1$ entries.
 	If $YGY$ is strictly positive-definite on the subspace $\{\symbf{\alpha} \in \mathbb{R}^M : \symbf{\alpha}^\top Y = \symbf{0}^\top\}$, then $f$ is strictly convex on the feasible region $\Omega$, and the minimizer $\symbf{\alpha}^\star$ is unique.
 \end{proof}
 \begin{proof}[]{}
-	
+
 	In contrast, if $YGY$ is only positive semi-definite (e.g., if $G$ is rank-deficient), then flat directions may exist in the objective, and multiple global minimizers may be possible.
 	\paragraph{Degenerate cases:} Degenerate cases occur when $YGY$ is positive semi-definite but not positive-definite on the constraint subspace. This happens in several scenarios:
 	\begin{enumerate}

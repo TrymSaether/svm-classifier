@@ -1,15 +1,16 @@
 \section{Numerical Methods}
 \label{chap:numerical_methods}
-
+\vspace{-0.4cm}
 \subsection{Gradient Descent for Primal SVM}
 We are now interested in implementing a numerical solution to the primal SVM problem. Since the objective is convex, gradient-based optimization methods can be used to reliably find a global minimum.
 
 To handle non-separable data, we use a soft-margin formulation, which allows some margin violations at a cost controlled by a regularization parameter. This cost is incorporated using a loss function, e.g., the hinge loss, which penalizes misclassified points.
-However the hinge loss function is non-smooth, so we instead use a smooth approximation—specifically the logistic loss:
+However the hinge loss function is non-smooth, so we instead use a smooth approximation, specifically the logistic loss:
 \begin{align*}
-\mathcal{l}_{log}(t) := ln(1 + e^{(-t)})
+    \ell(t) = \log(1 + e^{-t}) 
 \end{align*}
-which penalizes misclassified points in a differentiable way. The gradient is computed from the contributions of all training points, weighted by how much they violate the margin, and scaled by the regularization term.
+which penalizes misclassified points, and is differentiable. 
+The gradient is computed from the contributions of all training points, weighted by how much they violate the margin, and scaled by the regularization term.
 Using this gradient, we update the weights iteratively in the direction of steepest descent until convergence to an optimal solution.
 
 \subsection{Projected Gradient Descent for Dual SVM}
@@ -26,9 +27,9 @@ The projection was implemented by converting the problem into a constrained mini
 \end{align*}
 This way we can use the Lagrangian method with one lagrange multiplier, $\lambda$, and solve the projection efficiently via bisection.
 \vspace{-1.0em}
-\paragraph*{Step Length Selection}
-For step size, we used the \emph{Barzilai-Borwein method}, which estimates the step length from previous steps. 
-However if the BB step was invalid, we defaulted to a fixed step size.
+\subsubsection{Step Length Selection}
+To determine appropriate step lengths in both gradient descent methods, we implemented the \emph{Barzilai-Borwein (BB) method}, which dynamically estimates optimal step sizes based on information from previous iterations.
+When the BB method produced unusable step lengths (e.g., negative or excessively large values), we defaulted to a conservative fixed step size to ensure algorithm stability.
 In some cases where the step length was not satisfactory it would be necessary to perform a line search. This does come at a higher computational cost.
 So to avoid unnecessary line searches, we tracked a reference function value, $f_{ref}$, and only triggered a line search when the objective increased beyond this threshold.
 If the function hadn't improved after a set number of steps, we updated the reference and potentially performed a line search.

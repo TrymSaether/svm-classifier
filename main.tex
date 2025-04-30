@@ -2,10 +2,7 @@
 \usepackage{bib/trymtex}
 \usepackage{csquotes}
 \usepackage[backend=biber]{biblatex}
-\usepackage[short]{optidef}
 \usepackage{wrapfig}
-\usepackage{optidef}
-
 \addbibresource{bib/references.bib}
 
 \begin{document}
@@ -15,7 +12,6 @@
 \tableofcontents
 
 \section*{Notation}
-
 \begin{table}[H]
 	\centering
 	\begin{tabular}{|c|l|}
@@ -36,8 +32,6 @@
 		\hline
 		$Y = \operatorname{diag}(y_1,\ldots,y_M) \in \R^{M \times M}$ & Label/diagonal matrix                   \\
 		\hline
-		$Y = \operatorname{diag}(y_1,\ldots,y_M)$                     & Diagonal label matrix                   \\
-		\hline
 		$C > 0$                                                       & Penalty parameter for misclassification \\
 		\hline
 	\end{tabular}
@@ -46,15 +40,16 @@
 \end{table}
 \clearpage
 \input{chapters/1_introduction}
+\vspace{-0.5cm}
 \input{chapters/2_primal}
+\vspace{-0.5cm}
 \input{chapters/3_dual}
+\vspace{-0.5cm}
 \input{chapters/4_numerical_methods}
+\vspace{-0.5cm}
 \input{chapters/5_experiments_results}
+\vspace{-0.5cm}
 \input{chapters/6_conclusion}
-
+\vspace{-0.5cm}
 \printbibliography[title={References}]
-
-
-\appendix
-
 \end{document}

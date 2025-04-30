@@ -270,7 +270,6 @@ def plot_decision_boundary_2D(model, X, y, title="", save_path=None):
     """
     fig, (ax, ax_learn) = plt.subplots(1, 2, figsize=(12, 5), 
                                         gridspec_kw={'width_ratios': [2, 1]})
-    fig.suptitle("SVM Decision Boundary and Learning Curve", fontsize=16)
     # Class scatter plot
     ax.scatter(X[y==+1,0], X[y==+1,1], label="+1 class", marker='o')
     ax.scatter(X[y==-1,0], X[y==-1,1], label="-1 class", marker='s')
