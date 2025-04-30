@@ -1,6 +1,22 @@
 \subsection{The Dual Problem (DP)}
-The primal problem involves minimizing a regularized hinge loss over the parameters defining a separating hyperplane. The dual problem, derived via Lagrangian duality, provides computational and theoretical advantages, especially when expressed in terms of inner products between data points.
+The primal problem involves minimizing a regularized hinge loss over the three parameters 
+defining a separating hyperplane. Optimizing over three parameters can be computationally
+ineffcient. Using an alternate formulation, derived via Lagrangian duality, allows minimizing 
+over just one larger parameter providing computational and theoretical advantages, 
+especially when expressed in terms of inner products between data points. This alternate
+formulation, expressed below, will be refered to as the dual problem (DP).
 
+\begin{align}\label{eq:dual-problem}
+	\min_{\symbf{\alpha}} \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}} \text{ subject to }
+	\begin{cases}
+		0 \leq \symbf{\alpha} \leq C\symbf{1}_M,\\
+		\symbf{\alpha}^\top Y = 0.
+	\end{cases} \tag{DP}
+\end{align}
+	
+Where $G = \bigl(\inner*{\symbf{x}_i, \symbf{x}_j}\bigr)_{i,j=1,\hdots,M} = X X^\top$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
+
+\subsubsection{Dual Derivation}
 The dual formulation offers several key advantages. In the context of support vector machines,
 solving the dual allows the optimization to depend only on the number of data points rather than
 the dimension of the spatial space, making it efficient in high-dimensional settings.
@@ -10,19 +26,9 @@ into which data points are support vectors, since only the corresponding dual va
 Thus, the dual problem is usually more numerically stable and computationally efficient, than the
 primal formulation.
 
-\subsubsection{Dual Derivation}
-The dual problem is an equivalent formulation of the primal optimization problem derived using Lagrangian multipliers and KKT conditions. It can be expressed as:
-
 \begin{theorem}{The Dual Problem}{dual-problem}
-	The dual of the primal problem~\eqref{eq:primal-problem} is given by:
-	\[
-		\min_{\symbf{\alpha}} \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}} \text{ subject to }
-		\begin{cases}
-			0 \leq \symbf{\alpha} \leq C\symbf{1}_M,\\
-			\symbf{\alpha}^\top Y = 0.
-		\end{cases} \tag{DP}
-	\]
-	Where $G = \bigl(\inner*{\symbf{x}_i, \symbf{x}_j}\bigr)_{i,j=1,\hdots,M} = X X^\top$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
+	The dual problem~\eqref{eq:dual-problem} is derived from the primal 
+	problem~\eqref{eq:primal-problem} using Lagrangian multipliers and KKT conditions.
 \end{theorem}
 
 \begin{proof}[Proof of Theorem~\ref{thm:dual-problem}]{}
@@ -84,7 +90,11 @@ $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem \eqref{eq:
 using the KKT optimality conditions.
 
 \begin{proposition}{Recovering Primal Solution from Dual Solution}{D2P-solution}
-	Given an optimal solution $\symbf{\alpha}^\star$ to the dual problem, the corresponding optimal solution $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem can be recovered through:
+	Given an optimal solution $\symbf{\alpha}^\star$ to the dual problem 
+	\eqref{eq:dual-problem}, the corresponding optimal solution 
+	$(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem 
+	\eqref{eq:primal-problem} can be recovered as:
+
 	\begin{align*}
 		\symbf{w}^\star   & = X^\top Y \symbf{\alpha}^\star                                                                                 \\
 		b^\star           & = y_i - \symbf{x}_i^\top\symbf{w}^\star \quad \text{for any index } i \text{ such that } 0 < \alpha_i^\star < C \\
@@ -129,6 +139,35 @@ using the KKT optimality conditions.
 	\end{align*}
 	This shows that the primal problem can be recovered from the dual solution $\symbf{\alpha}^\star$. \qed
 \end{proof}
+	
+\begin{proof}
+	From the KKT conditions, the optimal weight vector $\symbf{w}^\star$ is given by:
+	\[
+	\symbf{w}^\star = \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i = X^\top Y \symbf{\alpha}^\star.
+	\]
+	To determine $b^\star$, we use the complementary slackness condition, which tells us that for any support vector (i.e.\ an index $i$ such that $0 < \alpha_i^\star < C$), the margin constraint is active and satisfies
+	\[
+	y_i (\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star) = 1.
+	\]
+	Solving for $b^\star$ yields:
+	\[
+	b^\star = y_i - \symbf{x}_i^\top \symbf{w}^\star,
+	\]
+	which holds for any $i$ with $0 < \alpha_i^\star < C$. 
+	To recover the slack variables $\symbf{\xi}^\star$, we rearrange the primal constraints:
+	\[
+	y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star) \ge 1 - \xi_i^\star, \quad \xi_i^\star \ge 0.
+	\]
+	Solving for $\xi_i^\star$, we obtain:
+	\[
+	\xi_i^\star = \max\left(0,\; 1 - y_i (\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\right),
+	\]
+	which in vector form becomes:
+	\[
+	\symbf{\xi}^\star = \max\left\{ \symbf{0}_M,\; \symbf{1}_M - Y(X \symbf{w}^\star + b^\star \symbf{1}_M) \right\}.
+	\]
+\end{proof}
+	
 
 \medskip
 
