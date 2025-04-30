@@ -18,35 +18,19 @@ The dual problem is an equivalent formulation of the primal optimization problem
 	\[
 		\min_{\symbf{\alpha}} \frac{1}{2} \inner*{\symbf{\alpha}, \mathrm{Y} \mathrm{G} \mathrm{Y} \symbf{\alpha}} -  \inner*{\symbf{1}_M, \symbf{\alpha}} \text{ subject to }
 		\begin{cases}
-			0 \leq \symbf{\alpha} \leq C\symbf{1}_M \\
-			\symbf{\alpha}^\top Y = 0
+			0 \leq \symbf{\alpha} \leq C\symbf{1}_M,\\
+			\symbf{\alpha}^\top Y = 0.
 		\end{cases} \tag{DP}
 	\]
 	Where $G = \bigl(\inner*{\symbf{x}_i, \symbf{x}_j}\bigr)_{i,j=1,\hdots,M} = X X^\top$ is the Gram matrix, and $Y=\operatorname{diag}(y_1,\dots,y_M)$.
 \end{theorem}
 
-\begin{proof}{}{}
-	\paragraph{Primal problem (P)}
-	We begin with the soft-margin SVM primal:
-	\[
-		\min_{\symbf{w}, b, \symbf{\xi}}
-		\tfrac12\|\symbf{w}\|_2^2
-		+ C\symbf{1}_M^\top \symbf{\xi}
-		\quad\text{subject to}\quad
-		\begin{cases}
-			c_1(\symbf{w}, b, \symbf{\xi}) & = \symbf{1}_M - Y\left(X\symbf{w} + b\symbf{1}_M\right)-\symbf{\xi}\le\symbf{0}_M, \\
-			c_2(\symbf{\xi})               & = -\symbf{\xi}\le\symbf{0}_M.
-		\end{cases}
-	\]
-	\paragraph{Lagrangian}
-	We introduce the Lagrange multipliers
-	\(\symbf{\alpha}_1,\symbf{\alpha}_2 \ge \symbf{0}_M.
-	\)
-	The Lagrangian is
+\begin{proof}[Proof of Theorem~\ref{thm:dual-problem}]{}
+	\paragraph{Lagrangian} To derive the dual problem, we start with the primal problem~\eqref{eq:primal-problem}.
+	We introduce Lagrange multipliers $\symbf{\alpha}_1,\symbf{\alpha}_2 \geq 0$ for the constraints $c_1(\symbf{w},b,\symbf{\xi}) \leq \symbf{0}_M$ and $c_2(\symbf{\xi}) \leq \symbf{0}_M$, respectively. The Lagrangian is given by:
 	\[
 		\mathcal{L}\left(\symbf{w}, b, \symbf{\xi}, \symbf{\alpha}_1,\symbf{\alpha}_2\right) =\tfrac12\|\symbf{w}\|_2^2 +C\symbf{1}_M^\top \symbf{\xi} +\symbf{\alpha}_1^\top c_1(\symbf{w},b,\symbf{\xi}) +\symbf{\alpha}_2^\top c_2(\symbf{\xi}).
 	\]
-
 	Because $\mathcal{L}$ is convex in $(\symbf{w},b,\symbf{\xi})$ and concave in $(\symbf{\alpha}_1,\symbf{\alpha}_2)$, the minimax theorem~\cite{vonNeumann1928} implies
 
 	\begin{align*}
@@ -55,21 +39,25 @@ The dual problem is an equivalent formulation of the primal optimization problem
 
 	\paragraph{KKT conditions}
 	To find the minimum of the Lagrangian, we need to satisfy the KKT conditions. The KKT conditions are a set of necessary and sufficient conditions for optimality in constrained optimization problems. They consist of three components:
-	\begin{itemize}
-		\item \textbf{Stationarity} The gradients of the Lagrangian with respect to the primal variables $(\symbf{w}, b, \symbf{\xi})$ must vanish:
-		      \begin{align*}
-			      \nabla_{\symbf{w}} \Lcal = \symbf{w} -  (X^\top Y) \symbf{\alpha}_1 = \symbf{0}, \quad \nabla_{b} \Lcal = - \symbf{\alpha}_1^\top Y = \symbf{0}^\top, \quad \nabla_{\symbf{\xi}} \Lcal  = C \symbf{1}_M^\top - \symbf{\alpha}_1^\top - \symbf{\alpha}_2^\top = \symbf{0}_M^\top
-		      \end{align*}
-		\item \textbf{Complementary slackness} The Lagrange multipliers $\symbf{\alpha}_1$ and $\symbf{\alpha}_2$ must satisfy the complementary slackness conditions:
-		      \begin{align*}
-			      \symbf{\alpha}_1^\top c_1(\symbf{w},b,\symbf{\xi}) = \symbf{0}_M^\top, \quad \symbf{\alpha}_2^\top c_2(\symbf{\xi}) = \symbf{0}_M^\top
-		      \end{align*}
-		\item \textbf{Feasibility} The primal variables $(\symbf{w}, b, \symbf{\xi})$ must satisfy the primal constraints:
-		      \begin{align*}
-			      c_1(\symbf{w},b,\symbf{\xi}) = \symbf{1}_M - Y\left(X\symbf{w} + b\symbf{1}_M\right)-\symbf{\xi}\le\symbf{0}_M, \\
-			      c_2(\symbf{\xi}) = -\symbf{\xi}\le\symbf{0}_M.
-		      \end{align*}
-	\end{itemize}
+
+\end{proof}
+\begin{proof}[]
+	\subparagraph{Stationarity} The gradients of the Lagrangian with respect to the primal variables $(\symbf{w}, b, \symbf{\xi})$ must vanish:
+	\begin{align*}
+		\nabla_{\symbf{w}} \Lcal = \symbf{w} -  (X^\top Y) \symbf{\alpha}_1 = \symbf{0}, \quad \nabla_{b} \Lcal = - \symbf{\alpha}_1^\top Y = \symbf{0}^\top, \quad \nabla_{\symbf{\xi}} \Lcal  = C \symbf{1}_M^\top - \symbf{\alpha}_1^\top - \symbf{\alpha}_2^\top = \symbf{0}_M^\top
+	\end{align*}
+
+	\subparagraph{Complementary slackness} The Lagrange multipliers $\symbf{\alpha}_1$ and $\symbf{\alpha}_2$ must satisfy the complementary slackness conditions:
+	\begin{align*}
+		\symbf{\alpha}_1^\top c_1(\symbf{w},b,\symbf{\xi}) = \symbf{0}_M^\top, \quad \symbf{\alpha}_2^\top c_2(\symbf{\xi}) = \symbf{0}_M^\top
+	\end{align*}
+
+	\subparagraph{Feasibility} The primal variables $(\symbf{w}, b, \symbf{\xi})$ must satisfy the primal constraints:
+	\begin{align*}
+		c_1(\symbf{w},b,\symbf{\xi}) = \symbf{1}_M - Y\left(X\symbf{w} + b\symbf{1}_M\right)-\symbf{\xi}\le\symbf{0}_M, \\
+		c_2(\symbf{\xi}) = -\symbf{\xi}\le\symbf{0}_M.
+	\end{align*}
+
 	Thus, we have the following conditions:
 	\begin{align*}
 		\symbf{w}             & = X^\top Y \symbf{\alpha}_1 , \quad \symbf{\alpha}_1^\top Y  = \symbf{0}_M^\top, \quad \symbf{0}_M \leq \symbf{\alpha}_1 + \underset{=\symbf{0}}{\symbf{\alpha}_2} \leq C\symbf{1}_M \; \text{where}                                                               \\
@@ -87,10 +75,10 @@ The dual problem is an equivalent formulation of the primal optimization problem
 		0\le\symbf{\alpha}\le C\symbf{1}_M,
 		\symbf{\alpha}^\top Y =0.
 	\]
-	This completes the derivation of the dual problem~\eqref{eq:dual-problem}.\qed
+	This completes the derivation of the dual problem~\eqref{thm:dual-problem}.\qed
 \end{proof}
 
-Once the dual problem \eqref{eq:dual-problem} has been solved and an optimal dual variable
+Once the dual problem \eqref{thm:dual-problem} has been solved and an optimal dual variable
 $\symbf{\alpha}^\star$ has been obtained, we can reconstruct the corresponding solution
 $(\symbf{w}^\star, b^\star, \symbf{\xi}^\star)$ to the primal problem \eqref{eq:primal-problem}
 using the KKT optimality conditions.
@@ -122,28 +110,11 @@ using the KKT optimality conditions.
 
 	Given an optimal dual solution $\symbf{\alpha}^\star$, the corresponding primal solution is recovered via:
 	\begin{align*}
-		\symbf{w}^\star & = \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i                                                                          \\
-		b^\star         & = y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle \quad \text{for any } i \text{ such that } 0 < \alpha_i^\star < C \\
+		\symbf{w}^\star & = \sum_{i=1}^M \alpha_i^\star y_i \symbf{x}_i = \symbf{y}^\top \symbf{\alpha}^\star \symbf{x}                                                                  \\
+		b^\star         & = y_i - \langle \symbf{w}^\star, \symbf{x}_i \rangle = \symbf{y} - {\symbf{w}^\star}^\top \symbf{x} = \symbf{y} - \inner*{\symbf{\alpha}^\star \symbf{x}, \symbf{y} \symbf{x}} \quad \text{for any } i \text{ such that } 0 < \alpha_i^\star < C \\
 		\xi_i^\star     & = \max\big(0,\; 1 - y_i(\langle \symbf{w}^\star, \symbf{x}_i \rangle + b^\star)\big)
 	\end{align*}
-	\paragraph{Recovering the Primal Problem (P)}
-	\begin{align*}
-		\min_{\symbf{w}, b, \symbf{\xi}} \quad
-		 & f(\symbf{w}, b, \symbf{\xi})
-		= \frac{1}{2}\|\symbf{w}\|_2^2 + C\,\symbf{1}_M^\top \symbf{\xi}
-		\quad
-		\text{subject to}
-		\quad
-		\begin{cases}
-			\symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi} & \le \symbf{0}_M, \\[6pt]
-			\symbf{\xi} \;\;                                                       & \ge \symbf{0}_M,
-		\end{cases}\tag{P}
-	\end{align*}
-	\begin{align*}
-		\symbf{w}^\star &= \symbf{y}^\top \symbf{\alpha}^\star \symbf{x} \\
-		\symbf{b}^\star &= \symbf{y} - {\symbf{w}^\star}^\top \symbf{x} = \symbf{y} - \inner*{\symbf{\alpha}^\star \symbf{x}, \symbf{y} \symbf{x}}
-	\end{align*}
-
+	\paragraph{Recovering the Primal Problem:}
 	\begin{align*}
 		 & \min_{\symbf{w}, b, \symbf{\xi}} \quad
 		f(\symbf{y}^\top \symbf{\alpha}^\star \symbf{x},\symbf{y} - {\symbf{w}^\star}^\top \symbf{x}, \symbf{\xi})
@@ -156,9 +127,10 @@ using the KKT optimality conditions.
 			\symbf{\xi} \;\;                                                                                                                                                                    & \ge \symbf{0}_M,
 		\end{cases} \\
 	\end{align*}
-
+	This shows that the primal problem can be recovered from the dual solution $\symbf{\alpha}^\star$. \qed
 \end{proof}
 
+\medskip
 
 \subsubsection{Existence and Uniqueness of the Dual Solution}
 The dual problem is a convex quadratic program with linear constraints.

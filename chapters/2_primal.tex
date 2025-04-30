@@ -12,11 +12,11 @@ which will serve as our primal problem (P).
 	\text{subject to}
 	\quad
 	\begin{cases}
-		\symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi}  \le \symbf{0}_M, \\[6pt]
-		\symbf{\xi} \;\;                                                        \ge \symbf{0}_M,
+		c_1(\symbf{w}, b, \symbf{\xi}) = \symbf{1}_M - Y\bigl(X\,\symbf{w} + b\,\symbf{1}_M\bigr) - \symbf{\xi}  \le \symbf{0}_M, \\[6pt]
+		c_2(\symbf{\xi}) = -\symbf{\xi} \leq \symbf{0}_M,
 	\end{cases}\tag{P}
 \end{align*}
-\begin{table}[htbp]
+\begin{table}[H]
 	\centering
 	\begin{tabular}{|c|l|}
 		\hline

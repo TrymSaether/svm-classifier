@@ -215,9 +215,8 @@ class DualSVM(BaseSVM):
                 prev_alpha = alpha.copy()
                 prev_grad = g_new
             
-            if self.verbose and k % 50 == 0:
-                print(f"Iter={k}, Obj={new_obj:.6f}, Step={step:.4g}, ||alpha_diff||={np.linalg.norm(alpha_diff):.3e}")
-        
+            if self.verbose and k % 100 == 0:
+                print(f"Iteration {k}: obj={new_obj:.4f}, ||g||={np.linalg.norm(g):.4f}, step={step:.4f}")
         # final alpha
         self.alpha = alpha
         

@@ -172,17 +172,8 @@ class PrimalSVM(BaseSVM):
         if self.verbose:
             print(f'b: {self.b}, w: {self.w}')
         margin = self.y * (self.X.dot(self.w) + self.b)
-        if self.verbose:
-            print(f"Margin: {margin}")
         support_vector_indices = np.where(margin <= 1.0 + eps)[0]
-        
-        # Check support vectors from each class
-        pos_sv = support_vector_indices[self.y[support_vector_indices] == 1.0]
-        neg_sv = support_vector_indices[self.y[support_vector_indices] == -1.0]
-        
-        if self.verbose:
-            print(f"Positive class support vectors: {len(pos_sv)}")
-            print(f"Negative class support vectors: {len(neg_sv)}")
+    
         return support_vector_indices
     def get_w(self):
         """
