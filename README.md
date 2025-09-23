@@ -8,15 +8,6 @@ This repository accompanies an Optimization 1 course project on soft-margin Supp
 - `svm/`: Lightweight Python package with reusable components for the experiments (`PrimalSVM`, `DualSVM`, kernels, utilities, and the `demo.ipynb` notebook).
 - `appendices/project_description.pdf`: Original project handout for reference.
 
-## Building the report
-The report relies on `latexmk`, `pdflatex`, and `biber`. A typical TeX Live or MiKTeX installation provides all required packages.
-
-```bash
-latexmk -pdf main.tex
-```
-
-`latexmk` takes care of the LaTeX -> Biber -> LaTeX toolchain and writes the final PDF to `main.pdf`. Clean auxiliary files with `latexmk -c` if needed.
-
 ## Python environment
 The SVM code depends on a minimal scientific Python stack:
 
